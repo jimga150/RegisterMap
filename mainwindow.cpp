@@ -57,6 +57,19 @@ void MainWindow::set_codename_generation(int custom_codename_checked)
     codeNameEdit->setReadOnly(custom_codename_checked == Qt::Unchecked);
 }
 
+void MainWindow::set_reg_block_name(const QString &new_name)
+{
+    std::string new_name_std(new_name.toUtf8().constData());
+
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
+    QWidget* w = qobject_cast<QWidget*>(s->parent());
+
+    RegisterBlock* rb = this->reg_blocks.at(w);
+    rb->name = new_name_std;
+}
+
 void MainWindow::save()
 {
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
@@ -82,6 +95,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QLineEdit* nameEdit = new QLineEdit();
     connect(nameEdit, &QLineEdit::textEdited, this, &MainWindow::gen_code_name);
+    connect(nameEdit, &QLineEdit::textEdited, this, &MainWindow::set_reg_block_name);
     g->addWidget(nameEdit, currRow, 1);
 
     QLabel* codeNameLabel = new QLabel("Source-Friendly Name: ");
@@ -114,5 +128,8 @@ void MainWindow::on_new_reg_block_btn_clicked()
     g->addItem(spacer, currRow, 0);
 
     w->setLayout(g);
+
+    RegisterBlock* rb = this->reg_map.add_register_block();
+    this->reg_blocks.insert({w, rb});
 }
 

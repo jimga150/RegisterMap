@@ -31,7 +31,6 @@ public:
     }
 
 
-
 };
 
 #endif // REGISTERBLOCK_H

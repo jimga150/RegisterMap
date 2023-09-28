@@ -36,7 +36,6 @@ static bool replace_first(std::string& s, const std::string& toReplace, const st
     return true;
 }
 
-//TODO: move this and some other stuff to a common header
 static std::string generate_code_name(std::string name){
     //copy name from human readable name
     std::string code_name = name;
@@ -64,7 +63,6 @@ static std::string generate_code_name(std::string name){
     }
 
     if (code_name.size() > 0 && code_name.at(0) <= '9' && code_name.at(0) >= '0'){
-        printf("leading number detected! %s\n", code_name.c_str());
         //names in source code cannot start with numbers.
         //On the chance that whatever name this is is used as the very first part of a source name,
         //throw an underscore in front of any leading numbers

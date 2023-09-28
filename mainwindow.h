@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "registermap.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -15,10 +17,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    RegisterMap reg_map;
+
+    std::map<QWidget*, RegisterBlock*> reg_blocks;
+
 public slots:
     void gen_code_name(const QString &new_text);
 
     void set_codename_generation(int custom_codename_checked);
+
+    void set_reg_block_name(const QString &new_name);
 
     void save();
 

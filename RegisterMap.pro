@@ -14,7 +14,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     register.cpp \
-    registerblock.cpp
+    registerblock.cpp \
+    registermap.cpp
 
 HEADERS += \
     bitfield.h \
@@ -22,7 +23,8 @@ HEADERS += \
     domain.h \
     mainwindow.h \
     register.h \
-    registerblock.h
+    registerblock.h \
+    registermap.h
 
 FORMS += \
     mainwindow.ui
