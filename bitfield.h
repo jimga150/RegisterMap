@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 //stringifies name of variable or literal you give it
 //str(TEMP) --> "TEMP"
@@ -23,7 +24,7 @@
     FXN(RW) \
     FXN(num_ioperms)
 
-//TODO: come up with a type to use for representing arbitrarily long sets of bits
+typedef std::vector<uint8_t> bitstring;
 
 enum ioperm_enum {
     FOREACH_IOPERMS(GENERATE_ENUM)
@@ -46,8 +47,7 @@ public:
     bool readable;
     bool writeable; //TODO: add write condition functionality
 
-    //TODO: use a type that is bit-width scaleable, like bigint, for anything storing a value this bitfield could have
-    uint32_t default_val;
+    bitstring default_val;
 
     //TODO: add reset domains
 
@@ -57,7 +57,7 @@ public:
     std::map<std::string, uint32_t> values;
 
     bool self_clearing;
-    uint32_t cleared_state;
+    bitstring cleared_state;
 
 
     ioperm_enum get_ioperms(){
