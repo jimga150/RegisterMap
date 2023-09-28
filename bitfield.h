@@ -2,20 +2,9 @@
 #define BITFIELD_H
 
 #include <map>
-#include <string>
 #include <vector>
 
-//stringifies name of variable or literal you give it
-//str(TEMP) --> "TEMP"
-#define str(x) #x
-
-//stringifies value of variable or literal you give it
-//xstr(TEMP) --> "10.3"
-//(assuming TEMP == 10.3)
-#define xstr(x) str(x)
-
-#define GENERATE_ENUM(ENUM) ENUM,
-#define GENERATE_STRING(STRING) #STRING,
+#include "common.h"
 
 #define FOREACH_IOPERMS(FXN) \
     FXN(NA) \

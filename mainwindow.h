@@ -16,6 +16,8 @@ public:
     ~MainWindow();
 
 public slots:
+    void gen_code_name(const QString &new_text);
+
     void set_codename_generation(int custom_codename_checked);
 
     void save();

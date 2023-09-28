@@ -6,6 +6,8 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 
+#include "common.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -20,14 +22,33 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::gen_code_name(const QString& new_text){
+
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
+    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the layout from the parent tab widget
+    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    //get the line edit we need from that layout
+    QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(g->itemAtPosition(0, 3)->widget());
+
+    if (codeNameEdit->isReadOnly()){
+        std::string codename_std = generate_code_name(new_text.toUtf8().constData());
+        QString cn_qs(codename_std.c_str());
+        codeNameEdit->setText(cn_qs);
+    }
+
+}
+
 void MainWindow::set_codename_generation(int custom_codename_checked)
 {
     //what follows is me pulling the line edit item using just the sender as context:
 
-    //get the sending checkbox
-    QCheckBox* cb = qobject_cast<QCheckBox*>(sender());
+    //get the sending object
+    QObject* s = sender();
     //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(cb->parent());
+    QWidget* w = qobject_cast<QWidget*>(s->parent());
     //get the layout from the parent tab widget
     QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
     //get the line edit we need from that layout
@@ -60,12 +81,14 @@ void MainWindow::on_new_reg_block_btn_clicked()
     g->addWidget(nameLabel, currRow, 0);
 
     QLineEdit* nameEdit = new QLineEdit();
+    connect(nameEdit, &QLineEdit::textEdited, this, &MainWindow::gen_code_name);
     g->addWidget(nameEdit, currRow, 1);
 
     QLabel* codeNameLabel = new QLabel("Source-Friendly Name: ");
     g->addWidget(codeNameLabel, currRow, 2);
 
     QLineEdit* codeNameEdit = new QLineEdit();
+    codeNameEdit->setReadOnly(true);
     g->addWidget(codeNameEdit, currRow, 3);
 
     ++currRow;

@@ -18,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     bitfield.h \
+    common.h \
     domain.h \
     mainwindow.h \
     register.h \
