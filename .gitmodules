@@ -1,0 +1,6 @@
+[submodule "erbsland-qt-toml"]
+	path = erbsland-qt-toml
+	url = https://github.com/erbsland-dev/erbsland-qt-toml.git
+[submodule "toml11"]
+	path = toml11
+	url = https://github.com/ToruNiina/toml11.git

@@ -5,12 +5,12 @@
 
 //stringifies name of variable or literal you give it
 //str(TEMP) --> "TEMP"
-#define str(x) #x
+#define STR(x) #x
 
 //stringifies value of variable or literal you give it
 //xstr(TEMP) --> "10.3"
 //(assuming TEMP == 10.3)
-#define xstr(x) str(x)
+#define XSTR(x) STR(x)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
@@ -26,10 +26,10 @@ static bool replace_first(std::string& s, const std::string& toReplace, const st
     try{
         s.replace(pos, toReplace.length(), replaceWith);
     } catch (std::out_of_range){
-        fprintf(stderr, "%s:%d: Out of range exception thrown! %s > %s.size()", __FILE__, __LINE__, str(pos), str(s));
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s > %s.size()", __FILE__, __LINE__, STR(pos), STR(s));
         return false;
     } catch (std::length_error){
-        fprintf(stderr, "%s:%d: Length error exception thrown! resulting string will be too large for buffer in %s", __FILE__, __LINE__, str(s));
+        fprintf(stderr, "%s:%d: Length error exception thrown! resulting string will be too large for buffer in %s", __FILE__, __LINE__, STR(s));
         return false;
     }
 

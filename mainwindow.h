@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "registermap.h"
+#include "toml11/toml.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
