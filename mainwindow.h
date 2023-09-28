@@ -15,6 +15,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void set_codename_generation(int custom_codename_checked);
+
 private slots:
     void on_new_reg_block_btn_clicked();
 

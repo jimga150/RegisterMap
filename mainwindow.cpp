@@ -15,6 +15,32 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::set_codename_generation(int custom_codename_checked)
+{
+    //what follows is me pulling the line edit item using just the sender as context:
+
+    //get the sending checkbox
+    QCheckBox* cb = qobject_cast<QCheckBox*>(sender());
+    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
+    QWidget* w = qobject_cast<QWidget*>(cb->parent());
+    //get the layout from the parent tab widget
+    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    //get the line edit we need from that layout
+    QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(g->itemAtPosition(0, 3)->widget());
+
+    codeNameEdit->setReadOnly(custom_codename_checked == Qt::Unchecked);
+}
+
+void MainWindow::save()
+{
+    QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
+    QUrl start_url(start_path);
+    QUrl save_location = QFileDialog::getSaveFileUrl(this, "Save As...", start_url, "All Files (*)");
+    printf("Save as: %s\n", save_location.path().toUtf8().constData());
+
+
+}
+
 
 void MainWindow::on_new_reg_block_btn_clicked()
 {
@@ -41,7 +67,8 @@ void MainWindow::on_new_reg_block_btn_clicked()
     ++currRow;
 
     QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-    g->addWidget(customCNCheckBox, currRow, 3); //TODO: make this enable or disable auto-codename generation
+    connect(customCNCheckBox, &QCheckBox::stateChanged, this, &MainWindow::set_codename_generation);
+    g->addWidget(customCNCheckBox, currRow, 3);
 
     ++currRow;
 
