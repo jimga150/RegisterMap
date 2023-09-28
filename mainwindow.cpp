@@ -3,11 +3,16 @@
 
 #include <limits>
 
+#include <QFileDialog>
+#include <QStandardPaths>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    connect(this->ui->actionSave_As, &QAction::triggered, this, &MainWindow::save);
 }
 
 MainWindow::~MainWindow()
@@ -62,7 +67,6 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QLineEdit* codeNameEdit = new QLineEdit();
     g->addWidget(codeNameEdit, currRow, 3);
-
 
     ++currRow;
 
