@@ -75,10 +75,15 @@ public:
         return (uint32_t)whole_byte_cnt;
     }
 
-    uint32_t get_default_val(){
-        uint32_t ans = 0;
+    bitstring get_default_val(){
+        bitstring ans;
+        for (uint32_t i = 0; i < bit_len; ++i){
+            ans.push_back(0);
+        }
         for (BitField& bf : this->bitfields){
-            ans &= bf.default_val << bf.low_index;
+            for (uint32_t i = bf.low_index; i <= bf.high_index; ++i){
+                ans.assign(i, bf.default_val.at(i-bf.low_index));
+            }
         }
         return ans;
     }
