@@ -13,13 +13,15 @@ SOURCES += \
     domain.cpp \
     main.cpp \
     mainwindow.cpp \
-    register.cpp
+    register.cpp \
+    registerblock.cpp
 
 HEADERS += \
     bitfield.h \
     domain.h \
     mainwindow.h \
-    register.h
+    register.h \
+    registerblock.h
 
 FORMS += \
     mainwindow.ui
