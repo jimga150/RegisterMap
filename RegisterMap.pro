@@ -10,12 +10,14 @@ CONFIG += c++17
 
 SOURCES += \
     bitfield.cpp \
+    domain.cpp \
     main.cpp \
     mainwindow.cpp \
     register.cpp
 
 HEADERS += \
     bitfield.h \
+    domain.h \
     mainwindow.h \
     register.h
 
