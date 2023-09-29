@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <iostream>
 #include <limits>
 
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QMessageBox>
 
 #include "common.h"
 
@@ -73,11 +75,30 @@ void MainWindow::set_reg_block_name(const QString &new_name)
 void MainWindow::save()
 {
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
-    QUrl start_url(start_path);
-    QUrl save_location = QFileDialog::getSaveFileUrl(this, "Save As...", start_url, "All Files (*)");
-    printf("Save as: %s\n", save_location.path().toUtf8().constData());
+    QString save_location = QFileDialog::getSaveFileName(this, "Save As...", start_path, "All Files (*)");
+    printf("Save as: %s\n", save_location.toUtf8().constData());
 
+    QFile save_file(save_location);
+    if (!(save_file.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate | QIODeviceBase::Text))){
+        QMessageBox::warning(this, "File save Failed", "Failed to save file");
+        return;
+    }
 
+    QTextStream savefilestream(&save_file);
+    std::stringstream std_stream;
+
+    for (std::pair<QWidget*, RegisterBlock*> p : this->reg_blocks){
+        RegisterBlock* rb = p.second;
+        toml::value rb_table{
+            {"name", rb->name.c_str()},
+
+        };
+        std_stream << rb_table << std::endl;
+    }
+
+    savefilestream << std_stream.str().c_str();
+
+    save_file.close();
 }
 
 
