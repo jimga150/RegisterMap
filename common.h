@@ -40,7 +40,7 @@ static std::string generate_code_name(std::string name){
     //copy name from human readable name
     std::string code_name = name;
 
-    printf("generate_code_name called: %s\n", code_name.c_str());
+//    printf("generate_code_name called: %s\n", code_name.c_str());
 
     //replace all spaces with underscores
     char toReplace = ' ';
