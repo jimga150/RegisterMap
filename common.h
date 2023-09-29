@@ -25,11 +25,11 @@ static bool replace_first(std::string& s, const std::string& toReplace, const st
 
     try{
         s.replace(pos, toReplace.length(), replaceWith);
-    } catch (std::out_of_range){
-        fprintf(stderr, "%s:%d: Out of range exception thrown! %s > %s.size()", __FILE__, __LINE__, STR(pos), STR(s));
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
         return false;
-    } catch (std::length_error){
-        fprintf(stderr, "%s:%d: Length error exception thrown! resulting string will be too large for buffer in %s", __FILE__, __LINE__, STR(s));
+    } catch (const std::length_error& e){
+        fprintf(stderr, "%s:%d: Length error exception thrown! %s", __FILE__, __LINE__, e.what());
         return false;
     }
 
