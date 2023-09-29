@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: add way of showing which register in the table is currently selected for editing
 //TODO: add register name/codename/offset to serialization
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)

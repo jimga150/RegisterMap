@@ -244,6 +244,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QTableWidget* regTable = new QTableWidget(0, 3);
     regTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     regTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    regTable->setSelectionMode(QAbstractItemView::NoSelection);
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_NAME, new QTableWidgetItem("Name"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_OFFSET, new QTableWidgetItem("Offset"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_DESC, new QTableWidgetItem("Descwiption"));
@@ -277,6 +278,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
             regGrid->itemAtPosition(REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second)->widget()
         );
         offsetSpinBox->setValue(curr_reg->offset);
+
+        regTable->setRangeSelected(QTableWidgetSelectionRange(0, 0, regTable->rowCount()-1, regTable->columnCount()-1), false);
+        regTable->setRangeSelected(QTableWidgetSelectionRange(this->current_reg_row, 0, this->current_reg_row, regTable->columnCount()-1), true);
 
     });
     g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, 4);
