@@ -58,11 +58,3 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES += \
-    toml11/CMakeLists.txt \
-    toml11/LICENSE \
-    toml11/README.md \
-    toml11/appveyor.yml \
-    toml11/cmake/toml11Config.cmake.in \
-    toml11/tests/CMakeLists.txt
-
