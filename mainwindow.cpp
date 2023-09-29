@@ -72,6 +72,30 @@ void MainWindow::set_reg_block_name(const QString &new_name)
     rb->name = new_name_std;
 }
 
+void MainWindow::set_reg_block_codename(const QString &new_name)
+{
+    std::string new_name_std(new_name.toUtf8().constData());
+
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
+    QWidget* w = qobject_cast<QWidget*>(s->parent());
+
+    RegisterBlock* rb = this->reg_blocks.at(w);
+    rb->code_name = new_name_std;
+}
+
+void MainWindow::set_reg_block_size(int new_size)
+{
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
+    QWidget* w = qobject_cast<QWidget*>(s->parent());
+
+    RegisterBlock* rb = this->reg_blocks.at(w);
+    rb->size = new_size;
+}
+
 void MainWindow::save()
 {
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
@@ -91,7 +115,10 @@ void MainWindow::save()
         RegisterBlock* rb = p.second;
         toml::value rb_table{
             {"name", rb->name.c_str()},
-
+            {"sourcename", rb->code_name.c_str()},
+            {"size", rb->size},
+            //TODO: add domain offsets
+            //TODO: add registers
         };
         std_stream << rb_table << std::endl;
     }
@@ -124,6 +151,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QLineEdit* codeNameEdit = new QLineEdit();
     codeNameEdit->setReadOnly(true);
+    connect(codeNameEdit, &QLineEdit::textChanged, this, &MainWindow::set_reg_block_codename);
     g->addWidget(codeNameEdit, currRow, 3);
 
     ++currRow;
@@ -140,7 +168,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QSpinBox* sizeEdit = new QSpinBox();
     sizeEdit->setMinimum(0);
     sizeEdit->setMaximum(std::numeric_limits<int>::max());
-    sizeEdit->setValue(1024);
+    connect(sizeEdit, &QSpinBox::valueChanged, this, &MainWindow::set_reg_block_size);
     g->addWidget(sizeEdit, currRow, 1);
 
     ++currRow;
@@ -152,5 +180,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     RegisterBlock* rb = this->reg_map.add_register_block();
     this->reg_blocks.insert({w, rb});
+
+    //triggers slot which attempt to reference RegisterBlock within reg_blocks map.
+    //fails before that record is populated.
+    sizeEdit->setValue(1024);
 }
 

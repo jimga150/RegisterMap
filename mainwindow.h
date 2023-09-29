@@ -29,6 +29,10 @@ public slots:
 
     void set_reg_block_name(const QString &new_name);
 
+    void set_reg_block_codename(const QString &new_name);
+
+    void set_reg_block_size(int new_size);
+
     void save();
 
 private slots:
