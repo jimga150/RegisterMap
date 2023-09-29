@@ -16,48 +16,6 @@ SOURCES += \
     register.cpp \
     registerblock.cpp \
     registermap.cpp \
-    toml11/tests/check.cpp \
-    toml11/tests/check_serialization.cpp \
-    toml11/tests/check_toml_test.cpp \
-    toml11/tests/test_comments.cpp \
-    toml11/tests/test_datetime.cpp \
-    toml11/tests/test_error_detection.cpp \
-    toml11/tests/test_expect.cpp \
-    toml11/tests/test_extended_conversions.cpp \
-    toml11/tests/test_find.cpp \
-    toml11/tests/test_find_or.cpp \
-    toml11/tests/test_find_or_recursive.cpp \
-    toml11/tests/test_format_error.cpp \
-    toml11/tests/test_get.cpp \
-    toml11/tests/test_get_or.cpp \
-    toml11/tests/test_lex_boolean.cpp \
-    toml11/tests/test_lex_datetime.cpp \
-    toml11/tests/test_lex_floating.cpp \
-    toml11/tests/test_lex_integer.cpp \
-    toml11/tests/test_lex_key_comment.cpp \
-    toml11/tests/test_lex_string.cpp \
-    toml11/tests/test_literals.cpp \
-    toml11/tests/test_multiple_translation_unit_1.cpp \
-    toml11/tests/test_multiple_translation_unit_2.cpp \
-    toml11/tests/test_parse_array.cpp \
-    toml11/tests/test_parse_boolean.cpp \
-    toml11/tests/test_parse_datetime.cpp \
-    toml11/tests/test_parse_file.cpp \
-    toml11/tests/test_parse_floating.cpp \
-    toml11/tests/test_parse_inline_table.cpp \
-    toml11/tests/test_parse_integer.cpp \
-    toml11/tests/test_parse_key.cpp \
-    toml11/tests/test_parse_string.cpp \
-    toml11/tests/test_parse_table.cpp \
-    toml11/tests/test_parse_table_key.cpp \
-    toml11/tests/test_parse_unicode.cpp \
-    toml11/tests/test_result.cpp \
-    toml11/tests/test_serialize_file.cpp \
-    toml11/tests/test_string.cpp \
-    toml11/tests/test_traits.cpp \
-    toml11/tests/test_utility.cpp \
-    toml11/tests/test_value.cpp \
-    toml11/tests/test_windows.cpp
 
 HEADERS += \
     bitfield.h \
@@ -67,9 +25,6 @@ HEADERS += \
     register.h \
     registerblock.h \
     registermap.h \
-    toml11/tests/test_lex_aux.hpp \
-    toml11/tests/test_parse_aux.hpp \
-    toml11/tests/unit_test.hpp \
     toml11/toml.hpp \
     toml11/toml/color.hpp \
     toml11/toml/combinator.hpp \
