@@ -10,6 +10,9 @@
 
 #include "common.h"
 
+//override unordered_map to map to imply order
+using value = toml::basic_value<TOML11_DEFAULT_COMMENT_STRATEGY, std::map, std::vector>;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -113,7 +116,7 @@ void MainWindow::save()
 
     for (std::pair<QWidget*, RegisterBlock*> p : this->reg_blocks){
         RegisterBlock* rb = p.second;
-        toml::value rb_table{
+        value rb_table{
             {"name", rb->name.c_str()},
             {"sourcename", rb->code_name.c_str()},
             {"size", rb->size},
