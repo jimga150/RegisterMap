@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 
+#include "QtWidgets/qtablewidget.h"
 #include "registermap.h"
 #include "toml11/toml.hpp"
 
@@ -22,8 +23,12 @@ public:
 
     std::map<QWidget*, RegisterBlock*> reg_blocks;
 
+    int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
+
+    QRegularExpressionValidator* codename_validator;
+
 public slots:
-    void gen_code_name(const QString &new_text);
+    void gen_regblk_code_name(const QString &new_text);
 
     void set_codename_generation(int custom_codename_checked);
 
@@ -32,6 +37,8 @@ public slots:
     void set_reg_block_codename(const QString &new_name);
 
     void set_reg_block_size(int new_size);
+
+    void set_current_reg(QTableWidgetItem* item);
 
     void save();
 
