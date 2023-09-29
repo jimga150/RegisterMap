@@ -75,7 +75,7 @@ void MainWindow::set_reg_block_name(const QString &new_name)
 void MainWindow::save()
 {
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
-    QString save_location = QFileDialog::getSaveFileName(this, "Save As...", start_path, "All Files (*)");
+    QString save_location = QFileDialog::getSaveFileName(this, "Save As...", start_path, "TOML Files (*.toml)");
     printf("Save as: %s\n", save_location.toUtf8().constData());
 
     QFile save_file(save_location);
