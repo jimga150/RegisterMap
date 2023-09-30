@@ -397,7 +397,7 @@ void MainWindow::save()
 
     value base_table{{"version", 0.1}};
 
-    std::stringstream rbid_stream;
+    std::string rbid;
     int reg_blk_id_num = 0;
 
     for (std::pair<QWidget*, RegisterBlock*> p : this->reg_blocks){
@@ -405,7 +405,7 @@ void MainWindow::save()
 
         value reg_array;
 
-        std::stringstream rid_stream;
+        std::string rid;
         int reg_id_num = 0;
 
         for (Register& reg : rb->registers){
@@ -415,9 +415,10 @@ void MainWindow::save()
                              {"offset", reg.offset},
                              };
 
-            rid_stream.clear();
-            rid_stream << "reg" << reg_id_num++;
-            reg_array[rid_stream.str().c_str()] = reg_record;
+            rid = "reg";
+            rid += (char)(reg_id_num + '0');
+            reg_array[rid.c_str()] = reg_record;
+            ++reg_id_num;
         }
 
         value rb_table{
@@ -427,9 +428,10 @@ void MainWindow::save()
             {"registers", reg_array}
         };
 
-        rbid_stream.clear();
-        rbid_stream << "regblk" << reg_blk_id_num++;
-        base_table[rbid_stream.str().c_str()] = rb_table;
+        rbid = "regblk";
+        rbid += (char)(reg_blk_id_num + '0');
+        base_table[rbid.c_str()] = rb_table;
+        ++reg_blk_id_num;
     }
 
     std_stream << base_table << std::endl;
