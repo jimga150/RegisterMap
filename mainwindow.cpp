@@ -55,14 +55,15 @@ void MainWindow::gen_regblk_code_name(const QString& new_text){
 
     //get the sending object
     QObject* s = sender();
-    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
     //get the layout from the parent tab widget
-    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    QGridLayout* g = qobject_cast<QGridLayout*>(tab->layout());
     //get the line edit we need from that layout
     QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(
         g->itemAtPosition(REG_BLOCK_FIELD_COORD_CODENAME.first, REG_BLOCK_FIELD_COORD_CODENAME.second)->widget()
-    );
+        );
 
     if (codeNameEdit->isReadOnly()){
         std::string codename_std = generate_code_name(new_text.toUtf8().constData());
@@ -72,32 +73,71 @@ void MainWindow::gen_regblk_code_name(const QString& new_text){
 
 }
 
-void MainWindow::set_codename_generation(int custom_codename_checked)
+void MainWindow::set_regblk_codename_generation(int custom_codename_checked)
 {
     //what follows is me pulling the line edit item using just the sender as context:
 
     //get the sending object
     QObject* s = sender();
-    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
     //get the layout from the parent tab widget
-    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    QGridLayout* g = qobject_cast<QGridLayout*>(tab->layout());
     //get the line edit we need from that layout
     QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(
         g->itemAtPosition(REG_BLOCK_FIELD_COORD_CODENAME.first, REG_BLOCK_FIELD_COORD_CODENAME.second)->widget()
-    );
+        );
 
     codeNameEdit->setReadOnly(custom_codename_checked == Qt::Unchecked);
 
     if (codeNameEdit->isReadOnly()){
         QLineEdit* nameEdit = qobject_cast<QLineEdit*>(
             g->itemAtPosition(REG_BLOCK_FIELD_COORD_NAME.first, REG_BLOCK_FIELD_COORD_NAME.second)->widget()
-        );
+            );
         QString name = nameEdit->text();
         std::string codename_std = generate_code_name(name.toUtf8().constData());
         QString cn_qs(codename_std.c_str());
         codeNameEdit->setText(cn_qs);
     }
+}
+
+void MainWindow::make_new_reg()
+{
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
+    //get the layout from the parent tab widget
+    QGridLayout* g = qobject_cast<QGridLayout*>(tab->layout());
+
+    RegisterBlock* rb;
+    try {
+        rb = this->reg_blocks.at(tab);
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
+        return;
+    }
+
+    QTableWidget* regTable = qobject_cast<QTableWidget*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second)->widget()
+        );
+
+    Register reg;
+    reg.name = "New Register";
+    reg.offset = rb->registers.size() ? rb->registers.at(rb->registers.size()-1).offset + 1 : 0;
+    reg.code_name = generate_code_name(reg.name);
+    reg.bit_len = 8; //TODO: set default for this in a menu? default per-block?
+    reg.description = "Reserved";
+
+    regTable->setRowCount(regTable->rowCount()+1);
+    int curr_table_row = regTable->rowCount() - 1;
+    regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, new QTableWidgetItem(reg.name.c_str()));
+    regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, new QTableWidgetItem(QString::number(reg.offset)));
+    regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, new QTableWidgetItem(reg.description.c_str()));
+
+    rb->registers.push_back(reg);
 }
 
 void MainWindow::set_reg_block_name(const QString &new_name)
@@ -106,11 +146,12 @@ void MainWindow::set_reg_block_name(const QString &new_name)
 
     //get the sending object
     QObject* s = sender();
-    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
 
     try {
-        RegisterBlock* rb = this->reg_blocks.at(w);
+        RegisterBlock* rb = this->reg_blocks.at(tab);
         rb->name = new_name_std;
     } catch (const std::out_of_range& e){
         fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
@@ -123,11 +164,12 @@ void MainWindow::set_reg_block_codename(const QString &new_name)
 
     //get the sending object
     QObject* s = sender();
-    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
 
     try {
-        RegisterBlock* rb = this->reg_blocks.at(w);
+        RegisterBlock* rb = this->reg_blocks.at(tab);
         rb->code_name = new_name_std;
     } catch (const std::out_of_range& e){
         fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
@@ -139,23 +181,203 @@ void MainWindow::set_reg_block_size(int new_size)
 {
     //get the sending object
     QObject* s = sender();
-    //get the parent widget (not the QGridLayout, this is actually the TabWidget)
-    QWidget* w = qobject_cast<QWidget*>(s->parent());
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* tab = qobject_cast<QWidget*>(s->parent());
 
     try {
-        RegisterBlock* rb = this->reg_blocks.at(w);
+        RegisterBlock* rb = this->reg_blocks.at(tab);
         rb->size = new_size;
     } catch (const std::out_of_range& e){
         fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
     }
 }
 
-void MainWindow::set_current_reg(QTableWidgetItem *item)
+void MainWindow::set_current_reg(QTableWidgetItem* item){
+
+    QTableWidget* regTable = item->tableWidget();
+    QWidget* tab = regTable->parentWidget();
+
+    //get the layout from the parent tab widget
+    QGridLayout* g = qobject_cast<QGridLayout*>(tab->layout());
+
+    RegisterBlock* rb;
+    try {
+        rb = this->reg_blocks.at(tab);
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
+        return;
+    }
+
+    this->current_reg_row = regTable->row(item);
+    Register* curr_reg = &(rb->registers.at(this->current_reg_row));
+
+    QFrame* regFrame = qobject_cast<QFrame*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second)->widget()
+        );
+
+    for (QObject* child : regFrame->children()){
+        QWidget* w = qobject_cast<QWidget*>(child);
+        if (w) w->setEnabled(true);
+    }
+
+    QGridLayout* regGrid = qobject_cast<QGridLayout*>(regFrame->layout());
+
+    QLineEdit* nameEdit = qobject_cast<QLineEdit*>(
+        regGrid->itemAtPosition(REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second)->widget()
+        );
+    nameEdit->setText(curr_reg->name.c_str());
+
+    QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(
+        regGrid->itemAtPosition(REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second)->widget()
+        );
+    codeNameEdit->setText(curr_reg->code_name.c_str());
+
+    QSpinBox* offsetSpinBox = qobject_cast<QSpinBox*>(
+        regGrid->itemAtPosition(REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second)->widget()
+        );
+    offsetSpinBox->setValue(curr_reg->offset);
+
+    regTable->setRangeSelected(QTableWidgetSelectionRange(0, 0, regTable->rowCount()-1, regTable->columnCount()-1), false);
+    regTable->setRangeSelected(QTableWidgetSelectionRange(this->current_reg_row, 0, this->current_reg_row, regTable->columnCount()-1), true);
+
+}
+
+void MainWindow::set_reg_name(const QString& new_name)
 {
-    QTableWidget* rt = qobject_cast<QTableWidget*>(sender());
-    this->current_reg_row = rt->row(item);
+    std::string new_name_std = new_name.toUtf8().constData();
 
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* frame = qobject_cast<QWidget*>(s->parent());
+    QWidget* w = qobject_cast<QWidget*>(frame->parent());
 
+    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    QTableWidget* regTable = qobject_cast<QTableWidget*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second)->widget()
+        );
+    QGridLayout* reggrid = qobject_cast<QGridLayout*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second)->widget()->layout()
+        );
+
+    RegisterBlock* rb;
+
+    try {
+        rb = this->reg_blocks.at(w);
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
+        return;
+    }
+
+    if (rb->registers.size() == 0){
+        return;
+    }
+
+    Register* curr_reg = &(rb->registers.at(this->current_reg_row));
+
+    curr_reg->name = new_name_std;
+
+    QLineEdit* cn_edit = qobject_cast<QLineEdit*>(
+        reggrid->itemAtPosition(REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second)->widget()
+        );
+    if (cn_edit->isReadOnly()){
+        curr_reg->code_name = generate_code_name(new_name_std);
+        cn_edit->setText(curr_reg->code_name.c_str());
+    }
+
+    regTable->item(this->current_reg_row, REG_TABLE_COL_NAME)->setText(new_name);
+}
+
+void MainWindow::set_reg_codename(const QString& new_codename)
+{
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* frame = qobject_cast<QWidget*>(s->parent());
+    QWidget* w = qobject_cast<QWidget*>(frame->parent());
+
+    RegisterBlock* rb;
+
+    try {
+        rb = this->reg_blocks.at(w);
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s\n", __FILE__, __LINE__, e.what());
+        return;
+    }
+
+    std::string new_name_std = new_codename.toUtf8().constData();
+    Register* curr_reg = &(rb->registers.at(this->current_reg_row));
+    curr_reg->code_name = new_name_std;
+}
+
+void MainWindow::set_reg_codename_gen(int custom_codename_checked)
+{
+
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* frame = qobject_cast<QWidget*>(s->parent());
+    QWidget* w = qobject_cast<QWidget*>(frame->parent());
+
+    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    QGridLayout* reggrid = qobject_cast<QGridLayout*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second)->widget()->layout()
+        );
+
+    QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(
+        reggrid->itemAtPosition(REG_FIELD_COORD_CODENAME.first, REG_BLOCK_FIELD_COORD_CODENAME.second)->widget()
+    );
+
+    codeNameEdit->setReadOnly(custom_codename_checked == Qt::Unchecked);
+
+    if (codeNameEdit->isReadOnly()){
+        QLineEdit* nameEdit = qobject_cast<QLineEdit*>(
+            reggrid->itemAtPosition(REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second)->widget()
+            );
+        QString name = nameEdit->text();
+        std::string codename_std = generate_code_name(name.toUtf8().constData());
+        QString cn_qs(codename_std.c_str());
+        codeNameEdit->setText(cn_qs);
+    }
+}
+
+void MainWindow::set_reg_offset(int new_offset)
+{
+
+    //get the sending object
+    QObject* s = sender();
+    //get the parent widget (not the containing layout,
+    //this is actually the widget that owns the layout containing the sender)
+    QWidget* frame = qobject_cast<QWidget*>(s->parent());
+    QWidget* w = qobject_cast<QWidget*>(frame->parent());
+
+    QGridLayout* g = qobject_cast<QGridLayout*>(w->layout());
+    QTableWidget* regTable = qobject_cast<QTableWidget*>(
+        g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second)->widget()
+        );
+
+    RegisterBlock* rb;
+
+    try {
+        rb = this->reg_blocks.at(w);
+    } catch (const std::out_of_range& e){
+        fprintf(stderr, "%s:%d: Out of range exception thrown! %s", __FILE__, __LINE__, e.what());
+        return;
+    }
+
+    if (rb->registers.size() == 0){
+        return;
+    }
+
+    Register* curr_reg = &(rb->registers.at(this->current_reg_row));
+
+    curr_reg->offset = new_offset;
+
+    regTable->item(this->current_reg_row, REG_TABLE_COL_OFFSET)->setText(QString::number(new_offset));
 }
 
 void MainWindow::save()
@@ -173,17 +395,44 @@ void MainWindow::save()
     QTextStream savefilestream(&save_file);
     std::stringstream std_stream;
 
+    value base_table{{"version", 0.1}};
+
+    std::stringstream rbid_stream;
+    int reg_blk_id_num = 0;
+
     for (std::pair<QWidget*, RegisterBlock*> p : this->reg_blocks){
         RegisterBlock* rb = p.second;
+
+        value reg_array;
+
+        std::stringstream rid_stream;
+        int reg_id_num = 0;
+
+        for (Register& reg : rb->registers){
+            value reg_record{
+                             {"name", reg.name.c_str()},
+                             {"sourcename", reg.code_name.c_str()},
+                             {"offset", reg.offset},
+                             };
+
+            rid_stream.clear();
+            rid_stream << "reg" << reg_id_num++;
+            reg_array[rid_stream.str().c_str()] = reg_record;
+        }
+
         value rb_table{
             {"name", rb->name.c_str()},
             {"sourcename", rb->code_name.c_str()},
             {"size", rb->size},
-            //TODO: add domain offsets
-            //TODO: add registers
+            {"registers", reg_array}
         };
-        std_stream << rb_table << std::endl;
+
+        rbid_stream.clear();
+        rbid_stream << "regblk" << reg_blk_id_num++;
+        base_table[rbid_stream.str().c_str()] = rb_table;
     }
+
+    std_stream << base_table << std::endl;
 
     savefilestream << std_stream.str().c_str();
 
@@ -220,7 +469,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     g->addWidget(codeNameEdit, REG_BLOCK_FIELD_COORD_CODENAME.first, REG_BLOCK_FIELD_COORD_CODENAME.second);
 
     QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-    connect(customCNCheckBox, &QCheckBox::stateChanged, this, &MainWindow::set_codename_generation);
+    connect(customCNCheckBox, &QCheckBox::stateChanged, this, &MainWindow::set_regblk_codename_generation);
     g->addWidget(customCNCheckBox, REG_BLOCK_FIELD_COORD_GEN_CODENAME.first, REG_BLOCK_FIELD_COORD_GEN_CODENAME.second);
 
     QLabel* sizeLabel = new QLabel("Size (in addrs): ");
@@ -248,66 +497,18 @@ void MainWindow::on_new_reg_block_btn_clicked()
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_NAME, new QTableWidgetItem("Name"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_OFFSET, new QTableWidgetItem("Offset"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_DESC, new QTableWidgetItem("Descwiption"));
-    connect(regTable, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem* item){
-
-        this->current_reg_row = regTable->row(item);
-        Register* curr_reg = &(rb->registers.at(this->current_reg_row));
-
-        QFrame* regFrame = qobject_cast<QFrame*>(
-            g->itemAtPosition(REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second)->widget()
-        );
-
-        for (QObject* child : regFrame->children()){
-            QWidget* w = qobject_cast<QWidget*>(child);
-            if (w) w->setEnabled(true);
-        }
-
-        QGridLayout* regGrid = qobject_cast<QGridLayout*>(regFrame->layout());
-
-        QLineEdit* nameEdit = qobject_cast<QLineEdit*>(
-            regGrid->itemAtPosition(REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second)->widget()
-        );
-        nameEdit->setText(curr_reg->name.c_str());
-
-        QLineEdit* codeNameEdit = qobject_cast<QLineEdit*>(
-            regGrid->itemAtPosition(REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second)->widget()
-            );
-        codeNameEdit->setText(curr_reg->code_name.c_str());
-
-        QSpinBox* offsetSpinBox = qobject_cast<QSpinBox*>(
-            regGrid->itemAtPosition(REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second)->widget()
-        );
-        offsetSpinBox->setValue(curr_reg->offset);
-
-        regTable->setRangeSelected(QTableWidgetSelectionRange(0, 0, regTable->rowCount()-1, regTable->columnCount()-1), false);
-        regTable->setRangeSelected(QTableWidgetSelectionRange(this->current_reg_row, 0, this->current_reg_row, regTable->columnCount()-1), true);
-
-    });
+    connect(regTable, &QTableWidget::itemDoubleClicked, this, &MainWindow::set_current_reg);
     g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, 4);
 
     QPushButton* newregButton = new QPushButton("New Register");
-    connect(newregButton, &QPushButton::clicked, [=](){
-
-        Register reg;
-        reg.name = "New Register";
-        reg.offset = rb->registers.size() ? rb->registers.at(rb->registers.size()-1).offset + 1 : 0;
-        reg.code_name = generate_code_name(reg.name);
-        reg.bit_len = 8; //TODO: set default for this in a menu? default per-block?
-        reg.description = "Reserved";
-
-        regTable->setRowCount(regTable->rowCount()+1);
-        int curr_table_row = regTable->rowCount() - 1;
-        regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, new QTableWidgetItem(reg.name.c_str()));
-        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, new QTableWidgetItem(QString::number(reg.offset)));
-        regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, new QTableWidgetItem(reg.description.c_str()));
-
-        rb->registers.push_back(reg);
-    });
+    connect(newregButton, &QPushButton::clicked, this, &MainWindow::make_new_reg);
     g->addWidget(newregButton, REG_BLOCK_FIELD_COORD_NEWREGBTN.first, REG_BLOCK_FIELD_COORD_NEWREGBTN.second);
 
     QFrame* regFrame = new QFrame();
     regFrame->setLineWidth(5);
     QGridLayout* reggrid = new QGridLayout();
+    printf("reggrid: %p\n", (void*)reggrid);
+    fflush(stdout);
     regFrame->setLayout(reggrid);
 
     {
@@ -316,28 +517,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
         reggrid->addWidget(regNameLabel, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second-1);
 
         QLineEdit* nameEdit = new QLineEdit();
-        connect(nameEdit, &QLineEdit::textEdited, [=](const QString& new_name){
-
-            std::string new_name_std = new_name.toUtf8().constData();
-
-            if (rb->registers.size() == 0){
-                return;
-            }
-
-            Register* curr_reg = &(rb->registers.at(this->current_reg_row));
-
-            curr_reg->name = new_name_std;
-
-            QLineEdit* cn_edit = qobject_cast<QLineEdit*>(
-                reggrid->itemAtPosition(REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second)->widget()
-            );
-            if (cn_edit->isReadOnly()){
-                curr_reg->code_name = generate_code_name(new_name_std);
-                cn_edit->setText(curr_reg->code_name.c_str());
-            }
-
-            regTable->item(this->current_reg_row, REG_TABLE_COL_NAME)->setText(new_name);
-        });
+        connect(nameEdit, &QLineEdit::textEdited, this, &MainWindow::set_reg_name);
         nameEdit->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(nameEdit, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second);
 
@@ -349,29 +529,11 @@ void MainWindow::on_new_reg_block_btn_clicked()
         codeNameEdit->setEnabled(false);
         codeNameEdit->setReadOnly(true);
         codeNameEdit->setValidator(this->codename_validator);
-        connect(codeNameEdit, &QLineEdit::textChanged, [=](const QString& new_name){
-
-            std::string new_name_std = new_name.toUtf8().constData();
-            Register* curr_reg = &(rb->registers.at(this->current_reg_row));
-            curr_reg->code_name = new_name_std;
-
-        });
+        connect(codeNameEdit, &QLineEdit::textChanged, this, &MainWindow::set_reg_codename);
         reggrid->addWidget(codeNameEdit, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second);
 
         QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-        connect(customCNCheckBox, &QCheckBox::stateChanged, [=](bool checked){
-            codeNameEdit->setReadOnly(checked == Qt::Unchecked);
-
-            if (codeNameEdit->isReadOnly()){
-                QLineEdit* nameEdit = qobject_cast<QLineEdit*>(
-                    reggrid->itemAtPosition(REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second)->widget()
-                );
-                QString name = nameEdit->text();
-                std::string codename_std = generate_code_name(name.toUtf8().constData());
-                QString cn_qs(codename_std.c_str());
-                codeNameEdit->setText(cn_qs);
-            }
-        });
+        connect(customCNCheckBox, &QCheckBox::stateChanged, this, &MainWindow::set_reg_codename_gen);
         customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
 
@@ -380,19 +542,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
         reggrid->addWidget(offsetLabel, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second-1);
 
         QSpinBox* offsetEdit = new QSpinBox();
-        connect(offsetEdit, &QSpinBox::valueChanged, [=](int new_val){
-
-            if (rb->registers.size() == 0){
-                return;
-            }
-
-            Register* curr_reg = &(rb->registers.at(this->current_reg_row));
-
-            curr_reg->offset = new_val;
-
-            regTable->item(this->current_reg_row, REG_TABLE_COL_OFFSET)->setText(QString::number(new_val));
-
-        });
+        connect(offsetEdit, &QSpinBox::valueChanged, this, &MainWindow::set_reg_offset);
         offsetEdit->setMinimum(0);
         offsetEdit->setMaximum(std::numeric_limits<int>::max());
         offsetEdit->setDisplayIntegerBase(16);

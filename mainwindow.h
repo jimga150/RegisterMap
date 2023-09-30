@@ -21,6 +21,7 @@ public:
 
     RegisterMap reg_map;
 
+    //associates tabs with registerblocks
     std::map<QWidget*, RegisterBlock*> reg_blocks;
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
@@ -30,7 +31,9 @@ public:
 public slots:
     void gen_regblk_code_name(const QString &new_text);
 
-    void set_codename_generation(int custom_codename_checked);
+    void set_regblk_codename_generation(int custom_codename_checked);
+
+    void make_new_reg();
 
     void set_reg_block_name(const QString &new_name);
 
@@ -39,6 +42,14 @@ public slots:
     void set_reg_block_size(int new_size);
 
     void set_current_reg(QTableWidgetItem* item);
+
+    void set_reg_name(const QString& new_name);
+
+    void set_reg_codename(const QString& new_codename);
+
+    void set_reg_codename_gen(int custom_codename_checked);
+
+    void set_reg_offset(int new_offset);
 
     void save();
 

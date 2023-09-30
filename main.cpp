@@ -2,6 +2,11 @@
 
 #include <QApplication>
 
+//TODO: make controller layer to get and set register/block info and update fields as appropriate
+//TODO: make object to own regster blocks and domains and stuff, MainWindow will own that
+
+//TODO: fix crash when editing one of several register blocks
+
 //TODO: add register name/codename/offset to serialization
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)
@@ -32,6 +37,8 @@
 //TODO: add verilog implementation output
 //TODO: add VHDL package output
 //TODO: add VHDL impl output
+
+//TODO: make command line option to just export a toml file as one or more of the other outputs instead of running the whole GUI
 
 int main(int argc, char *argv[])
 {
