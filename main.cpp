@@ -6,8 +6,9 @@
 //TODO: make object to own regster blocks and domains and stuff, MainWindow will own that
 
 //TODO: fix crash when editing one of several register blocks
+//TODO: validate that no codenames collide
+//TODO: use codenames for object IDs
 
-//TODO: add register name/codename/offset to serialization
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)
 //TODO: add register longoform description
