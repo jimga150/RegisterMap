@@ -416,9 +416,8 @@ void MainWindow::save()
                              };
 
             rid = "reg";
-            rid += (char)(reg_id_num + '0');
+            rid += QString::number(reg_id_num++).toUtf8().constData();
             reg_array[rid.c_str()] = reg_record;
-            ++reg_id_num;
         }
 
         value rb_table{
@@ -429,9 +428,8 @@ void MainWindow::save()
         };
 
         rbid = "regblk";
-        rbid += (char)(reg_blk_id_num + '0');
+        rbid += QString::number(reg_blk_id_num++).toUtf8().constData();
         base_table[rbid.c_str()] = rb_table;
-        ++reg_blk_id_num;
     }
 
     std_stream << base_table << std::endl;
