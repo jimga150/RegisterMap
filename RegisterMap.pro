@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     bitfield.cpp \
+    common.cpp \
     domain.cpp \
     main.cpp \
     mainwindow.cpp \
