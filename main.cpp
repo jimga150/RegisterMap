@@ -2,12 +2,13 @@
 
 #include <QApplication>
 
-//TODO: make controller layer to get and set register/block info and update fields as appropriate
-//TODO: make object to own regster blocks and domains and stuff, MainWindow will own that
+//TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
 
 //TODO: fix crash when editing one of several register blocks
 //TODO: validate that no codenames collide
 //TODO: use codenames for object IDs
+
+//TODO: add loading TOML files
 
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)

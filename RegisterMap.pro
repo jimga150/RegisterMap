@@ -15,7 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     register.cpp \
     registerblock.cpp \
-    registermap.cpp \
+    registerblockcontroller.cpp
 
 HEADERS += \
     bitfield.h \
@@ -24,7 +24,7 @@ HEADERS += \
     mainwindow.h \
     register.h \
     registerblock.h \
-    registermap.h \
+    registerblockcontroller.h \
     toml11/toml.hpp \
     toml11/toml/color.hpp \
     toml11/toml/combinator.hpp \
