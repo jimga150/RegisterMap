@@ -2,13 +2,13 @@
 
 #include <QApplication>
 
-//TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
-
-//TODO: fix crash when editing one of several register blocks
 //TODO: validate that no codenames collide
 //TODO: use codenames for object IDs
 
 //TODO: add loading TOML files
+//TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
+//  I think this feature should be strictly the equality (or lack thereof)
+//  between the TOML file you loaded from (or that you havent loaded from any TOML file) and your UI.
 
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)
