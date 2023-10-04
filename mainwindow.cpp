@@ -53,6 +53,64 @@ MainWindow::~MainWindow()
 
 void MainWindow::save()
 {
+
+    bool collision = false;
+
+    //verify that no register block codenames collide
+    QVector<RegisterBlockController*> colliding_rbs;
+    for (RegisterBlockController* p : this->reg_block_ctrls){
+        for (RegisterBlockController* q : this->reg_block_ctrls){
+            if (p == q) continue;
+            if (!p->getCodeName().compare(q->getCodeName())){
+                collision = true;
+                if(!colliding_rbs.contains(p)) colliding_rbs.push_back(p);
+                if(!colliding_rbs.contains(q)) colliding_rbs.push_back(q);
+            }
+        }
+    }
+    if (collision){
+        QString warn_msg = "One or more Register Blocks have the same Source-Friendly name.";
+        for (RegisterBlockController* c : colliding_rbs){
+            warn_msg += "\nName: ";
+            warn_msg += c->getName();
+            warn_msg += "\tSource-Friendly Name: ";
+            warn_msg += c->getCodeName();
+        }
+        QMessageBox::warning(this, "Validation Failed", warn_msg);
+    }
+
+    //verify that not register codenames collide within register blocks
+    QVector<int> colliding_reg_idxs;
+    for (RegisterBlockController* rbc : this->reg_block_ctrls){
+        bool reg_collision = false;
+        colliding_reg_idxs.clear();
+        int num_regs = rbc->getNumRegs();
+        for (int i = 0; i < num_regs; ++i){
+            for (int j = 0; j < num_regs; ++j){
+                if (i == j) continue;
+                if (!(rbc->getRegCodeName(i).compare(rbc->getRegCodeName(j)))){
+                    collision = true;
+                    reg_collision = true;
+                    if (!colliding_reg_idxs.contains(i)) colliding_reg_idxs.push_back(i);
+                    if (!colliding_reg_idxs.contains(j)) colliding_reg_idxs.push_back(j);
+                }
+            }
+        }
+        if (reg_collision){
+            QString warn_msg = "One or more Registers in " + rbc->getName() + " have the same Source-Friendly name.";
+            for (int i : colliding_reg_idxs){
+                warn_msg += "\nName: ";
+                warn_msg += rbc->getRegName(i);
+                warn_msg += "\tSource-Friendly Name: ";
+                warn_msg += rbc->getRegCodeName(i);
+            }
+            QMessageBox::warning(this, "Validation Failed: " + rbc->getName(), warn_msg);
+        }
+    }
+
+    if (collision) return;
+
+
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
     QString save_location = QFileDialog::getSaveFileName(this, "Save As...", start_path, "TOML Files (*.toml)");
     printf("Save as: %s\n", save_location.toUtf8().constData());

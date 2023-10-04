@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-//TODO: validate that no codenames collide
+//TODO: fix bug where register table doesnt update with values x
 //TODO: use codenames for object IDs
 
 //TODO: add loading TOML files
