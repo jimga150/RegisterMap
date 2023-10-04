@@ -37,6 +37,8 @@ public:
     test_result_enum checkRBRegCodeNameCollisions();
     test_result_enum checkRegCodeNameCollisions(RegisterBlockController* rbc);
 
+    void print_toml_table(toml_value_t table, int tab_level);
+
     QVector<RegisterBlockController*> reg_block_ctrls;
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
@@ -44,6 +46,8 @@ public:
 public slots:
 
     void save();
+
+    void load();
 
 private slots:
     void on_new_reg_block_btn_clicked();

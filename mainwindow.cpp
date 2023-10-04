@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(this->ui->actionSave_As, &QAction::triggered, this, &MainWindow::save);
+    connect(this->ui->actionLoad, &QAction::triggered, this, &MainWindow::load);
 }
 
 MainWindow::~MainWindow()
@@ -185,6 +186,19 @@ test_result_enum MainWindow::checkRegCodeNameCollisions(RegisterBlockController*
     return result;
 }
 
+void MainWindow::print_toml_table(toml_value_t table, int tab_level = 0)
+{
+    if (!table.is_table()) return;
+    for (std::pair<const std::string, toml_value_t>& kv : table.as_table()){
+        for (int i = 0; i < tab_level; ++i){
+            printf("\t");
+        }
+        printf("%s\n", kv.first.c_str());
+
+        this->print_toml_table(kv.second, tab_level+1);
+    }
+}
+
 void MainWindow::save()
 {
     bool valid = true;
@@ -250,6 +264,33 @@ void MainWindow::save()
     savefilestream << std_stream.str().c_str();
 
     save_file.close();
+}
+
+void MainWindow::load()
+{
+    QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
+    QString load_filename = QFileDialog::getOpenFileName(this, "Load TOML File", start_path, "TOML Files (*.toml)");
+    printf("Load from: %s\n", load_filename.toUtf8().constData());
+
+    QFile load_file(load_filename);
+    if (!(load_file.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text))){
+        QMessageBox::warning(this, "File load Failed", "Failed to load file");
+        return;
+    }
+
+    toml_value_t base_table;
+
+    try {
+        base_table = toml::parse(load_filename.toUtf8().constData());
+    } catch (std::runtime_error& e){
+        fprintf(stderr, "%s:%d: TOML Parse failed: %s", __FILE__, __LINE__, e.what());
+        QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
+        return;
+    }
+
+    printf("File contents:\n");
+    this->print_toml_table(base_table);
+
 }
 
 

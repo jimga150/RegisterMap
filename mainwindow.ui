@@ -248,6 +248,7 @@
      <string>File</string>
     </property>
     <addaction name="actionSave_As"/>
+    <addaction name="actionLoad"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -261,6 +262,14 @@
    </property>
    <property name="autoRepeat">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>
