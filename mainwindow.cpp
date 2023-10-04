@@ -336,9 +336,24 @@ void MainWindow::on_new_reg_block_btn_clicked()
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_OFFSET, new QTableWidgetItem("Offset"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_DESC, new QTableWidgetItem("Descwiption"));
     connect(regTable, &QTableWidget::itemDoubleClicked, rbc, [=](QTableWidgetItem* item){
-        rbc->setCurrRegIdx(regTable->row(item));
+        int row = regTable->row(item);
+        rbc->setCurrRegIdx(row);
     });
+
     connect(rbc, &RegisterBlockController::currRegIdxChanged, regTable, &QTableWidget::selectRow);
+
+    //this forces the highlighted row to always be the one we're editing
+    connect(regTable, &QTableWidget::itemSelectionChanged, this, [=](){
+        int curr_row = rbc->getCurrRegIdx();
+        for (QTableWidgetItem* twi : regTable->selectedItems()){
+            if (regTable->row(twi) != curr_row){
+                regTable->clearSelection();
+                regTable->selectRow(curr_row);
+                break;
+            }
+        }
+    });
+
     g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, 4);
 
     QPushButton* newregButton = new QPushButton("New Register");

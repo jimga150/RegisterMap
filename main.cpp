@@ -2,8 +2,6 @@
 
 #include <QApplication>
 
-//TODO: only highlight register currently in focus
-
 //TODO: make typedefs for address and size
 
 //TODO: add loading TOML files
