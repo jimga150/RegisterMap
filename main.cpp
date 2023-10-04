@@ -2,8 +2,11 @@
 
 #include <QApplication>
 
-//TODO: fix bug where register table doesnt update with values x
+//TODO: update register block tab name with register block name
 //TODO: use codenames for object IDs
+
+//TODO: use unique IDs or something to permanently refer to registers, not vector index
+//TODO: automatically sort registers by offset
 
 //TODO: add loading TOML files
 //TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?

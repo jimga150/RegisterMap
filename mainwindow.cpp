@@ -271,9 +271,25 @@ void MainWindow::on_new_reg_block_btn_clicked()
         regTable->setRowCount(regTable->rowCount()+1);
         int curr_table_row = regTable->rowCount() - 1;
 
-        regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, new QTableWidgetItem(name));
-        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, new QTableWidgetItem(QString::number(offset)));
-        regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, new QTableWidgetItem(description));
+        QTableWidgetItem* name_item = new QTableWidgetItem(name);
+        QTableWidgetItem* offset_item = new QTableWidgetItem(QString::number(offset, 16));
+        QTableWidgetItem* desc_item = new QTableWidgetItem(description);
+
+        connect(rbc, &RegisterBlockController::regNameChanged, regTable, [=](const QString& new_name){
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                name_item->setText(new_name);
+            }
+        });
+        connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](uint32_t new_offset){
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                offset_item->setText(QString::number(new_offset, 16));
+            }
+        });
+        //TODO: add connection for register description change
+
+        regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
+        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
+        regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, desc_item);
 
         rbc->setCurrRegIdx(curr_table_row);
 
