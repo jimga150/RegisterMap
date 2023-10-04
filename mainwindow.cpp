@@ -108,6 +108,34 @@ void MainWindow::save()
         }
     }
 
+    //verify that no register offsets collide within register blocks
+    for (RegisterBlockController* rbc : this->reg_block_ctrls){
+        bool reg_collision = false;
+        colliding_reg_idxs.clear();
+        int num_regs = rbc->getNumRegs();
+        for (int i = 0; i < num_regs; ++i){
+            for (int j = 0; j < num_regs; ++j){
+                if (i == j) continue;
+                if (rbc->getRegOffset(i) == rbc->getRegOffset(j)){
+                    collision = true;
+                    reg_collision = true;
+                    if (!colliding_reg_idxs.contains(i)) colliding_reg_idxs.push_back(i);
+                    if (!colliding_reg_idxs.contains(j)) colliding_reg_idxs.push_back(j);
+                }
+            }
+        }
+        if (reg_collision){
+            QString warn_msg = "One or more Registers in " + rbc->getName() + " have the same offset.";
+            for (int i : colliding_reg_idxs){
+                warn_msg += "\nName: ";
+                warn_msg += rbc->getRegName(i);
+                warn_msg += "\tOffset: ";
+                warn_msg += rbc->getRegOffsetAsString(i);
+            }
+            QMessageBox::warning(this, "Validation Failed: " + rbc->getName(), warn_msg);
+        }
+    }
+
     if (collision) return;
 
 
