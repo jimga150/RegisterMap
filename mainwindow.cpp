@@ -54,21 +54,23 @@ MainWindow::~MainWindow()
 void MainWindow::save()
 {
 
-    bool collision = false;
-
-    //verify that no register block codenames collide
+    bool valid = true;
+    //verify that no register block codenames collide or are empty
     QVector<RegisterBlockController*> colliding_rbs;
+    QVector<RegisterBlockController*> empty_rbs;
     for (RegisterBlockController* p : this->reg_block_ctrls){
         for (RegisterBlockController* q : this->reg_block_ctrls){
             if (p == q) continue;
             if (!p->getCodeName().compare(q->getCodeName())){
-                collision = true;
                 if(!colliding_rbs.contains(p)) colliding_rbs.push_back(p);
                 if(!colliding_rbs.contains(q)) colliding_rbs.push_back(q);
             }
         }
+        if (p->getCodeName().length() == 0){
+            if(!empty_rbs.contains(p)) empty_rbs.push_back(p);
+        }
     }
-    if (collision){
+    if (colliding_rbs.length() > 0){
         QString warn_msg = "One or more Register Blocks have the same Source-Friendly name.";
         for (RegisterBlockController* c : colliding_rbs){
             warn_msg += "\nName: ";
@@ -77,26 +79,40 @@ void MainWindow::save()
             warn_msg += c->getCodeName();
         }
         QMessageBox::warning(this, "Validation Failed", warn_msg);
+        valid = false;
+    }
+    if (empty_rbs.length() > 0){
+        QString warn_msg = "One or more Register Blocks have no Source-Friendly Name.";
+        for (RegisterBlockController* c : empty_rbs){
+            warn_msg += "\nName: ";
+            warn_msg += c->getName();
+        }
+        QMessageBox::warning(this, "Validation Failed", warn_msg);
+        valid = false;
     }
 
-    //verify that no register codenames collide within register blocks
+    //verify that no register codenames collide within register blocks (or are empty)
     QVector<int> colliding_reg_idxs;
+    QVector<int> empty_reg_idxs;
     for (RegisterBlockController* rbc : this->reg_block_ctrls){
-        bool reg_collision = false;
+
         colliding_reg_idxs.clear();
         int num_regs = rbc->getNumRegs();
+
         for (int i = 0; i < num_regs; ++i){
             for (int j = 0; j < num_regs; ++j){
                 if (i == j) continue;
                 if (!(rbc->getRegCodeName(i).compare(rbc->getRegCodeName(j)))){
-                    collision = true;
-                    reg_collision = true;
                     if (!colliding_reg_idxs.contains(i)) colliding_reg_idxs.push_back(i);
                     if (!colliding_reg_idxs.contains(j)) colliding_reg_idxs.push_back(j);
                 }
             }
+            if (rbc->getRegCodeName(i).length() == 0){
+                if (!empty_reg_idxs.contains(i)) empty_reg_idxs.push_back(i);
+            }
         }
-        if (reg_collision){
+
+        if (colliding_reg_idxs.length() > 0){
             QString warn_msg = "One or more Registers in " + rbc->getName() + " have the same Source-Friendly name.";
             for (int i : colliding_reg_idxs){
                 warn_msg += "\nName: ";
@@ -105,7 +121,19 @@ void MainWindow::save()
                 warn_msg += rbc->getRegCodeName(i);
             }
             QMessageBox::warning(this, "Validation Failed: " + rbc->getName(), warn_msg);
+            valid = false;
         }
+
+        if (empty_reg_idxs.length() > 0){
+            QString warn_msg = "One or more Registers in " + rbc->getName() + " have no Source-Friendly name.";
+            for (int i : empty_reg_idxs){
+                warn_msg += "\nName: ";
+                warn_msg += rbc->getRegName(i);
+            }
+            QMessageBox::warning(this, "Validation Failed: " + rbc->getName(), warn_msg);
+            valid = false;
+        }
+
     }
 
     //verify that no register offsets collide within register blocks
@@ -117,7 +145,7 @@ void MainWindow::save()
             for (int j = 0; j < num_regs; ++j){
                 if (i == j) continue;
                 if (rbc->getRegOffset(i) == rbc->getRegOffset(j)){
-                    collision = true;
+                    valid = false;
                     reg_collision = true;
                     if (!colliding_reg_idxs.contains(i)) colliding_reg_idxs.push_back(i);
                     if (!colliding_reg_idxs.contains(j)) colliding_reg_idxs.push_back(j);
@@ -136,7 +164,7 @@ void MainWindow::save()
         }
     }
 
-    if (collision) return;
+    if (!valid) return;
 
 
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
