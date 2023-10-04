@@ -218,6 +218,10 @@ void MainWindow::on_new_reg_block_btn_clicked()
     RegisterBlockController* rbc = new RegisterBlockController(&(this->reg_block_ctrls), w);
     this->reg_block_ctrls.push_back(rbc);
 
+    connect(rbc, &RegisterBlockController::nameChanged, this->ui->tabWidget, [=](const QString& new_name){
+        this->ui->tabWidget->setTabText(this->ui->tabWidget->indexOf(w), new_name);
+    });
+
     QGridLayout* g = new QGridLayout();
     w->setLayout(g);
 
