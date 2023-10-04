@@ -2,8 +2,6 @@
 
 #include <QApplication>
 
-//TODO: use codenames for object IDs
-
 //TODO: use unique IDs or something to permanently refer to registers, not vector index
 //TODO: automatically sort registers by offset
 

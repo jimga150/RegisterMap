@@ -426,5 +426,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
 
+    rbc->setName("Register Block " + QString::number(this->reg_block_ctrls.size()-1));
+
 }
 
