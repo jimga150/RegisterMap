@@ -63,6 +63,11 @@ uint32_t RegisterBlockController::getCurrRegOffset()
     return this->rb.registers[this->current_reg_idx].offset;
 }
 
+QString RegisterBlockController::getCurrRegOffsetAsString()
+{
+    return this->getRegOffsetAsString(this->current_reg_idx);
+}
+
 QString RegisterBlockController::getRegName(int reg_idx)
 {
     return this->rb.registers[reg_idx].name.c_str();
@@ -81,6 +86,11 @@ bool RegisterBlockController::getRegCodeNameGeneration(int reg_idx)
 uint32_t RegisterBlockController::getRegOffset(int reg_idx)
 {
     return this->rb.registers[reg_idx].offset;
+}
+
+QString RegisterBlockController::getRegOffsetAsString(int reg_idx)
+{
+    return "0x" + QString::number(this->getRegOffset(reg_idx), 16);
 }
 
 void RegisterBlockController::setName(const QString& new_name)

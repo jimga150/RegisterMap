@@ -26,11 +26,13 @@ public:
     QString getCurrRegCodeName();
     bool getCurrRegCodeNameGeneration();
     uint32_t getCurrRegOffset();
+    QString getCurrRegOffsetAsString();
 
     QString getRegName(int reg_idx);
     QString getRegCodeName(int reg_idx);
     bool getRegCodeNameGeneration(int reg_idx);
     uint32_t getRegOffset(int reg_idx);
+    QString getRegOffsetAsString(int reg_idx);
 
 signals:
 

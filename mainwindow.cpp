@@ -79,7 +79,7 @@ void MainWindow::save()
         QMessageBox::warning(this, "Validation Failed", warn_msg);
     }
 
-    //verify that not register codenames collide within register blocks
+    //verify that no register codenames collide within register blocks
     QVector<int> colliding_reg_idxs;
     for (RegisterBlockController* rbc : this->reg_block_ctrls){
         bool reg_collision = false;
@@ -268,11 +268,13 @@ void MainWindow::on_new_reg_block_btn_clicked()
     connect(rbc, &RegisterBlockController::regCreated, regTable, [=]
             (const QString& name, uint32_t offset, const QString& description){
 
+        Q_UNUSED(offset);
+
         regTable->setRowCount(regTable->rowCount()+1);
         int curr_table_row = regTable->rowCount() - 1;
 
         QTableWidgetItem* name_item = new QTableWidgetItem(name);
-        QTableWidgetItem* offset_item = new QTableWidgetItem(QString::number(offset, 16));
+        QTableWidgetItem* offset_item = new QTableWidgetItem(rbc->getRegOffsetAsString(rbc->getNumRegs()-1));
         QTableWidgetItem* desc_item = new QTableWidgetItem(description);
 
         connect(rbc, &RegisterBlockController::regNameChanged, regTable, [=](const QString& new_name){
@@ -281,8 +283,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
             }
         });
         connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](uint32_t new_offset){
+            Q_UNUSED(new_offset);
             if (rbc->getCurrRegIdx() == curr_table_row){
-                offset_item->setText(QString::number(new_offset, 16));
+                offset_item->setText(rbc->getCurrRegOffsetAsString());
             }
         });
         //TODO: add connection for register description change
