@@ -2,8 +2,10 @@
 
 #include <QApplication>
 
-//TODO: use unique IDs or something to permanently refer to registers, not vector index
+//TODO: add ability to sort registers by offset (both in the UI and in the model, since they assume parity)
 //TODO: automatically sort registers by offset
+
+//TODO: make typedefs for address and size
 
 //TODO: add loading TOML files
 //TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?

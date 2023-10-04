@@ -11,6 +11,13 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum test_result_enum{
+    OK,
+    ERROR,
+
+    num_test_results
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -18,6 +25,14 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    test_result_enum checkRBOffsetCollisions();
+    test_result_enum checkOffsetCollisions(RegisterBlockController* rbc);
+
+    test_result_enum checkRBCodeNameCollisions();
+
+    test_result_enum checkRBRegCodeNameCollisions();
+    test_result_enum checkRegCodeNameCollisions(RegisterBlockController* rbc);
 
     QVector<RegisterBlockController*> reg_block_ctrls;
 
