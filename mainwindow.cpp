@@ -219,20 +219,29 @@ void MainWindow::save()
 
     value base_table{{"version", 0.1}};
 
+    std::string toml_id;
+
     for (RegisterBlockController* p : this->reg_block_ctrls){
 
         value reg_array;
 
+        //we already verified that no offset collisions occur, so this is OK
+        p->sortRegsByOffset();
+
         for (int i = 0; i < p->getNumRegs(); ++i){
+            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
             value reg_record{
                 {"name", p->getRegName(i).toStdString()},
+                {"codename", p->getRegCodeName(i).toStdString()},
                 {"offset", p->getRegOffset(i)},
             };
-            reg_array[p->getRegCodeName(i).toStdString()] = reg_record;
+            toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
+            reg_array[toml_id] = reg_record;
         }
 
         value rb_table{
             {"name", p->getName().toStdString()},
+            {"codename", p->getCodeName().toStdString()},
             {"size", p->getSize()},
             {"registers", reg_array}
         };
