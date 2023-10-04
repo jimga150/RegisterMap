@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: update register block tab name with register block name
 //TODO: use codenames for object IDs
 
 //TODO: use unique IDs or something to permanently refer to registers, not vector index
