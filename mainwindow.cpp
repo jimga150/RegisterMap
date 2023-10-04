@@ -310,7 +310,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QSpinBox* sizeEdit = new QSpinBox();
     connect(sizeEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setSize);
-    connect(rbc, &RegisterBlockController::sizeChanged, sizeEdit, [=](uint32_t new_size){
+    connect(rbc, &RegisterBlockController::sizeChanged, sizeEdit, [=](addr_t new_size){
         if ((int)new_size != sizeEdit->value()){
             sizeEdit->setValue(new_size);
         }
@@ -372,7 +372,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     //connect up new register functionality here so we can reference regFrame
     connect(rbc, &RegisterBlockController::regCreated, regTable, [=]
-            (const QString& name, uint32_t offset, const QString& description){
+            (const QString& name, addr_t offset, const QString& description){
 
         Q_UNUSED(offset);
 
@@ -388,7 +388,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
                 name_item->setText(new_name);
             }
         });
-        connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](uint32_t new_offset){
+        connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](addr_t new_offset){
             Q_UNUSED(new_offset);
             if (rbc->getCurrRegIdx() == curr_table_row){
                 offset_item->setText(rbc->getCurrRegOffsetAsString());
@@ -462,8 +462,8 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
         QSpinBox* offsetEdit = new QSpinBox();
         connect(offsetEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegOffset);
-        connect(rbc, &RegisterBlockController::regOffsetChanged, offsetEdit, [=](uint32_t new_offset){
-            if (new_offset != (uint32_t)offsetEdit->value()){
+        connect(rbc, &RegisterBlockController::regOffsetChanged, offsetEdit, [=](addr_t new_offset){
+            if (new_offset != (addr_t)offsetEdit->value()){
                 offsetEdit->setValue(new_offset);
             }
         });

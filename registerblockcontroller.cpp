@@ -28,7 +28,7 @@ bool RegisterBlockController::getCodeNameGeneration()
     return this->gen_codename;
 }
 
-uint32_t RegisterBlockController::getSize()
+addr_t RegisterBlockController::getSize()
 {
     return this->rb.size;
 }
@@ -58,7 +58,7 @@ bool RegisterBlockController::getCurrRegCodeNameGeneration()
     return this->gen_reg_codenames[this->current_reg_idx];
 }
 
-uint32_t RegisterBlockController::getCurrRegOffset()
+addr_t RegisterBlockController::getCurrRegOffset()
 {
     return this->rb.registers[this->current_reg_idx].offset;
 }
@@ -83,7 +83,7 @@ bool RegisterBlockController::getRegCodeNameGeneration(int reg_idx)
     return this->gen_reg_codenames[reg_idx];
 }
 
-uint32_t RegisterBlockController::getRegOffset(int reg_idx)
+addr_t RegisterBlockController::getRegOffset(int reg_idx)
 {
     return this->rb.registers[reg_idx].offset;
 }
@@ -122,7 +122,7 @@ void RegisterBlockController::setCodeNameGeneration(bool gen_code_name)
     }
 }
 
-void RegisterBlockController::setSize(const uint32_t new_size)
+void RegisterBlockController::setSize(const addr_t new_size)
 {
     this->rb.size = new_size;
     emit this->sizeChanged(new_size);
@@ -136,7 +136,7 @@ void RegisterBlockController::setCurrRegIdx(int new_idx)
 
 void RegisterBlockController::sortRegsByOffset()
 {
-    uint32_t offset_in_focus = this->getCurrRegOffset();
+    addr_t offset_in_focus = this->getCurrRegOffset();
 
     this->rb.sort_registers_by_offset();
 
@@ -202,7 +202,7 @@ void RegisterBlockController::setRegCodeNameGeneration(bool gen_codename)
     }
 }
 
-void RegisterBlockController::setRegOffset(uint32_t new_offset)
+void RegisterBlockController::setRegOffset(addr_t new_offset)
 {
     this->rb.registers[this->current_reg_idx].offset = new_offset;
     emit this->regOffsetChanged(new_offset);

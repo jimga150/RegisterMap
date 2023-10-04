@@ -8,6 +8,8 @@
 
 #include "bitfield.h"
 
+typedef uint32_t addr_t;
+
 class Register
 {
 public:
@@ -18,7 +20,7 @@ public:
 
     uint32_t bit_len;
 
-    uint32_t offset;
+    addr_t offset;
 
     std::string description;
 

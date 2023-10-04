@@ -2,8 +2,6 @@
 
 #include <QApplication>
 
-//TODO: make typedefs for address and size
-
 //TODO: add loading TOML files
 //TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
 //  I think this feature should be strictly the equality (or lack thereof)

@@ -16,15 +16,15 @@ public:
     std::string name;
     std::string code_name;
 
-    uint32_t size;
+    addr_t size;
 
-    std::map<uint64_t, Domain*> domain_offsets;
+//    std::map<uint64_t, Domain*> domain_offsets;
 
     inline static const std::string invalid_reg_name = "<INVALID>";
 
-    Register get_register_at(uint32_t offset);
+    Register get_register_at(addr_t offset);
 
-    uint32_t get_max_offset();
+    addr_t get_max_offset();
 
     void sort_registers_by_offset();
 
