@@ -18,6 +18,7 @@
 #define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(4, 0))
 #define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(5, 0))
 #define REG_BLOCK_FIELD_COORD_NEWREGBTN     (std::pair<int, int>(6, 0))
+#define REG_BLOCK_FIELD_COORD_SORTREGBTN    (std::pair<int, int>(6, 1))
 #define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(7, 0))
 #define REG_BLOCK_FIELD_COORD_SPACER        (std::pair<int, int>(8, 0))
 
@@ -343,6 +344,13 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QPushButton* newregButton = new QPushButton("New Register");
     connect(newregButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewReg);
     g->addWidget(newregButton, REG_BLOCK_FIELD_COORD_NEWREGBTN.first, REG_BLOCK_FIELD_COORD_NEWREGBTN.second);
+
+    QPushButton* sortRegsButton = new QPushButton("Sort Registers by Offset");
+    connect(sortRegsButton, &QPushButton::clicked, rbc, [=](){
+        if (this->checkOffsetCollisions(rbc) != OK) return;
+        rbc->sortRegsByOffset();
+    });
+    g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
 
     QFrame* regFrame = new QFrame();
     regFrame->setLineWidth(5);

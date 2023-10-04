@@ -2,8 +2,7 @@
 
 #include <QApplication>
 
-//TODO: add ability to sort registers by offset (both in the UI and in the model, since they assume parity)
-//TODO: automatically sort registers by offset
+//TODO: only highlight register currently in focus
 
 //TODO: make typedefs for address and size
 

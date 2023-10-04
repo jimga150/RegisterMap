@@ -134,6 +134,27 @@ void RegisterBlockController::setCurrRegIdx(int new_idx)
     emit this->currRegIdxChanged(new_idx);
 }
 
+void RegisterBlockController::sortRegsByOffset()
+{
+    uint32_t offset_in_focus = this->getCurrRegOffset();
+
+    this->rb.sort_registers_by_offset();
+
+    //cycle through all register indices to cause table to update
+    //with the info from new registers in given index positions
+    for (int i = 0; i < this->getNumRegs(); ++i){
+        this->setCurrRegIdx(i);
+    }
+
+    //return to whatever register we were focused on when we started
+    for (uint i = 0; i < this->rb.registers.size(); ++i){
+        if (this->rb.registers[i].offset == offset_in_focus){
+            this->setCurrRegIdx(i);
+            break;
+        }
+    }
+}
+
 void RegisterBlockController::makeNewReg()
 {
 

@@ -60,6 +60,7 @@ public slots:
     void setSize(const uint32_t new_size);
 
     void setCurrRegIdx(int new_idx);
+    void sortRegsByOffset();
 
     void makeNewReg();
 

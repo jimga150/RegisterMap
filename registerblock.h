@@ -20,16 +20,13 @@ public:
 
     std::map<uint64_t, Domain*> domain_offsets;
 
+    inline static const std::string invalid_reg_name = "<INVALID>";
 
-    Register get_register_at(uint32_t offset){
-        for (Register& reg : this->registers){
-            if (reg.offset == offset) return reg;
-        }
-        Register r;
-        r.name = "<INVALID>";
-        return r;
-    }
+    Register get_register_at(uint32_t offset);
 
+    uint32_t get_max_offset();
+
+    void sort_registers_by_offset();
 
 };
 
