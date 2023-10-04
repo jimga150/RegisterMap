@@ -35,9 +35,6 @@
 #define REG_TABLE_COL_DESC      (2)
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
 
-//override unordered_map to map to imply order
-using value = toml::basic_value<TOML11_DEFAULT_COMMENT_STRATEGY, std::map, std::vector>;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -217,20 +214,20 @@ void MainWindow::save()
     QTextStream savefilestream(&save_file);
     std::stringstream std_stream;
 
-    value base_table{{"version", 0.1}};
+    toml_value_t base_table{{"version", 0.1}};
 
     std::string toml_id;
 
     for (RegisterBlockController* p : this->reg_block_ctrls){
 
-        value reg_array;
+        toml_value_t reg_array;
 
         //we already verified that no offset collisions occur, so this is OK
         p->sortRegsByOffset();
 
         for (int i = 0; i < p->getNumRegs(); ++i){
             printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
-            value reg_record{
+            toml_value_t reg_record{
                 {"name", p->getRegName(i).toStdString()},
                 {"codename", p->getRegCodeName(i).toStdString()},
                 {"offset", p->getRegOffset(i)},
@@ -239,7 +236,7 @@ void MainWindow::save()
             reg_array[toml_id] = reg_record;
         }
 
-        value rb_table{
+        toml_value_t rb_table{
             {"name", p->getName().toStdString()},
             {"codename", p->getCodeName().toStdString()},
             {"size", p->getSize()},

@@ -7,6 +7,9 @@
 #include "registerblockcontroller.h"
 #include "toml11/toml.hpp"
 
+//override unordered_map to map to imply order
+using toml_value_t = toml::basic_value<TOML11_DEFAULT_COMMENT_STRATEGY, std::map, std::vector>;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
