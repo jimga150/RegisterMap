@@ -154,37 +154,24 @@ void MainWindow::save()
 
     value base_table{{"version", 0.1}};
 
-    std::string rbid;
-    int reg_blk_id_num = 0;
-
     for (RegisterBlockController* p : this->reg_block_ctrls){
 
         value reg_array;
 
-        std::string rid;
-
         for (int i = 0; i < p->getNumRegs(); ++i){
             value reg_record{
                 {"name", p->getRegName(i).toStdString()},
-                {"sourcename", p->getRegCodeName(i).toStdString()},
                 {"offset", p->getRegOffset(i)},
             };
-
-            rid = "reg";
-            rid += QString::number(i).toUtf8().constData();
-            reg_array[rid.c_str()] = reg_record;
+            reg_array[p->getRegCodeName(i).toStdString()] = reg_record;
         }
 
         value rb_table{
             {"name", p->getName().toStdString()},
-            {"sourcename", p->getCodeName().toStdString()},
             {"size", p->getSize()},
             {"registers", reg_array}
         };
-
-        rbid = "regblk";
-        rbid += QString::number(reg_blk_id_num++).toUtf8().constData();
-        base_table[rbid.c_str()] = rb_table;
+        base_table[p->getCodeName().toStdString()] = rb_table;
     }
 
     std_stream << base_table << std::endl;
