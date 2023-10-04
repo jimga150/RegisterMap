@@ -23,8 +23,6 @@ public:
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
 
-    QRegularExpressionValidator* codename_validator;
-
 public slots:
 
     void save();

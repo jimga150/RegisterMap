@@ -5,11 +5,13 @@
 
 #include "registerblock.h"
 
+class CodeNameValidator;
+
 class RegisterBlockController : public QObject
 {
     Q_OBJECT
 public:
-    explicit RegisterBlockController(QObject *parent = nullptr);
+    explicit RegisterBlockController(QVector<RegisterBlockController*>* containing_list, QObject *parent = nullptr);
 
     QString getName();
     QString getCodeName();

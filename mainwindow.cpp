@@ -8,12 +8,12 @@
 #include <QStandardPaths>
 #include <QMessageBox>
 
-#include "common.h"
 
 #define REG_BLOCK_FIELD_COORD_NAME          (std::pair<int, int>(0, 1))
 #define REG_BLOCK_FIELD_COORD_CODENAME      (std::pair<int, int>(0, 3))
 #define REG_BLOCK_FIELD_COORD_GEN_CODENAME  (std::pair<int, int>(1, 3))
 #define REG_BLOCK_FIELD_COORD_SIZE          (std::pair<int, int>(2, 1))
+#define REG_BLOCK_FIELD_COORD_CN_COLL_WARN  (std::pair<int, int>(2, 3))
 #define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(3, 0))
 #define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(4, 0))
 #define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(5, 0))
@@ -25,6 +25,7 @@
 #define REG_FIELD_COORD_CODENAME        (std::pair<int, int>(0, 3))
 #define REG_FIELD_COORD_GEN_CODENAME    (std::pair<int, int>(1, 3))
 #define REG_FIELD_COORD_OFFSET          (std::pair<int, int>(2, 1))
+#define REG_FIELD_COORD_CN_COLL_WARN    (std::pair<int, int>(2, 3))
 #define REG_FIELD_COORD_DESC_LABEL      (std::pair<int, int>(3, 0))
 #define REG_FIELD_COORD_DESC            (std::pair<int, int>(4, 0))
 
@@ -43,8 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(this->ui->actionSave_As, &QAction::triggered, this, &MainWindow::save);
-
-    this->codename_validator = new QRegularExpressionValidator(QRegularExpression("[0-9][A-Z][a-z]_"), this);
 }
 
 MainWindow::~MainWindow()
@@ -115,7 +114,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QWidget* w = new QWidget();
     this->ui->tabWidget->addTab(w, "Register Block");
 
-    RegisterBlockController* rbc = new RegisterBlockController(w);
+    RegisterBlockController* rbc = new RegisterBlockController(&(this->reg_block_ctrls), w);
     this->reg_block_ctrls.push_back(rbc);
 
     QGridLayout* g = new QGridLayout();
@@ -138,13 +137,8 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QLineEdit* codeNameEdit = new QLineEdit();
     codeNameEdit->setReadOnly(true);
-    codeNameEdit->setValidator(this->codename_validator);
     connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setCodeName);
-    connect(rbc, &RegisterBlockController::codeNameChanged, codeNameEdit, [=](const QString& newname){
-        if (newname != codeNameEdit->text()){
-            codeNameEdit->setText(newname);
-        }
-    });
+    connect(rbc, &RegisterBlockController::codeNameChanged, codeNameEdit, &QLineEdit::setText);
     g->addWidget(codeNameEdit, REG_BLOCK_FIELD_COORD_CODENAME.first, REG_BLOCK_FIELD_COORD_CODENAME.second);
 
     QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
@@ -152,8 +146,22 @@ void MainWindow::on_new_reg_block_btn_clicked()
     //and other levels of being checked at nonzero values, which will map to the bool type as checked -> true, unchecked -> false.
     //if that enum changes, this breaks. I dont feel like making this super robust though cause i dont want to include Qt GUI stuff in my controller.
     //wah wah.
-    connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, &RegisterBlockController::setCodeNameGeneration);
+    connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
+        if (state == Qt::CheckState::Checked){
+            rbc->setCodeNameGeneration(false);
+        } else {
+            rbc->setCodeNameGeneration(true);
+        }
+    });
+    connect(rbc, &RegisterBlockController::codeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
+        customCNCheckBox->setChecked(!gen_code_name);
+        codeNameEdit->setReadOnly(gen_code_name);
+    });
     g->addWidget(customCNCheckBox, REG_BLOCK_FIELD_COORD_GEN_CODENAME.first, REG_BLOCK_FIELD_COORD_GEN_CODENAME.second);
+
+    QLabel* CNCollisionWarningLabel = new QLabel("");
+    CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
+    g->addWidget(CNCollisionWarningLabel, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.first, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.second);
 
     QLabel* sizeLabel = new QLabel("Size (in addrs): ");
     g->addWidget(sizeLabel, REG_BLOCK_FIELD_COORD_SIZE.first, REG_BLOCK_FIELD_COORD_SIZE.second-1);
@@ -242,16 +250,28 @@ void MainWindow::on_new_reg_block_btn_clicked()
         QLineEdit* codeNameEdit = new QLineEdit();
         codeNameEdit->setEnabled(false);
         codeNameEdit->setReadOnly(true);
-        codeNameEdit->setValidator(this->codename_validator);
         connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setRegCodeName);
         connect(rbc, &RegisterBlockController::regCodeNameChanged, codeNameEdit, &QLineEdit::setText);
         reggrid->addWidget(codeNameEdit, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second);
 
         QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-        connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, &RegisterBlockController::setCodeNameGeneration);
-        connect(rbc, &RegisterBlockController::codeNameGenerationChanged, customCNCheckBox, &QCheckBox::setChecked);
+        connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
+            if (state == Qt::CheckState::Checked){
+                rbc->setRegCodeNameGeneration(false);
+            } else {
+                rbc->setRegCodeNameGeneration(true);
+            }
+        });
+        connect(rbc, &RegisterBlockController::regCodeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
+            customCNCheckBox->setChecked(!gen_code_name);
+            codeNameEdit->setReadOnly(gen_code_name);
+        });
         customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
+
+        QLabel* CNCollisionWarningLabel = new QLabel("");
+        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
+        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
 
         QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
         offsetLabel->setEnabled(false);
@@ -270,6 +290,14 @@ void MainWindow::on_new_reg_block_btn_clicked()
         offsetEdit->setPrefix("0x");
         offsetEdit->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
+
+//        connect(rbc, &RegisterBlockController::currRegIdxChanged, this, [=](int new_idx){
+//            Q_UNUSED(new_idx);
+//            nameEdit->setText(rbc->getCurrRegName());
+//            codeNameEdit->setText(rbc->getCurrRegCodeName());
+//            customCNCheckBox->setChecked(!(rbc->getCurrRegCodeNameGeneration()));
+//            offsetEdit->setValue(rbc->getCurrRegOffset());
+//        });
 
     }
 

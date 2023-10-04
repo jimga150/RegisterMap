@@ -1,6 +1,6 @@
 #include "registerblockcontroller.h"
 
-RegisterBlockController::RegisterBlockController(QObject *parent)
+RegisterBlockController::RegisterBlockController(QVector<RegisterBlockController*>* containing_list, QObject *parent)
     : QObject{parent}
 {
     //if the current register index changes, notify any listeners about the current info changes
@@ -96,8 +96,9 @@ void RegisterBlockController::setName(const QString& new_name)
 
 void RegisterBlockController::setCodeName(const QString& new_name)
 {
-    this->rb.code_name = new_name.toStdString();
-    emit this->codeNameChanged(new_name);
+    QString new_name_fixed = generate_code_name(new_name.toStdString()).c_str();
+    this->rb.code_name = new_name_fixed.toStdString();
+    emit this->codeNameChanged(new_name_fixed);
 }
 
 void RegisterBlockController::setCodeNameGeneration(bool gen_code_name)
@@ -125,9 +126,12 @@ void RegisterBlockController::setCurrRegIdx(int new_idx)
 
 void RegisterBlockController::makeNewReg()
 {
+
+    int new_idx = this->rb.registers.size();
+
     Register reg;
-    reg.name = "New Register";
-    reg.offset = this->rb.registers.size();
+    reg.name = "New Register " + std::to_string(new_idx);
+    reg.offset = new_idx; //TODO: check for offset collisions
     reg.code_name = generate_code_name(reg.name);
     reg.bit_len = 8; //TODO: set default for this in a menu? default per-block?
     reg.description = "Reserved";
@@ -150,14 +154,21 @@ void RegisterBlockController::setRegName(const QString& new_name)
 
 void RegisterBlockController::setRegCodeName(const QString& new_name)
 {
-    this->rb.registers[this->current_reg_idx].name = new_name.toStdString();
-    emit this->regCodeNameChanged(new_name);
+    QString new_name_fixed = generate_code_name(new_name.toStdString()).c_str();
+    this->rb.registers[this->current_reg_idx].code_name = new_name_fixed.toStdString();
+    emit this->regCodeNameChanged(new_name_fixed);
 }
 
 void RegisterBlockController::setRegCodeNameGeneration(bool gen_codename)
 {
-    this->gen_codename = gen_codename;
-    emit this->codeNameGenerationChanged(gen_codename);
+    this->gen_reg_codenames.at(this->current_reg_idx) = gen_codename;
+    emit this->regCodeNameGenerationChanged(gen_codename);
+
+    if (gen_codename){
+        this->setRegCodeName(
+            generate_code_name(this->rb.registers[this->current_reg_idx].name).c_str()
+        );
+    }
 }
 
 void RegisterBlockController::setRegOffset(uint32_t new_offset)
