@@ -281,6 +281,8 @@ void MainWindow::save()
 
     savefilestream << std_stream.str().c_str();
 
+    this->setWindowTitle(QFileInfo(save_file.fileName()).fileName());
+
     save_file.close();
 }
 
@@ -350,8 +352,6 @@ void MainWindow::load_file(QString load_filename)
             this->ui->tabWidget->removeTab(1);
         }
 
-        this->setWindowTitle(QFileInfo(load_file.fileName()).fileName());
-
         for (std::pair<const std::string, toml_value_t>& kv : base_table.as_table()){
             const std::string key = kv.first;
             toml_value_t val = kv.second;
@@ -404,7 +404,18 @@ void MainWindow::load_file(QString load_filename)
         return;
     }
 
+    this->setWindowTitle(QFileInfo(load_file.fileName()).fileName());
+
     load_file.close();
+}
+
+void MainWindow::changeMade()
+{
+    QString windowTitle = this->windowTitle();
+    if (windowTitle.at(windowTitle.length()-1) != '*'){
+        //this indicates an unsaved change exists
+        this->setWindowTitle(windowTitle + "*");
+    }
 }
 
 
@@ -641,6 +652,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
+
+    //notify of any actual data changes
+    connect(rbc, &RegisterBlockController::changeMade, this, &MainWindow::changeMade);
 
     rbc->setName("Register Block " + QString::number(this->reg_block_ctrls.size()-1));
 

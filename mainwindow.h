@@ -55,6 +55,8 @@ public slots:
 
     void load_file(QString load_file);
 
+    void changeMade();
+
 private slots:
     void on_new_reg_block_btn_clicked();
 

@@ -95,8 +95,11 @@ QString RegisterBlockController::getRegOffsetAsString(int reg_idx)
 
 void RegisterBlockController::setName(const QString& new_name)
 {
+    if (!(new_name.compare(this->rb.name.c_str()))) return;
+
     this->rb.name = new_name.toStdString();
     emit this->nameChanged(new_name);
+    emit this->changeMade();
 
     if (gen_codename){
         this->rb.code_name = generate_code_name(this->rb.name);
@@ -106,15 +109,21 @@ void RegisterBlockController::setName(const QString& new_name)
 
 void RegisterBlockController::setCodeName(const QString& new_name)
 {
+    if (!(new_name.compare(this->rb.code_name.c_str()))) return;
+
     QString new_name_fixed = generate_code_name(new_name.toStdString()).c_str();
     this->rb.code_name = new_name_fixed.toStdString();
     emit this->codeNameChanged(new_name_fixed);
+    emit this->changeMade();
 }
 
 void RegisterBlockController::setCodeNameGeneration(bool gen_code_name)
 {
+    if (this->gen_codename == gen_code_name) return;
+
     this->gen_codename = gen_code_name;
     emit this->codeNameGenerationChanged(gen_code_name);
+    emit this->changeMade();
 
     if (gen_codename){
         this->rb.code_name = generate_code_name(this->rb.name);
@@ -124,8 +133,11 @@ void RegisterBlockController::setCodeNameGeneration(bool gen_code_name)
 
 void RegisterBlockController::setSize(const addr_t new_size)
 {
+    if (this->rb.size == new_size) return;
+
     this->rb.size = new_size;
     emit this->sizeChanged(new_size);
+    emit this->changeMade();
 }
 
 void RegisterBlockController::setCurrRegIdx(int new_idx)
@@ -171,12 +183,16 @@ void RegisterBlockController::makeNewReg()
     this->gen_reg_codenames.push_back(true);
 
     emit this->regCreated(reg.name.c_str(), reg.offset, reg.description.c_str());
+    emit this->changeMade();
 }
 
 void RegisterBlockController::setRegName(const QString& new_name)
 {
+    if (!(new_name.compare(this->rb.registers[this->current_reg_idx].name.c_str()))) return;
+
     this->rb.registers[this->current_reg_idx].name = new_name.toStdString();
     emit this->regNameChanged(new_name);
+    emit this->changeMade();
 
     if (this->gen_reg_codenames[this->current_reg_idx]){
         this->setRegCodeName(generate_code_name(this->rb.registers[this->current_reg_idx].name).c_str());
@@ -185,15 +201,21 @@ void RegisterBlockController::setRegName(const QString& new_name)
 
 void RegisterBlockController::setRegCodeName(const QString& new_name)
 {
+    if (!(new_name.compare(this->rb.registers[this->current_reg_idx].code_name.c_str()))) return;
+
     QString new_name_fixed = generate_code_name(new_name.toStdString()).c_str();
     this->rb.registers[this->current_reg_idx].code_name = new_name_fixed.toStdString();
     emit this->regCodeNameChanged(new_name_fixed);
+    emit this->changeMade();
 }
 
 void RegisterBlockController::setRegCodeNameGeneration(bool gen_codename)
 {
+    if (gen_codename == this->gen_reg_codenames.at(this->current_reg_idx)) return;
+
     this->gen_reg_codenames.at(this->current_reg_idx) = gen_codename;
     emit this->regCodeNameGenerationChanged(gen_codename);
+    emit this->changeMade();
 
     if (gen_codename){
         this->setRegCodeName(
@@ -204,6 +226,10 @@ void RegisterBlockController::setRegCodeNameGeneration(bool gen_codename)
 
 void RegisterBlockController::setRegOffset(addr_t new_offset)
 {
+    if (new_offset == this->rb.registers[this->current_reg_idx].offset) return;
+
     this->rb.registers[this->current_reg_idx].offset = new_offset;
+
     emit this->regOffsetChanged(new_offset);
+    emit this->changeMade();
 }

@@ -36,6 +36,8 @@ public:
 
 signals:
 
+    void changeMade();
+
     void nameChanged(const QString& new_name);
     void codeNameChanged(const QString& new_name);
     void codeNameGenerationChanged(bool gen_code_name);
