@@ -359,11 +359,42 @@ void MainWindow::load_file(QString load_filename)
             if (!key.substr(0, reg_block_prefix.length()).compare(reg_block_prefix)){
                 //this is a register block
 
-                std::string name = toml::find<std::string>(val, "name");
-                std::string codename = toml::find<std::string>(val, "codename");
-                bool gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
-                addr_t size = toml::find<addr_t>(val, "size");
-                toml_value_t registers = toml::find(val, "registers");
+                std::string name;
+                try {
+                    name = toml::find<std::string>(val, "name");
+                } catch (std::out_of_range& e){
+                    name = key;
+                }
+
+                std::string codename;
+                try {
+                    codename = toml::find<std::string>(val, "codename");
+                } catch (std::out_of_range& e){
+                    codename = key;
+                }
+
+                bool gen_codename;
+                try {
+                    gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                } catch (std::out_of_range& e){
+                    gen_codename = true;
+                }
+
+                addr_t size;
+                try {
+                    size = toml::find<addr_t>(val, "size");
+                } catch (std::out_of_range& e){
+                    //TODO: try best to figure out size from register offsets?
+                    //if this isnt in the TOML then this should probably just error out to be honest.
+                    size = 0;
+                }
+
+                toml_value_t registers;
+                try {
+                    registers = toml::find(val, "registers");
+                } catch (std::out_of_range& e){
+                    //TODO: this should deffo throw an error message. probably not a popup every time though.
+                }
 
                 this->on_new_reg_block_btn_clicked();
                 RegisterBlockController* rbc = this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1);
@@ -377,10 +408,34 @@ void MainWindow::load_file(QString load_filename)
                     const std::string key = kv.first;
                     toml_value_t val = kv.second;
 
-                    std::string name = toml::find<std::string>(val, "name");
-                    std::string codename = toml::find<std::string>(val, "codename");
-                    bool gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
-                    addr_t offset = toml::find<addr_t>(val, "offset");
+                    std::string name;
+                    try {
+                        name = toml::find<std::string>(val, "name");
+                    } catch (std::out_of_range& e){
+                        name = key;
+                    }
+
+                    std::string codename;
+                    try {
+                        codename = toml::find<std::string>(val, "codename");
+                    } catch (std::out_of_range& e){
+                        codename = key;
+                    }
+
+                    bool gen_codename;
+                    try {
+                        gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                    } catch (std::out_of_range& e){
+                        gen_codename = true;
+                    }
+
+                    addr_t offset;
+                    try {
+                        offset = toml::find<addr_t>(val, "offset");
+                    } catch (std::out_of_range& e){
+                        //TODO: this should be an error.
+                        offset = 0;
+                    }
 
                     rbc->makeNewReg();
                     int new_reg_idx = rbc->getNumRegs() - 1;
