@@ -18,7 +18,7 @@
 #define REG_BLOCK_FIELD_COORD_CODENAME      (std::pair<int, int>(0, 3))
 #define REG_BLOCK_FIELD_COORD_GEN_CODENAME  (std::pair<int, int>(1, 3))
 #define REG_BLOCK_FIELD_COORD_SIZE          (std::pair<int, int>(2, 1))
-#define REG_BLOCK_FIELD_COORD_CN_COLL_WARN  (std::pair<int, int>(2, 3))
+//#define REG_BLOCK_FIELD_COORD_CN_COLL_WARN  (std::pair<int, int>(2, 3))
 #define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(3, 0))
 #define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(4, 0))
 #define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(5, 0))
@@ -34,7 +34,7 @@
 #define REG_FIELD_COORD_CODENAME        (std::pair<int, int>(0, 3))
 #define REG_FIELD_COORD_GEN_CODENAME    (std::pair<int, int>(1, 3))
 #define REG_FIELD_COORD_OFFSET          (std::pair<int, int>(2, 1))
-#define REG_FIELD_COORD_CN_COLL_WARN    (std::pair<int, int>(2, 3))
+#define REG_FIELD_COORD_BITLEN          (std::pair<int, int>(2, 3))
 #define REG_FIELD_COORD_DESC_LABEL      (std::pair<int, int>(3, 0))
 #define REG_FIELD_COORD_DESC            (std::pair<int, int>(4, 0))
 
@@ -268,6 +268,7 @@ void MainWindow::save()
                 {RegisterBlockController::reg_codename_key, p->getRegCodeName(i).toStdString()},
                 {RegisterBlockController::reg_codenamegen_key, p->getRegCodeNameGeneration(i) ? "true" : "false"},
                 {RegisterBlockController::reg_offset_key, p->getRegOffset(i)},
+                {RegisterBlockController::reg_bitlen_key, p->getRegBitLen(i)}
             };
             toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
             reg_array[toml_id] = reg_record;
@@ -454,6 +455,14 @@ void MainWindow::load_file(QString load_filename)
                         offset = 0;
                     }
 
+                    uint32_t bit_len;
+                    try {
+                        bit_len = toml::find<uint32_t>(val, RegisterBlockController::reg_bitlen_key);
+                    } catch (std::out_of_range& e){
+                        //TODO: this should be an error.
+                        bit_len = 8;
+                    }
+
                     rbc->makeNewReg();
                     int new_reg_idx = rbc->getNumRegs() - 1;
                     rbc->setCurrRegIdx(new_reg_idx);
@@ -462,6 +471,7 @@ void MainWindow::load_file(QString load_filename)
                     rbc->setRegCodeNameGeneration(gen_codename);
                     rbc->setRegCodeName(codename.c_str());
                     rbc->setRegOffset(offset);
+                    rbc->setRegBitLen(bit_len);
                 }
             }
         }
@@ -702,6 +712,23 @@ void MainWindow::on_new_reg_block_btn_clicked()
 //        QLabel* CNCollisionWarningLabel = new QLabel("");
 //        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
 //        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
+
+        QLabel* bitLenLabel = new QLabel("Size (bits): ");
+        bitLenLabel->setEnabled(false);
+        reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
+
+        QSpinBox* bitLenEdit = new QSpinBox();
+        bitLenEdit->setValue(1);
+        bitLenEdit->setMinimum(1);
+        bitLenEdit->setMaximum(std::numeric_limits<int>::max());
+        bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
+        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegBitLen);
+        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](addr_t new_bitlen){
+            if (new_bitlen != (uint32_t)bitLenEdit->value()){
+                bitLenEdit->setValue(new_bitlen);
+            }
+        });
+        reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
 
         QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
         offsetLabel->setEnabled(false);

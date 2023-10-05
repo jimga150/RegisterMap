@@ -10,6 +10,7 @@ RegisterBlockController::RegisterBlockController(QObject *parent)
         emit this->regCodeNameChanged(this->getCurrRegCodeName());
         emit this->regCodeNameGenerationChanged(this->getCurrRegCodeNameGeneration());
         emit this->regOffsetChanged(this->getCurrRegOffset());
+        emit this->regBitLenChanged(this->getCurrRegBitLen());
     });
 }
 

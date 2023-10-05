@@ -49,6 +49,7 @@ public:
     inline static const std::string reg_codenamegen_key = "autogen_codename";
     inline static const std::string reg_desc_key = "description";
     inline static const std::string reg_offset_key = "offset";
+    inline static const std::string reg_bitlen_key = "bit_len";
 
 signals:
 
