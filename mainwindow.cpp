@@ -713,23 +713,6 @@ void MainWindow::on_new_reg_block_btn_clicked()
 //        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
 //        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
 
-        QLabel* bitLenLabel = new QLabel("Size (bits): ");
-        bitLenLabel->setEnabled(false);
-        reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
-
-        QSpinBox* bitLenEdit = new QSpinBox();
-        bitLenEdit->setValue(1);
-        bitLenEdit->setMinimum(1);
-        bitLenEdit->setMaximum(std::numeric_limits<int>::max());
-        bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegBitLen);
-        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](addr_t new_bitlen){
-            if (new_bitlen != (uint32_t)bitLenEdit->value()){
-                bitLenEdit->setValue(new_bitlen);
-            }
-        });
-        reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
-
         QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
         offsetLabel->setEnabled(false);
         reggrid->addWidget(offsetLabel, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second-1);
@@ -747,6 +730,23 @@ void MainWindow::on_new_reg_block_btn_clicked()
         offsetEdit->setPrefix("0x");
         offsetEdit->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
+
+        QLabel* bitLenLabel = new QLabel("Size (bits): ");
+        bitLenLabel->setEnabled(false);
+        reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
+
+        QSpinBox* bitLenEdit = new QSpinBox();
+        bitLenEdit->setValue(1);
+        bitLenEdit->setMinimum(1);
+        bitLenEdit->setMaximum(std::numeric_limits<int>::max());
+        bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
+        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegBitLen);
+        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](addr_t new_bitlen){
+            if (new_bitlen != (uint32_t)bitLenEdit->value()){
+                bitLenEdit->setValue(new_bitlen);
+            }
+        });
+        reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
 
     }
 
