@@ -46,6 +46,3 @@ target_wrapper.*
 CMakeLists.txt.user*
 
 *.xlsx
-
-Row clear.txt
-*.toml
