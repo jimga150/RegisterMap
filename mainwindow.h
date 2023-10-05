@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(void (*makeNewWindow)(QString load_filename), QWidget *parent = nullptr);
     ~MainWindow();
 
     test_result_enum checkRBOffsetCollisions();
@@ -43,6 +43,8 @@ public:
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
 
+    void (*makeNewWindow)(QString load_filename) = nullptr;
+
     inline static const std::string reg_block_prefix = "rb_";
 
 public slots:
@@ -50,6 +52,8 @@ public slots:
     void save();
 
     void load();
+
+    void load_file(QString load_file);
 
 private slots:
     void on_new_reg_block_btn_clicked();

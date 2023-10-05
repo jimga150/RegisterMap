@@ -26,7 +26,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>-1</number>
+         <number>0</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideRight</enum>
@@ -46,6 +46,11 @@
         <property name="tabBarAutoHide">
          <bool>false</bool>
         </property>
+        <widget class="QWidget" name="mainTab">
+         <attribute name="title">
+          <string>Main Page</string>
+         </attribute>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -72,8 +77,9 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_As"/>
+    <addaction name="actionNew"/>
     <addaction name="actionLoad"/>
+    <addaction name="actionSave_As"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -95,6 +101,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

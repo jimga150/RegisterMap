@@ -40,14 +40,19 @@
 #define REG_TABLE_COL_DESC      (2)
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(void (*makeNewWindow)(QString), QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
+    this->makeNewWindow = makeNewWindow;
+
     connect(this->ui->actionSave_As, &QAction::triggered, this, &MainWindow::save);
     connect(this->ui->actionLoad, &QAction::triggered, this, &MainWindow::load);
+    connect(this->ui->actionNew, &QAction::triggered, this, [=](){
+        this->makeNewWindow("");
+    });
 }
 
 MainWindow::~MainWindow()
@@ -279,9 +284,35 @@ void MainWindow::save()
 
 void MainWindow::load()
 {
+
+    QMessageBox msgBox;
+    msgBox.setText("Load in new window?");
+    msgBox.setInformativeText("Selecting 'No' will discard all changes in the current window.");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+    int selected_opt = msgBox.exec();
+
     QString start_path = QStandardPaths::displayName(QStandardPaths::DesktopLocation);
     QString load_filename = QFileDialog::getOpenFileName(this, "Load TOML File", start_path, "TOML Files (*.toml)");
     printf("Load from: %s\n", load_filename.toUtf8().constData());
+
+    if (selected_opt == QMessageBox::Yes){
+        //make a new window and load it with the selected TOML file
+        this->makeNewWindow(load_filename);
+    } else {
+        //wipe this window and load the selected TOML file
+        this->load_file(load_filename);
+    }
+
+}
+
+void MainWindow::load_file(QString load_filename)
+{
+
+    if (load_filename.length() == 0){
+        printf("Empty load filename, skipping load...\n");
+        return;
+    }
 
     QFile load_file(load_filename);
     if (!(load_file.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text))){
@@ -366,6 +397,7 @@ void MainWindow::load()
         return;
     }
 
+    load_file.close();
 }
 
 

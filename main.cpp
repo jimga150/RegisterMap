@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: add option to make new window or overwrite stuff in the existing one
 //TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
 //  I think this feature should be strictly the equality (or lack thereof)
 //  between the TOML file you loaded from (or that you havent loaded from any TOML file) and your UI.
@@ -39,10 +38,39 @@
 
 //TODO: make command line option to just export a toml file as one or more of the other outputs instead of running the whole GUI
 
+void makeNewWindow(QString load_filename);
+void makeNewWindow_noload();
+
+static std::vector<MainWindow*> windows;
+
+void makeNewWindow(QString load_filename){
+    makeNewWindow_noload();
+    windows.at(windows.size()-1)->load_file(load_filename);
+}
+
+void makeNewWindow_noload(){
+    MainWindow* w = new MainWindow(makeNewWindow);
+    windows.push_back(w);
+    w->show();
+
+    if (windows.size() > 1){
+        //shift down and to the right by 20 pixels, just to make the previous window visible
+        MainWindow* last_window = windows.at(windows.size()-2);
+        w->move(last_window->pos() + QPoint(20, 20));
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
+
+    makeNewWindow_noload();
+
+    int retval = a.exec();
+
+    for (MainWindow* w : windows){
+        w->deleteLater();
+    }
+
+    return retval;
 }
