@@ -1,0 +1,79 @@
+version_major = 0
+version_minor = 1
+
+[rb_Register_Block678]
+autogen_codename = "false"
+codename = "Register_Block678"
+description = ""
+name = "Register Block 1"
+size = 1024
+
+[rb_Register_Block678.registers]
+
+[rb_Register_Block678.registers.0_New_Register_0]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_0"
+name = "New Register 0"
+offset = 0
+
+[rb_Register_Block678.registers.1_New_Register_1]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_1"
+name = "New Register 1"
+offset = 1
+
+[rb_Register_Block678.registers.2_New_Register_2846]
+autogen_codename = "false"
+bit_len = 7
+codename = "New_Register_2846"
+name = "New Register 2"
+offset = 2
+
+[rb_Register_Block678.registers.3_New_Register_3]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_3"
+name = "New Register 3"
+offset = 3
+
+[rb_Register_Block678.registers.4_New_Register_4]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_4"
+name = "New Register 4"
+offset = 4
+
+[rb_Register_Block_0]
+autogen_codename = "true"
+codename = "Register_Block_0"
+description = ""
+name = "Register Block 0"
+size = 1024
+
+[rb_Register_Block_0.registers]
+
+[rb_Register_Block_0.registers.0__000000]
+autogen_codename = "true"
+bit_len = 800
+codename = "_000000"
+name = "000000"
+offset = 0
+
+[rb_Register_Block_0.registers.2_New_Register_2]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_2"
+name = "New Register 2"
+offset = 2
+
+[rb_Register_Block_0.registers.6_New_Register_1]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_1"
+name = "New Register 1"
+offset = 6
+
+
+
