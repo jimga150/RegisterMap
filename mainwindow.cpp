@@ -269,7 +269,8 @@ void MainWindow::save()
                 {RegisterBlockController::reg_codename_key, p->getRegCodeName(i).toStdString()},
                 {RegisterBlockController::reg_codenamegen_key, p->getRegCodeNameGeneration(i) ? "true" : "false"},
                 {RegisterBlockController::reg_offset_key, p->getRegOffset(i)},
-                {RegisterBlockController::reg_bitlen_key, p->getRegBitLen(i)}
+                {RegisterBlockController::reg_bitlen_key, p->getRegBitLen(i)},
+                {RegisterBlockController::reg_desc_key, p->getRegDescription(i).toStdString()}
             };
             toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
             reg_array[toml_id] = reg_record;
@@ -468,6 +469,13 @@ void MainWindow::load_file(QString load_filename)
                         bit_len = 8;
                     }
 
+                    std::string description;
+                    try {
+                        description = toml::find<std::string>(val, RegisterBlockController::reg_desc_key);
+                    } catch (std::out_of_range& e){
+                        description = "";
+                    }
+
                     rbc->makeNewReg();
                     int new_reg_idx = rbc->getNumRegs() - 1;
                     rbc->setCurrRegIdx(new_reg_idx);
@@ -477,6 +485,7 @@ void MainWindow::load_file(QString load_filename)
                     rbc->setRegCodeName(codename.c_str());
                     rbc->setRegOffset(offset);
                     rbc->setRegBitLen(bit_len);
+                    rbc->setRegDescription(description.c_str());
                 }
             }
         }
@@ -580,14 +589,18 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     sizeEdit->setValue(rbc->getSize());
 
-    QLabel* descLabel = new QLabel("Decription: ");
+    QLabel* descLabel = new QLabel("Description: ");
     g->addWidget(descLabel, REG_BLOCK_FIELD_COORD_DESC_LABEL.first, REG_BLOCK_FIELD_COORD_DESC_LABEL.second);
 
     QTextEdit* descEdit = new QTextEdit();
     connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
         rbc->setDescription(descEdit->toPlainText());
     });
-    connect(rbc, &RegisterBlockController::descriptionChanged, descEdit, &QTextEdit::setText);
+    connect(rbc, &RegisterBlockController::descriptionChanged, descEdit, [=](const QString& new_desc){
+        if (descEdit->toPlainText().compare(new_desc)){
+            descEdit->setText(new_desc);
+        }
+    });
     g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QTableWidget* regTable = new QTableWidget(0, 3);
@@ -778,6 +791,20 @@ void MainWindow::on_new_reg_block_btn_clicked()
             }
         });
         reggrid->addWidget(byteLenEdit, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second);
+
+        QLabel* descLabel = new QLabel("Description: ");
+        reggrid->addWidget(descLabel, REG_FIELD_COORD_DESC_LABEL.first, REG_FIELD_COORD_DESC_LABEL.second);
+
+        QTextEdit* descEdit = new QTextEdit();
+        connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
+            rbc->setRegDescription(descEdit->toPlainText());
+        });
+        connect(rbc, &RegisterBlockController::regDescriptionChanged, descEdit, [=](const QString& new_desc){
+            if (descEdit->toPlainText().compare(new_desc)){
+                descEdit->setText(new_desc);
+            }
+        });
+        reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH);
 
     }
 

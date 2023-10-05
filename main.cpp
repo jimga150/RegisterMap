@@ -2,8 +2,9 @@
 
 #include <QApplication>
 
-//TODO: add register byte length (from bit length, not saved)
-//TODO: add register longoform description
+//TODO: allow single-clicking on registers to select them
+//TODO: implement arrow keys in register table to select adjacent rows
+
 //TODO: add register bit fields (table?)
 //TODO: add bit field bit range
 //TODO: add bit field name

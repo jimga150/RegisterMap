@@ -14,6 +14,12 @@ size = 1024
 autogen_codename = "true"
 bit_len = 8
 codename = "New_Register_0"
+description = """
+wawaweewoo descrtiption
+
+
+text gere\
+"""
 name = "New Register 0"
 offset = 0
 
@@ -21,6 +27,7 @@ offset = 0
 autogen_codename = "true"
 bit_len = 8
 codename = "New_Register_1"
+description = ""
 name = "New Register 1"
 offset = 1
 
@@ -28,6 +35,7 @@ offset = 1
 autogen_codename = "false"
 bit_len = 7
 codename = "New_Register_2846"
+description = ""
 name = "New Register 2"
 offset = 2
 
@@ -35,6 +43,7 @@ offset = 2
 autogen_codename = "true"
 bit_len = 16
 codename = "New_Register_3"
+description = ""
 name = "New Register 3"
 offset = 3
 
@@ -42,6 +51,7 @@ offset = 3
 autogen_codename = "true"
 bit_len = 12
 codename = "New_Register_4"
+description = ""
 name = "New Register 4"
 offset = 4
 
@@ -58,6 +68,7 @@ size = 1024
 autogen_codename = "true"
 bit_len = 800
 codename = "_000000"
+description = ""
 name = "000000"
 offset = 0
 
@@ -65,6 +76,7 @@ offset = 0
 autogen_codename = "true"
 bit_len = 8
 codename = "New_Register_2"
+description = ""
 name = "New Register 2"
 offset = 2
 
@@ -72,6 +84,7 @@ offset = 2
 autogen_codename = "true"
 bit_len = 8
 codename = "New_Register_1"
+description = ""
 name = "New Register 1"
 offset = 6
 

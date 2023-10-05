@@ -29,6 +29,7 @@ public:
     addr_t getCurrRegOffset();
     QString getCurrRegOffsetAsString();
     uint32_t getCurrRegBitLen();
+    QString getCurrRegDescription();
 
     QString getRegName(int reg_idx);
     QString getRegCodeName(int reg_idx);
@@ -36,6 +37,7 @@ public:
     addr_t getRegOffset(int reg_idx);
     QString getRegOffsetAsString(int reg_idx);
     uint32_t getRegBitLen(int reg_idx);
+    QString getRegDescription(int reg_idx);
 
     inline static const std::string name_key = "name";
     inline static const std::string codename_key = "codename";
@@ -71,6 +73,7 @@ signals:
     void regCodeNameGenerationChanged(bool gen_codename);
     void regOffsetChanged(addr_t new_offset);
     void regBitLenChanged(uint32_t new_bitlen);
+    void regDescriptionChanged(const QString& new_desc);
 
 public slots:
 
@@ -91,6 +94,7 @@ public slots:
     void setRegCodeNameGeneration(bool gen_codename);
     void setRegOffset(addr_t new_offset);
     void setRegBitLen(uint32_t new_bitlen);
+    void setRegDescription(const QString& new_desc);
 
 private:
 

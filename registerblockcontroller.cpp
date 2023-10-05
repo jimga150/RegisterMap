@@ -11,6 +11,7 @@ RegisterBlockController::RegisterBlockController(QObject *parent)
         emit this->regCodeNameGenerationChanged(this->getCurrRegCodeNameGeneration());
         emit this->regOffsetChanged(this->getCurrRegOffset());
         emit this->regBitLenChanged(this->getCurrRegBitLen());
+        emit this->regDescriptionChanged(this->getCurrRegDescription());
     });
 }
 
@@ -79,6 +80,11 @@ uint32_t RegisterBlockController::getCurrRegBitLen()
     return this->getRegBitLen(this->current_reg_idx);
 }
 
+QString RegisterBlockController::getCurrRegDescription()
+{
+    return this->getRegDescription(this->current_reg_idx);
+}
+
 QString RegisterBlockController::getRegName(int reg_idx)
 {
     return this->rb.registers[reg_idx].name.c_str();
@@ -107,6 +113,11 @@ QString RegisterBlockController::getRegOffsetAsString(int reg_idx)
 uint32_t RegisterBlockController::getRegBitLen(int reg_idx)
 {
     return this->rb.registers[reg_idx].bit_len;
+}
+
+QString RegisterBlockController::getRegDescription(int reg_idx)
+{
+    return this->rb.registers[reg_idx].description.c_str();
 }
 
 void RegisterBlockController::setName(const QString& new_name)
@@ -267,4 +278,12 @@ void RegisterBlockController::setRegBitLen(uint32_t new_bitlen)
     //Also, will this be compatible with the interface(s)???
     this->rb.registers[this->current_reg_idx].bit_len = new_bitlen;
     emit this->regBitLenChanged(new_bitlen);
+}
+
+void RegisterBlockController::setRegDescription(const QString& new_desc)
+{
+    if (!(new_desc.compare(this->rb.registers[this->current_reg_idx].description.c_str()))) return;
+
+    this->rb.registers[this->current_reg_idx].description = new_desc.toStdString();
+    emit this->regDescriptionChanged(new_desc);
 }
