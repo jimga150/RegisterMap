@@ -33,14 +33,14 @@ offset = 2
 
 [rb_Register_Block678.registers.3_New_Register_3]
 autogen_codename = "true"
-bit_len = 8
+bit_len = 16
 codename = "New_Register_3"
 name = "New Register 3"
 offset = 3
 
 [rb_Register_Block678.registers.4_New_Register_4]
 autogen_codename = "true"
-bit_len = 8
+bit_len = 12
 codename = "New_Register_4"
 name = "New Register 4"
 offset = 4

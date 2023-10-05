@@ -15,6 +15,8 @@
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
 
+#define BITS_PER_BYTE (8)
+
 //replaces the first instance of toReplace within s with the string replaceWith
 //returns
 //  true if replacement was succesful

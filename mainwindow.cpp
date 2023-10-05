@@ -35,11 +35,12 @@
 #define REG_FIELD_COORD_GEN_CODENAME    (std::pair<int, int>(1, 3))
 #define REG_FIELD_COORD_OFFSET          (std::pair<int, int>(2, 1))
 #define REG_FIELD_COORD_BITLEN          (std::pair<int, int>(2, 3))
-#define REG_FIELD_COORD_DESC_LABEL      (std::pair<int, int>(3, 0))
-#define REG_FIELD_COORD_DESC            (std::pair<int, int>(4, 0))
+#define REG_FIELD_COORD_BYTELEN         (std::pair<int, int>(3, 3))
+#define REG_FIELD_COORD_DESC_LABEL      (std::pair<int, int>(4, 0))
+#define REG_FIELD_COORD_DESC            (std::pair<int, int>(5, 0))
 
 #define REG_FIELD_WIDTH   (4)
-#define REG_FIELD_HEIGHT  (5)
+#define REG_FIELD_HEIGHT  (6)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
@@ -740,13 +741,39 @@ void MainWindow::on_new_reg_block_btn_clicked()
         bitLenEdit->setMinimum(1);
         bitLenEdit->setMaximum(std::numeric_limits<int>::max());
         bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegBitLen);
-        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](addr_t new_bitlen){
+        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+            if (bitLenEdit->hasFocus()){
+                rbc->setRegBitLen(new_val);
+            }
+        });
+        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](uint32_t new_bitlen){
             if (new_bitlen != (uint32_t)bitLenEdit->value()){
                 bitLenEdit->setValue(new_bitlen);
             }
         });
         reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
+
+        QLabel* byteLenLabel = new QLabel("Size (bytes): ");
+        byteLenLabel->setEnabled(false);
+        reggrid->addWidget(byteLenLabel, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second-1);
+
+        QSpinBox* byteLenEdit = new QSpinBox();
+        byteLenEdit->setValue(1);
+        byteLenEdit->setMinimum(1);
+        byteLenEdit->setMaximum(std::numeric_limits<int>::max());
+        byteLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
+        connect(byteLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+            if (byteLenEdit->hasFocus()){
+                rbc->setRegBitLen(new_val*BITS_PER_BYTE);
+            }
+        });
+        connect(rbc, &RegisterBlockController::regBitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
+            uint32_t new_bytelen = (uint32_t)ceil((float)new_bitlen*1.0/BITS_PER_BYTE);
+            if (new_bytelen != (uint32_t)byteLenEdit->value()){
+                byteLenEdit->setValue(new_bytelen);
+            }
+        });
+        reggrid->addWidget(byteLenEdit, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second);
 
     }
 
