@@ -45,22 +45,22 @@ int RegisterBlockController::getNumRegs()
 
 QString RegisterBlockController::getCurrRegName()
 {
-    return this->rb.registers[this->current_reg_idx].name.c_str();
+    return this->getRegName(this->current_reg_idx);
 }
 
 QString RegisterBlockController::getCurrRegCodeName()
 {
-    return this->rb.registers[this->current_reg_idx].code_name.c_str();
+    return this->getRegCodeName(this->current_reg_idx);
 }
 
 bool RegisterBlockController::getCurrRegCodeNameGeneration()
 {
-    return this->gen_reg_codenames[this->current_reg_idx];
+    return this->getRegCodeNameGeneration(this->current_reg_idx);
 }
 
 addr_t RegisterBlockController::getCurrRegOffset()
 {
-    return this->rb.registers[this->current_reg_idx].offset;
+    return this->getRegOffset(this->current_reg_idx);
 }
 
 QString RegisterBlockController::getCurrRegOffsetAsString()
