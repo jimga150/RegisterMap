@@ -15,6 +15,7 @@ public:
 
     std::string name;
     std::string code_name;
+    std::string description;
 
     addr_t size;
 

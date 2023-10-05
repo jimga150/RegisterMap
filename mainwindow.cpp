@@ -277,6 +277,7 @@ void MainWindow::save()
             {"codename", p->getCodeName().toStdString()},
             {"autogen_codename", p->getCodeNameGeneration() ? "true" : "false"},
             {"size", p->getSize()},
+            {"description", p->getDescription().toStdString()},
             {"registers", reg_array}
         };
         toml_id = reg_block_prefix + p->getCodeName().toStdString();
@@ -386,6 +387,13 @@ void MainWindow::load_file(QString load_filename)
                     gen_codename = true;
                 }
 
+                std::string description;
+                try {
+                    description = toml::find<std::string>(val, "description");
+                } catch (std::out_of_range& e){
+                    description = "";
+                }
+
                 addr_t size;
                 try {
                     size = toml::find<addr_t>(val, "size");
@@ -408,6 +416,7 @@ void MainWindow::load_file(QString load_filename)
                 rbc->setName(name.c_str());
                 rbc->setCodeNameGeneration(gen_codename);
                 rbc->setCodeName(codename.c_str());
+                rbc->setDescription(description.c_str());
                 rbc->setSize(size);
 
                 for (std::pair<const std::string, toml_value_t>& kv : registers.as_table()){
@@ -558,6 +567,10 @@ void MainWindow::on_new_reg_block_btn_clicked()
     g->addWidget(descLabel, REG_BLOCK_FIELD_COORD_DESC_LABEL.first, REG_BLOCK_FIELD_COORD_DESC_LABEL.second);
 
     QTextEdit* descEdit = new QTextEdit();
+    connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
+        rbc->setDescription(descEdit->toPlainText());
+    });
+    connect(rbc, &RegisterBlockController::descriptionChanged, descEdit, &QTextEdit::setText);
     g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QTableWidget* regTable = new QTableWidget(0, 3);

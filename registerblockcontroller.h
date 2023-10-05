@@ -16,6 +16,7 @@ public:
     QString getName();
     QString getCodeName();
     bool getCodeNameGeneration();
+    QString getDescription();
 
     addr_t getSize();
 
@@ -27,12 +28,14 @@ public:
     bool getCurrRegCodeNameGeneration();
     addr_t getCurrRegOffset();
     QString getCurrRegOffsetAsString();
+    uint32_t getCurrRegBitLen();
 
     QString getRegName(int reg_idx);
     QString getRegCodeName(int reg_idx);
     bool getRegCodeNameGeneration(int reg_idx);
     addr_t getRegOffset(int reg_idx);
     QString getRegOffsetAsString(int reg_idx);
+    uint32_t getRegBitLen(int reg_idx);
 
 signals:
 
@@ -41,6 +44,7 @@ signals:
     void nameChanged(const QString& new_name);
     void codeNameChanged(const QString& new_name);
     void codeNameGenerationChanged(bool gen_code_name);
+    void descriptionChanged(const QString& new_desc);
 
     void sizeChanged(addr_t new_size);
 
@@ -52,12 +56,14 @@ signals:
     void regCodeNameChanged(const QString& new_name);
     void regCodeNameGenerationChanged(bool gen_codename);
     void regOffsetChanged(addr_t new_offset);
+    void regBitLenChanged(uint32_t new_bitlen);
 
 public slots:
 
     void setName(const QString& new_name);
     void setCodeName(const QString& new_name);
     void setCodeNameGeneration(bool gen_code_name);
+    void setDescription(const QString& new_desc);
 
     void setSize(const addr_t new_size);
 
@@ -70,6 +76,7 @@ public slots:
     void setRegCodeName(const QString& new_name);
     void setRegCodeNameGeneration(bool gen_codename);
     void setRegOffset(addr_t new_offset);
+    void setRegBitLen(uint32_t new_bitlen);
 
 private:
 

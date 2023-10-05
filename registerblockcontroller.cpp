@@ -28,6 +28,11 @@ bool RegisterBlockController::getCodeNameGeneration()
     return this->gen_codename;
 }
 
+QString RegisterBlockController::getDescription()
+{
+    return this->rb.description.c_str();
+}
+
 addr_t RegisterBlockController::getSize()
 {
     return this->rb.size;
@@ -68,6 +73,11 @@ QString RegisterBlockController::getCurrRegOffsetAsString()
     return this->getRegOffsetAsString(this->current_reg_idx);
 }
 
+uint32_t RegisterBlockController::getCurrRegBitLen()
+{
+    return this->getRegBitLen(this->current_reg_idx);
+}
+
 QString RegisterBlockController::getRegName(int reg_idx)
 {
     return this->rb.registers[reg_idx].name.c_str();
@@ -91,6 +101,11 @@ addr_t RegisterBlockController::getRegOffset(int reg_idx)
 QString RegisterBlockController::getRegOffsetAsString(int reg_idx)
 {
     return "0x" + QString::number(this->getRegOffset(reg_idx), 16);
+}
+
+uint32_t RegisterBlockController::getRegBitLen(int reg_idx)
+{
+    return this->rb.registers[reg_idx].bit_len;
 }
 
 void RegisterBlockController::setName(const QString& new_name)
@@ -129,6 +144,15 @@ void RegisterBlockController::setCodeNameGeneration(bool gen_code_name)
         this->rb.code_name = generate_code_name(this->rb.name);
         emit this->codeNameChanged(this->rb.code_name.c_str());
     }
+}
+
+void RegisterBlockController::setDescription(const QString& new_desc)
+{
+    if (!(new_desc.compare(this->rb.description.c_str()))) return;
+
+    this->rb.description = new_desc.toStdString();
+    emit this->descriptionChanged(new_desc);
+    emit this->changeMade();
 }
 
 void RegisterBlockController::setSize(const addr_t new_size)
@@ -232,4 +256,14 @@ void RegisterBlockController::setRegOffset(addr_t new_offset)
 
     emit this->regOffsetChanged(new_offset);
     emit this->changeMade();
+}
+
+void RegisterBlockController::setRegBitLen(uint32_t new_bitlen)
+{
+    if (new_bitlen == this->rb.registers[this->current_reg_idx].bit_len) return;
+
+    //TODO: there will likely be some heavy ramifications of this if it ends up being too small for the existing bitfields.
+    //Also, will this be compatible with the interface(s)???
+    this->rb.registers[this->current_reg_idx].bit_len = new_bitlen;
+    emit this->regBitLenChanged(new_bitlen);
 }
