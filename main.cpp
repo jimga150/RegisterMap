@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: allow single-clicking on registers to select them
 //TODO: implement arrow keys in register table to select adjacent rows
 
 //TODO: add register bit fields (table?)

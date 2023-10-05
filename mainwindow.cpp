@@ -607,10 +607,11 @@ void MainWindow::on_new_reg_block_btn_clicked()
     regTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     regTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     regTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    regTable->setAutoScroll(false);
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_NAME, new QTableWidgetItem("Name"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_OFFSET, new QTableWidgetItem("Offset"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_DESC, new QTableWidgetItem("Descwiption"));
-    connect(regTable, &QTableWidget::itemDoubleClicked, rbc, [=](QTableWidgetItem* item){
+    connect(regTable, &QTableWidget::itemClicked, rbc, [=](QTableWidgetItem* item){
         int row = regTable->row(item);
         rbc->setCurrRegIdx(row);
     });
