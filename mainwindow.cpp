@@ -53,6 +53,8 @@ MainWindow::MainWindow(void (*makeNewWindow)(QString), QWidget *parent)
     connect(this->ui->actionNew, &QAction::triggered, this, [=](){
         this->makeNewWindow("");
     });
+
+    this->setWindowTitle("New Register Map");
 }
 
 MainWindow::~MainWindow()
@@ -347,6 +349,8 @@ void MainWindow::load_file(QString load_filename)
         while(this->ui->tabWidget->count() > 1){
             this->ui->tabWidget->removeTab(1);
         }
+
+        this->setWindowTitle(QFileInfo(load_file.fileName()).fileName());
 
         for (std::pair<const std::string, toml_value_t>& kv : base_table.as_table()){
             const std::string key = kv.first;
