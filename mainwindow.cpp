@@ -27,6 +27,9 @@
 #define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(7, 0))
 #define REG_BLOCK_FIELD_COORD_SPACER        (std::pair<int, int>(8, 0))
 
+#define REG_BLOCK_FIELD_WIDTH   (4)
+#define REG_BLOCK_FIELD_HEIGHT  (9)
+
 #define REG_FIELD_COORD_NAME            (std::pair<int, int>(0, 1))
 #define REG_FIELD_COORD_CODENAME        (std::pair<int, int>(0, 3))
 #define REG_FIELD_COORD_GEN_CODENAME    (std::pair<int, int>(1, 3))
@@ -34,6 +37,9 @@
 #define REG_FIELD_COORD_CN_COLL_WARN    (std::pair<int, int>(2, 3))
 #define REG_FIELD_COORD_DESC_LABEL      (std::pair<int, int>(3, 0))
 #define REG_FIELD_COORD_DESC            (std::pair<int, int>(4, 0))
+
+#define REG_FIELD_WIDTH   (4)
+#define REG_FIELD_HEIGHT  (5)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
@@ -546,14 +552,13 @@ void MainWindow::on_new_reg_block_btn_clicked()
     sizeEdit->setMaximum(std::numeric_limits<int>::max());
     g->addWidget(sizeEdit, REG_BLOCK_FIELD_COORD_SIZE.first, REG_BLOCK_FIELD_COORD_SIZE.second);
 
-    //must call this after the spinbox has been added to the gridlayout and the registerblock has been associated with the widget
-    sizeEdit->setValue(1024);
+    sizeEdit->setValue(rbc->getSize());
 
     QLabel* descLabel = new QLabel("Decription: ");
     g->addWidget(descLabel, REG_BLOCK_FIELD_COORD_DESC_LABEL.first, REG_BLOCK_FIELD_COORD_DESC_LABEL.second);
 
     QTextEdit* descEdit = new QTextEdit();
-    g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, 4);
+    g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QTableWidget* regTable = new QTableWidget(0, 3);
     regTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -581,7 +586,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
         }
     });
 
-    g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, 4);
+    g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QPushButton* newregButton = new QPushButton("New Register");
     connect(newregButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewReg);
@@ -703,7 +708,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
 
     }
 
-    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, 4);
+    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
