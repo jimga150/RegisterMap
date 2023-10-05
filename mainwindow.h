@@ -45,6 +45,9 @@ public:
 
     void (*makeNewWindow)(QString load_filename) = nullptr;
 
+    inline static const std::string vmaj_key = "version_major";
+    inline static const std::string vmin_key = "version_minor";
+
     inline static const std::string reg_block_prefix = "rb_";
 
 public slots:

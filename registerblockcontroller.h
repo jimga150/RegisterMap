@@ -37,6 +37,19 @@ public:
     QString getRegOffsetAsString(int reg_idx);
     uint32_t getRegBitLen(int reg_idx);
 
+    inline static const std::string name_key = "name";
+    inline static const std::string codename_key = "codename";
+    inline static const std::string codenamegen_key = "autogen_codename";
+    inline static const std::string desc_key = "description";
+    inline static const std::string size_key = "size";
+    inline static const std::string reg_key = "registers";
+
+    inline static const std::string reg_name_key = "name";
+    inline static const std::string reg_codename_key = "codename";
+    inline static const std::string reg_codenamegen_key = "autogen_codename";
+    inline static const std::string reg_desc_key = "description";
+    inline static const std::string reg_offset_key = "offset";
+
 signals:
 
     void changeMade();

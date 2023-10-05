@@ -246,9 +246,10 @@ void MainWindow::save()
     QTextStream savefilestream(&save_file);
     std::stringstream std_stream;
 
+    //TODO: store version of app and write that out instead
     toml_value_t base_table{
-        {"version_major", 0},
-        {"version_minor", 1}
+        {vmaj_key, 0},
+        {vmin_key, 1}
     };
 
     std::string toml_id;
@@ -261,24 +262,24 @@ void MainWindow::save()
         p->sortRegsByOffset();
 
         for (int i = 0; i < p->getNumRegs(); ++i){
-            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
+//            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
             toml_value_t reg_record{
-                {"name", p->getRegName(i).toStdString()},
-                {"codename", p->getRegCodeName(i).toStdString()},
-                {"autogen_codename", p->getRegCodeNameGeneration(i) ? "true" : "false"},
-                {"offset", p->getRegOffset(i)},
+                {RegisterBlockController::reg_name_key, p->getRegName(i).toStdString()},
+                {RegisterBlockController::reg_codename_key, p->getRegCodeName(i).toStdString()},
+                {RegisterBlockController::reg_codenamegen_key, p->getRegCodeNameGeneration(i) ? "true" : "false"},
+                {RegisterBlockController::reg_offset_key, p->getRegOffset(i)},
             };
             toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
             reg_array[toml_id] = reg_record;
         }
 
         toml_value_t rb_table{
-            {"name", p->getName().toStdString()},
-            {"codename", p->getCodeName().toStdString()},
-            {"autogen_codename", p->getCodeNameGeneration() ? "true" : "false"},
-            {"size", p->getSize()},
-            {"description", p->getDescription().toStdString()},
-            {"registers", reg_array}
+            {RegisterBlockController::name_key, p->getName().toStdString()},
+            {RegisterBlockController::codename_key, p->getCodeName().toStdString()},
+            {RegisterBlockController::codenamegen_key, p->getCodeNameGeneration() ? "true" : "false"},
+            {RegisterBlockController::size_key, p->getSize()},
+            {RegisterBlockController::desc_key, p->getDescription().toStdString()},
+            {RegisterBlockController::reg_key, reg_array}
         };
         toml_id = reg_block_prefix + p->getCodeName().toStdString();
         base_table[toml_id] = rb_table;
@@ -339,8 +340,9 @@ void MainWindow::load_file(QString load_filename)
         printf("File contents:\n");
         this->print_toml_table(base_table);
 
-        int vmaj = toml::find<int>(base_table, "version_major");
-        int vmin = toml::find<int>(base_table, "version_minor");
+        //TODO: make method of storing old load methods and call upon those to translate to the current object structure
+        int vmaj = toml::find<int>(base_table, vmaj_key);
+        int vmin = toml::find<int>(base_table, vmin_key);
 
         if (vmaj == 0 && vmin == 1){
             printf("Current version!\n");
@@ -368,35 +370,35 @@ void MainWindow::load_file(QString load_filename)
 
                 std::string name;
                 try {
-                    name = toml::find<std::string>(val, "name");
+                    name = toml::find<std::string>(val, RegisterBlockController::name_key);
                 } catch (std::out_of_range& e){
                     name = key;
                 }
 
                 std::string codename;
                 try {
-                    codename = toml::find<std::string>(val, "codename");
+                    codename = toml::find<std::string>(val, RegisterBlockController::codename_key);
                 } catch (std::out_of_range& e){
                     codename = key;
                 }
 
                 bool gen_codename;
                 try {
-                    gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                    gen_codename = toml::find<std::string>(val, RegisterBlockController::codenamegen_key).compare("false");
                 } catch (std::out_of_range& e){
                     gen_codename = true;
                 }
 
                 std::string description;
                 try {
-                    description = toml::find<std::string>(val, "description");
+                    description = toml::find<std::string>(val, RegisterBlockController::desc_key);
                 } catch (std::out_of_range& e){
                     description = "";
                 }
 
                 addr_t size;
                 try {
-                    size = toml::find<addr_t>(val, "size");
+                    size = toml::find<addr_t>(val, RegisterBlockController::size_key);
                 } catch (std::out_of_range& e){
                     //TODO: try best to figure out size from register offsets?
                     //if this isnt in the TOML then this should probably just error out to be honest.
@@ -405,7 +407,7 @@ void MainWindow::load_file(QString load_filename)
 
                 toml_value_t registers;
                 try {
-                    registers = toml::find(val, "registers");
+                    registers = toml::find(val, RegisterBlockController::reg_key);
                 } catch (std::out_of_range& e){
                     //TODO: this should deffo throw an error message. probably not a popup every time though.
                 }
@@ -425,28 +427,28 @@ void MainWindow::load_file(QString load_filename)
 
                     std::string name;
                     try {
-                        name = toml::find<std::string>(val, "name");
+                        name = toml::find<std::string>(val, RegisterBlockController::reg_name_key);
                     } catch (std::out_of_range& e){
                         name = key;
                     }
 
                     std::string codename;
                     try {
-                        codename = toml::find<std::string>(val, "codename");
+                        codename = toml::find<std::string>(val, RegisterBlockController::reg_codename_key);
                     } catch (std::out_of_range& e){
                         codename = key;
                     }
 
                     bool gen_codename;
                     try {
-                        gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                        gen_codename = toml::find<std::string>(val, RegisterBlockController::reg_codenamegen_key).compare("false");
                     } catch (std::out_of_range& e){
                         gen_codename = true;
                     }
 
                     addr_t offset;
                     try {
-                        offset = toml::find<addr_t>(val, "offset");
+                        offset = toml::find<addr_t>(val, RegisterBlockController::reg_offset_key);
                     } catch (std::out_of_range& e){
                         //TODO: this should be an error.
                         offset = 0;
