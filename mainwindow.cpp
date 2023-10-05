@@ -624,9 +624,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
         customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
 
-        QLabel* CNCollisionWarningLabel = new QLabel("");
-        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
-        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
+//        QLabel* CNCollisionWarningLabel = new QLabel("");
+//        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
+//        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
 
         QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
         offsetLabel->setEnabled(false);
