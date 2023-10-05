@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-//TODO: add loading TOML files
+//TODO: add option to make new window or overwrite stuff in the existing one
 //TODO: get a more textEdit style of saving and loading--changes dont immediately change object structure, must hit apply?
 //  I think this feature should be strictly the equality (or lack thereof)
 //  between the TOML file you loaded from (or that you havent loaded from any TOML file) and your UI.

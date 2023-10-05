@@ -4,6 +4,11 @@
 #include <iostream>
 #include <limits>
 
+#include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QSpinBox>
+#include <QTextEdit>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QMessageBox>
@@ -228,7 +233,10 @@ void MainWindow::save()
     QTextStream savefilestream(&save_file);
     std::stringstream std_stream;
 
-    toml_value_t base_table{{"version", 0.1}};
+    toml_value_t base_table{
+        {"version_major", 0},
+        {"version_minor", 1}
+    };
 
     std::string toml_id;
 
@@ -244,6 +252,7 @@ void MainWindow::save()
             toml_value_t reg_record{
                 {"name", p->getRegName(i).toStdString()},
                 {"codename", p->getRegCodeName(i).toStdString()},
+                {"autogen_codename", p->getRegCodeNameGeneration(i) ? "true" : "false"},
                 {"offset", p->getRegOffset(i)},
             };
             toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
@@ -253,10 +262,12 @@ void MainWindow::save()
         toml_value_t rb_table{
             {"name", p->getName().toStdString()},
             {"codename", p->getCodeName().toStdString()},
+            {"autogen_codename", p->getCodeNameGeneration() ? "true" : "false"},
             {"size", p->getSize()},
             {"registers", reg_array}
         };
-        base_table[p->getCodeName().toStdString()] = rb_table;
+        toml_id = reg_block_prefix + p->getCodeName().toStdString();
+        base_table[toml_id] = rb_table;
     }
 
     std_stream << base_table << std::endl;
@@ -282,14 +293,78 @@ void MainWindow::load()
 
     try {
         base_table = toml::parse(load_filename.toUtf8().constData());
+
+        printf("File contents:\n");
+        this->print_toml_table(base_table);
+
+        int vmaj = toml::find<int>(base_table, "version_major");
+        int vmin = toml::find<int>(base_table, "version_minor");
+
+        if (vmaj == 0 && vmin == 1){
+            printf("Current version!\n");
+        } else {
+            fprintf(stderr, "Version %d.%d is not yet supported (this binary is version %d.%d\n", vmaj, vmin, 0, 1);
+            return;
+        }
+
+        //----------------------------------------------------------
+        //This is the point of no return (pun intended)
+        //----------------------------------------------------------
+
+        //remove all tabs (doesnt delete them yet but thats fine)
+        this->ui->tabWidget->clear();
+
+        for (std::pair<const std::string, toml_value_t>& kv : base_table.as_table()){
+            const std::string key = kv.first;
+            toml_value_t val = kv.second;
+
+            if (!key.substr(0, reg_block_prefix.length()).compare(reg_block_prefix)){
+                //this is a register block
+
+                std::string name = toml::find<std::string>(val, "name");
+                std::string codename = toml::find<std::string>(val, "codename");
+                bool gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                addr_t size = toml::find<addr_t>(val, "size");
+                toml_value_t registers = toml::find(val, "registers");
+
+                this->on_new_reg_block_btn_clicked();
+                RegisterBlockController* rbc = this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1);
+
+                rbc->setName(name.c_str());
+                rbc->setCodeNameGeneration(gen_codename);
+                rbc->setCodeName(codename.c_str());
+                rbc->setSize(size);
+
+                for (std::pair<const std::string, toml_value_t>& kv : registers.as_table()){
+                    const std::string key = kv.first;
+                    toml_value_t val = kv.second;
+
+                    std::string name = toml::find<std::string>(val, "name");
+                    std::string codename = toml::find<std::string>(val, "codename");
+                    bool gen_codename = toml::find<std::string>(val, "autogen_codename").compare("false");
+                    addr_t offset = toml::find<addr_t>(val, "offset");
+
+                    rbc->makeNewReg();
+                    int new_reg_idx = rbc->getNumRegs() - 1;
+                    rbc->setCurrRegIdx(new_reg_idx);
+
+                    rbc->setRegName(name.c_str());
+                    rbc->setRegCodeNameGeneration(gen_codename);
+                    rbc->setRegCodeName(codename.c_str());
+                    rbc->setRegOffset(offset);
+                }
+            }
+        }
+
     } catch (std::runtime_error& e){
-        fprintf(stderr, "%s:%d: TOML Parse failed: %s", __FILE__, __LINE__, e.what());
+        fprintf(stderr, "%s:%d: TOML Parse failed (runtime error): %s", __FILE__, __LINE__, e.what());
+        QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
+        return;
+    } catch (std::out_of_range& e){
+        fprintf(stderr, "%s:%d: TOML Parse failed (out of range error): %s", __FILE__, __LINE__, e.what());
         QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
         return;
     }
-
-    printf("File contents:\n");
-    this->print_toml_table(base_table);
 
 }
 
@@ -299,7 +374,7 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QWidget* w = new QWidget();
     this->ui->tabWidget->addTab(w, "Register Block");
 
-    RegisterBlockController* rbc = new RegisterBlockController(&(this->reg_block_ctrls), w);
+    RegisterBlockController* rbc = new RegisterBlockController(w);
     this->reg_block_ctrls.push_back(rbc);
 
     connect(rbc, &RegisterBlockController::nameChanged, this->ui->tabWidget, [=](const QString& new_name){

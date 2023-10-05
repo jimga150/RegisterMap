@@ -43,6 +43,8 @@ public:
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
 
+    inline static const std::string reg_block_prefix = "rb_";
+
 public slots:
 
     void save();
