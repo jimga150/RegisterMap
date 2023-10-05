@@ -635,14 +635,6 @@ void MainWindow::on_new_reg_block_btn_clicked()
         offsetEdit->setEnabled(false); //will set editable when register is tracked with this UI
         reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
 
-//        connect(rbc, &RegisterBlockController::currRegIdxChanged, this, [=](int new_idx){
-//            Q_UNUSED(new_idx);
-//            nameEdit->setText(rbc->getCurrRegName());
-//            codeNameEdit->setText(rbc->getCurrRegCodeName());
-//            customCNCheckBox->setChecked(!(rbc->getCurrRegCodeNameGeneration()));
-//            offsetEdit->setValue(rbc->getCurrRegOffset());
-//        });
-
     }
 
     g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, 4);
