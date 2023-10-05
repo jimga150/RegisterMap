@@ -11,7 +11,7 @@ class RegisterBlockController : public QObject
 {
     Q_OBJECT
 public:
-    explicit RegisterBlockController(QVector<RegisterBlockController*>* containing_list, QObject *parent = nullptr);
+    explicit RegisterBlockController(QObject *parent = nullptr);
 
     QString getName();
     QString getCodeName();

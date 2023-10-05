@@ -1,6 +1,6 @@
 #include "registerblockcontroller.h"
 
-RegisterBlockController::RegisterBlockController(QVector<RegisterBlockController*>* containing_list, QObject *parent)
+RegisterBlockController::RegisterBlockController(QObject *parent)
     : QObject{parent}
 {
     //if the current register index changes, notify any listeners about the current info changes
