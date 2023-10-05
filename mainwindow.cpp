@@ -362,6 +362,10 @@ void MainWindow::load_file(QString load_filename)
         while(this->ui->tabWidget->count() > 1){
             this->ui->tabWidget->removeTab(1);
         }
+        for (RegisterBlockController* rbc : this->reg_block_ctrls){
+            rbc->deleteLater();
+        }
+        this->reg_block_ctrls.clear();
 
         for (std::pair<const std::string, toml_value_t>& kv : base_table.as_table()){
             const std::string key = kv.first;
