@@ -2,6 +2,9 @@
 
 #include <QApplication>
 
+//TODO: add register block longform description
+//TODO: parameterize TOML key names
+
 //TODO: add register bit length
 //TODO: add register byte length (from bit length, not saved)
 //TODO: add register longoform description
