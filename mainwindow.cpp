@@ -545,9 +545,9 @@ void MainWindow::on_new_reg_block_btn_clicked()
     });
     g->addWidget(customCNCheckBox, REG_BLOCK_FIELD_COORD_GEN_CODENAME.first, REG_BLOCK_FIELD_COORD_GEN_CODENAME.second);
 
-    QLabel* CNCollisionWarningLabel = new QLabel("");
-    CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
-    g->addWidget(CNCollisionWarningLabel, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.first, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.second);
+//    QLabel* CNCollisionWarningLabel = new QLabel("");
+//    CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
+//    g->addWidget(CNCollisionWarningLabel, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.first, REG_BLOCK_FIELD_COORD_CN_COLL_WARN.second);
 
     QLabel* sizeLabel = new QLabel("Size (in addrs): ");
     g->addWidget(sizeLabel, REG_BLOCK_FIELD_COORD_SIZE.first, REG_BLOCK_FIELD_COORD_SIZE.second-1);
