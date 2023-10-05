@@ -342,8 +342,11 @@ void MainWindow::load_file(QString load_filename)
         //This is the point of no return (pun intended)
         //----------------------------------------------------------
 
-        //remove all tabs (doesnt delete them yet but thats fine)
-        this->ui->tabWidget->clear();
+        //remove all tabs except main tab
+        //(doesnt delete them yet but thats fine)
+        while(this->ui->tabWidget->count() > 1){
+            this->ui->tabWidget->removeTab(1);
+        }
 
         for (std::pair<const std::string, toml_value_t>& kv : base_table.as_table()){
             const std::string key = kv.first;
