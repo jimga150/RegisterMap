@@ -12,6 +12,7 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QMessageBox>
+#include <QStackedWidget>
 
 
 #define REG_BLOCK_FIELD_COORD_NAME          (std::pair<int, int>(0, 1))
@@ -21,25 +22,23 @@
 //#define REG_BLOCK_FIELD_COORD_CN_COLL_WARN  (std::pair<int, int>(2, 3))
 #define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(3, 0))
 #define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(4, 0))
-#define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(5, 0))
-#define REG_BLOCK_FIELD_COORD_NEWREGBTN     (std::pair<int, int>(6, 0))
-#define REG_BLOCK_FIELD_COORD_SORTREGBTN    (std::pair<int, int>(6, 1))
-#define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(7, 0))
-#define REG_BLOCK_FIELD_COORD_SPACER        (std::pair<int, int>(8, 0))
+#define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(5, 0))
+#define REG_BLOCK_FIELD_COORD_SPACER        (std::pair<int, int>(6, 0))
 
 #define REG_BLOCK_FIELD_WIDTH   (4)
-#define REG_BLOCK_FIELD_HEIGHT  (9)
+#define REG_BLOCK_FIELD_HEIGHT  (7)
 
-#define REG_FIELD_COORD_NAME                (std::pair<int, int>(0, 1))
-#define REG_FIELD_COORD_CODENAME            (std::pair<int, int>(0, 3))
-#define REG_FIELD_COORD_GEN_CODENAME        (std::pair<int, int>(1, 3))
-#define REG_FIELD_COORD_OFFSET              (std::pair<int, int>(2, 1))
-#define REG_FIELD_COORD_BITLEN              (std::pair<int, int>(2, 3))
-#define REG_FIELD_COORD_BYTELEN             (std::pair<int, int>(3, 3))
-#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(4, 0))
-#define REG_FIELD_COORD_DESC                (std::pair<int, int>(5, 0))
-#define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(6, 0))
-#define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(7, 0))
+#define REG_FIELD_COORD_REGTABLE            (std::pair<int, int>(0, 0))
+#define REG_FIELD_COORD_NEWREGBTN           (std::pair<int, int>(1, 0))
+#define REG_FIELD_COORD_SORTREGBTN          (std::pair<int, int>(1, 1))
+#define REG_FIELD_COORD_NAME                (std::pair<int, int>(2, 1))
+#define REG_FIELD_COORD_CODENAME            (std::pair<int, int>(2, 3))
+#define REG_FIELD_COORD_GEN_CODENAME        (std::pair<int, int>(3, 3))
+#define REG_FIELD_COORD_OFFSET              (std::pair<int, int>(4, 1))
+#define REG_FIELD_COORD_BITLEN              (std::pair<int, int>(4, 3))
+#define REG_FIELD_COORD_BYTELEN             (std::pair<int, int>(5, 3))
+#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(6, 0))
+#define REG_FIELD_COORD_DESC                (std::pair<int, int>(7, 0))
 #define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(8, 0))
 
 #define REG_FIELD_WIDTH   (4)
@@ -50,16 +49,18 @@
 #define REG_TABLE_COL_DESC      (2)
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
 
-#define BITFIELD_FIELD_COORD_NAME           (std::pair<int, int>(0, 1))
-#define BITFIELD_FIELD_COORD_CODENAME       (std::pair<int, int>(0, 3))
-#define BITFIELD_FIELD_COORD_GEN_CODENAME   (std::pair<int, int>(1, 3))
-#define BITFIELD_FIELD_COORD_RANGE_HIGH     (std::pair<int, int>(2, 1))
-#define BITFIELD_FIELD_COORD_RANGE_LOW      (std::pair<int, int>(2, 3))
-#define BITFIELD_FIELD_COORD_DESC_LABEL     (std::pair<int, int>(3, 0))
-#define BITFIELD_FIELD_COORD_DESC           (std::pair<int, int>(4, 0))
+#define BITFIELD_FIELD_COORD_BITFIELD_TABLE     (std::pair<int, int>(0, 0))
+#define BITFIELD_FIELD_COORD_NEW_BITFIELD_BTN   (std::pair<int, int>(1, 0))
+#define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(2, 1))
+#define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(2, 3))
+#define BITFIELD_FIELD_COORD_GEN_CODENAME       (std::pair<int, int>(3, 3))
+#define BITFIELD_FIELD_COORD_RANGE_HIGH         (std::pair<int, int>(4, 1))
+#define BITFIELD_FIELD_COORD_RANGE_LOW          (std::pair<int, int>(4, 3))
+#define BITFIELD_FIELD_COORD_DESC_LABEL         (std::pair<int, int>(5, 0))
+#define BITFIELD_FIELD_COORD_DESC               (std::pair<int, int>(6, 0))
 
 #define BITFIELD_FIELD_WIDTH   (4)
-#define BITFIELD_FIELD_HEIGHT  (5)
+#define BITFIELD_FIELD_HEIGHT  (7)
 
 #define BITFIELD_TABLE_COL_NAME     (0)
 #define BITFIELD_TABLE_COL_RANGE    (1)
@@ -720,6 +721,27 @@ QWidget* MainWindow::makeNewRegBlockTab(){
     });
     g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH);
 
+    QFrame* regFrame = this->makeNewRegFrame(rbc);
+
+    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+
+//    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+//    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
+
+    //notify of any actual data changes
+    connect(rbc, &RegisterBlockController::changeMade, this, &MainWindow::changeMade);
+
+    return w;
+}
+
+QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
+
+    QFrame* regFrame = new QFrame();
+    regFrame->setLineWidth(5);
+
+    QGridLayout* reggrid = new QGridLayout();
+    regFrame->setLayout(reggrid);
+
     QTableWidget* regTable = new QTableWidget(0, 3);
     regTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     regTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -747,86 +769,18 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         }
     });
 
-    g->addWidget(regTable, REG_BLOCK_FIELD_COORD_REGTABLE.first, REG_BLOCK_FIELD_COORD_REGTABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
+    reggrid->addWidget(regTable, REG_FIELD_COORD_REGTABLE.first, REG_FIELD_COORD_REGTABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QPushButton* newregButton = new QPushButton("New Register");
     connect(newregButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewReg);
-    g->addWidget(newregButton, REG_BLOCK_FIELD_COORD_NEWREGBTN.first, REG_BLOCK_FIELD_COORD_NEWREGBTN.second);
+    reggrid->addWidget(newregButton, REG_FIELD_COORD_NEWREGBTN.first, REG_FIELD_COORD_NEWREGBTN.second);
 
     QPushButton* sortRegsButton = new QPushButton("Sort Registers by Offset");
     connect(sortRegsButton, &QPushButton::clicked, rbc, [=](){
         if (this->checkOffsetCollisions(rbc) != OK) return;
         rbc->sortRegsByOffset();
     });
-    g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
-
-    QFrame* regFrame = this->makeNewRegFrame(rbc, regTable);
-    setAllEnabled(regFrame, false);
-
-    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
-
-//    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-//    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
-
-    //notify of any actual data changes
-    connect(rbc, &RegisterBlockController::changeMade, this, &MainWindow::changeMade);
-
-    return w;
-}
-
-QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* regTable){
-
-    QFrame* regFrame = new QFrame();
-    regFrame->setLineWidth(5);
-
-    //connect up new register functionality here so we can reference regFrame
-    connect(rbc, &RegisterBlockController::regCreated, regTable, [=]
-            (const QString& name, addr_t offset, const QString& description){
-
-        Q_UNUSED(offset);
-
-        regTable->setRowCount(regTable->rowCount()+1);
-        int curr_table_row = regTable->rowCount() - 1;
-
-        QTableWidgetItem* name_item = new QTableWidgetItem(name);
-        QTableWidgetItem* offset_item = new QTableWidgetItem(rbc->getRegOffsetAsString(rbc->getNumRegs()-1));
-        QTableWidgetItem* desc_item = new QTableWidgetItem(description);
-
-        connect(rbc, &RegisterBlockController::regNameChanged, regTable, [=](const QString& new_name){
-            if (rbc->getCurrRegIdx() == curr_table_row){
-                name_item->setText(new_name);
-            }
-        });
-        connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](addr_t new_offset){
-            Q_UNUSED(new_offset);
-            if (rbc->getCurrRegIdx() == curr_table_row){
-                offset_item->setText(rbc->getCurrRegOffsetAsString());
-            }
-        });
-        connect(rbc, &RegisterBlockController::regDescriptionChanged, regTable, [=](const QString& new_desc){
-            if (rbc->getCurrRegIdx() == curr_table_row){
-                desc_item->setText(new_desc);
-            }
-        });
-
-        regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
-        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
-        regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, desc_item);
-
-        rbc->setCurrRegIdx(curr_table_row);
-
-        //loop through children of register frame
-        for (QObject* const qo : regFrame->children()){
-            //if its a widget (invalid casts return nullptr)
-            if (QWidget* const w = qobject_cast<QWidget*>(qo)){
-                //enable it
-                w->setEnabled(true);
-            }
-        }
-    });
-
-    QGridLayout* reggrid = new QGridLayout();
-    regFrame->setLayout(reggrid);
+    reggrid->addWidget(sortRegsButton, REG_FIELD_COORD_SORTREGBTN.first, REG_FIELD_COORD_SORTREGBTN.second);
 
     QLabel* regNameLabel = new QLabel("Name: ");
     regNameLabel->setEnabled(false);
@@ -943,6 +897,66 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* 
     });
     reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH);
 
+    QStackedWidget* bitFieldStack = new QStackedWidget();
+    connect(rbc, &RegisterBlockController::currRegIdxChanged, bitFieldStack, &QStackedWidget::setCurrentIndex);
+
+    reggrid->addWidget(bitFieldStack, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+
+    //connect up new register functionality here so we can reference bitFieldStack
+    connect(rbc, &RegisterBlockController::regCreated, regTable, [=]
+            (const QString& name, addr_t offset, const QString& description){
+
+        Q_UNUSED(offset);
+
+        regTable->setRowCount(regTable->rowCount() + 1);
+        int curr_table_row = regTable->rowCount() - 1;
+
+        QTableWidgetItem* name_item = new QTableWidgetItem(name);
+        QTableWidgetItem* offset_item = new QTableWidgetItem(rbc->getRegOffsetAsString(rbc->getNumRegs()-1));
+        QTableWidgetItem* desc_item = new QTableWidgetItem(description);
+
+        connect(rbc, &RegisterBlockController::regNameChanged, regTable, [=](const QString& new_name){
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                name_item->setText(new_name);
+            }
+        });
+        connect(rbc, &RegisterBlockController::regOffsetChanged, regTable, [=](addr_t new_offset){
+            Q_UNUSED(new_offset);
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                offset_item->setText(rbc->getCurrRegOffsetAsString());
+            }
+        });
+        connect(rbc, &RegisterBlockController::regDescriptionChanged, regTable, [=](const QString& new_desc){
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                desc_item->setText(new_desc);
+            }
+        });
+
+        regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
+        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
+        regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, desc_item);
+
+        bitFieldStack->addWidget(this->makeNewBitFieldFrame(rbc, curr_table_row));
+
+        rbc->setCurrRegIdx(curr_table_row);
+
+        this->setAllEnabled(regFrame, true);
+    });
+
+    setAllEnabled(regFrame, false);
+
+    newregButton->setEnabled(true);
+
+    return regFrame;
+}
+
+QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_idx){
+    QFrame* bitFieldFrame = new QFrame();
+    bitFieldFrame->setLineWidth(5);
+
+    QGridLayout* bitFieldGrid = new QGridLayout();
+    bitFieldFrame->setLayout(bitFieldGrid);
+
     QTableWidget* bitFieldTable = new QTableWidget(0, 3);
     bitFieldTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     bitFieldTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -970,12 +984,12 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* 
         }
     });
 
-    reggrid->addWidget(bitFieldTable, REG_FIELD_COORD_BITFIELD_TABLE.first, REG_FIELD_COORD_BITFIELD_TABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
+    bitFieldGrid->addWidget(bitFieldTable, BITFIELD_FIELD_COORD_BITFIELD_TABLE.first, BITFIELD_FIELD_COORD_BITFIELD_TABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
 
     QPushButton* newBitFieldButton = new QPushButton("New Bit Field");
     newBitFieldButton->setEnabled(false);
     connect(newBitFieldButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewBitField);
-    reggrid->addWidget(newBitFieldButton, REG_FIELD_COORD_NEW_BITFIELD_BTN.first, REG_FIELD_COORD_NEW_BITFIELD_BTN.second);
+    bitFieldGrid->addWidget(newBitFieldButton, BITFIELD_FIELD_COORD_NEW_BITFIELD_BTN.first, BITFIELD_FIELD_COORD_NEW_BITFIELD_BTN.second);
 
     //        QPushButton* sortBitFieldsBtn = new QPushButton("Sort Bit Fields");
     //        connect(sortBitFieldsBtn, &QPushButton::clicked, rbc, [=](){
@@ -984,23 +998,11 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* 
     //        });
     //        g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
 
-    QFrame* bitFieldFrame = this->makeNewBitFieldFrame(rbc, bitFieldTable);
-
-    //disable all bitfield stuff till we start tracking a bitfield
-    setAllEnabled(bitFieldFrame, false);
-
-    reggrid->addWidget(bitFieldFrame, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
-
-    return regFrame;
-}
-
-QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWidget* bitFieldTable){
-    QFrame* bitFieldFrame = new QFrame();
-    bitFieldFrame->setLineWidth(5);
-
     //connect up new register functionality here so we can reference bitFieldFrame
     connect(rbc, &RegisterBlockController::bitFieldCreated, bitFieldTable, [=]
             (const QString& name, uint32_t low_idx, uint32_t high_idx, const QString& description){
+
+        if (rbc->getCurrRegIdx() != reg_idx) return;
 
         bitFieldTable->setRowCount(bitFieldTable->rowCount()+1);
         int curr_table_row = bitFieldTable->rowCount() - 1;
@@ -1010,17 +1012,17 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
         QTableWidgetItem* desc_item = new QTableWidgetItem(description);
 
         connect(rbc, &RegisterBlockController::bitFieldNameChanged, bitFieldTable, [=](const QString& new_name){
-            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row && rbc->getCurrRegIdx() == reg_idx){
                 name_item->setText(new_name);
             }
         });
         connect(rbc, &RegisterBlockController::bitFieldRangeChanged, bitFieldTable, [=](uint32_t low_idx, uint32_t high_idx){
-            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row && rbc->getCurrRegIdx() == reg_idx){
                 range_item->setText(RegisterBlockController::getBitRangeAsString(low_idx, high_idx));
             }
         });
         connect(rbc, &RegisterBlockController::bitFieldDescriptionChanged, bitFieldTable, [=](const QString& new_desc){
-            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row && rbc->getCurrRegIdx() == reg_idx){
                 desc_item->setText(new_desc);
             }
         });
@@ -1031,18 +1033,8 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
 
         rbc->setCurrBitFieldIdx(curr_table_row);
 
-        //loop through children of register frame
-        for (QObject* const qo : bitFieldFrame->children()){
-            //if its a widget (invalid casts return nullptr)
-            if (QWidget* const w = qobject_cast<QWidget*>(qo)){
-                //enable it
-                w->setEnabled(true);
-            }
-        }
+        this->setAllEnabled(bitFieldFrame, true);
     });
-
-    QGridLayout* bitFieldGrid = new QGridLayout();
-    bitFieldFrame->setLayout(bitFieldGrid);
 
     QLabel* bitFieldNameLabel = new QLabel("Name: ");
     bitFieldNameLabel->setEnabled(false);
@@ -1050,7 +1042,11 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
 
     QLineEdit* nameEdit = new QLineEdit();
     connect(nameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setBitFieldName);
-    connect(rbc, &RegisterBlockController::bitFieldNameChanged, nameEdit, &QLineEdit::setText);
+    connect(rbc, &RegisterBlockController::bitFieldNameChanged, nameEdit, [=](const QString& new_name){
+        if (rbc->getCurrRegIdx() == reg_idx){
+            nameEdit->setText(new_name);
+        }
+    });
     nameEdit->setEnabled(false); //will set editable when bit field is tracked with this UI
     bitFieldGrid->addWidget(nameEdit, BITFIELD_FIELD_COORD_NAME.first, BITFIELD_FIELD_COORD_NAME.second);
 
@@ -1062,7 +1058,11 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
     codeNameEdit->setEnabled(false);
     codeNameEdit->setReadOnly(true);
     connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setBitFieldCodeName);
-    connect(rbc, &RegisterBlockController::bitFieldCodeNameChanged, codeNameEdit, &QLineEdit::setText);
+    connect(rbc, &RegisterBlockController::bitFieldCodeNameChanged, codeNameEdit, [=](const QString& new_name){
+        if (rbc->getCurrRegIdx() == reg_idx){
+            codeNameEdit->setText(new_name);
+        }
+    });
     bitFieldGrid->addWidget(codeNameEdit, BITFIELD_FIELD_COORD_CODENAME.first, BITFIELD_FIELD_COORD_CODENAME.second);
 
     QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
@@ -1074,8 +1074,10 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
         }
     });
     connect(rbc, &RegisterBlockController::bitFieldCodeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
-        customCNCheckBox->setChecked(!gen_code_name);
-        codeNameEdit->setReadOnly(gen_code_name);
+        if (rbc->getCurrRegIdx() == reg_idx){
+            customCNCheckBox->setChecked(!gen_code_name);
+            codeNameEdit->setReadOnly(gen_code_name);
+        }
     });
     customCNCheckBox->setEnabled(false); //will set editable when bit field is tracked with this UI
     bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second);
@@ -1087,12 +1089,6 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
     QSpinBox* rangeHighEdit = new QSpinBox();
     connect(rangeHighEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
         rbc->setBitFieldRange(rbc->getCurrRegCurrBitField().low_index, new_val);
-    });
-    connect(rbc, &RegisterBlockController::bitFieldRangeChanged, rangeHighEdit, [=](uint32_t low_idx, uint32_t high_idx){
-        Q_UNUSED(low_idx);
-        if (high_idx != (uint32_t)rangeHighEdit->value()){
-            rangeHighEdit->setValue(high_idx);
-        }
     });
     rangeHighEdit->setMinimum(0);
     rangeHighEdit->setMaximum(std::numeric_limits<int>::max());
@@ -1107,12 +1103,6 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
     connect(rangeLowEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
         rbc->setBitFieldRange(new_val, rbc->getCurrRegCurrBitField().high_index);
     });
-    connect(rbc, &RegisterBlockController::bitFieldRangeChanged, rangeLowEdit, [=](uint32_t low_idx, uint32_t high_idx){
-        Q_UNUSED(high_idx);
-        if (low_idx != (uint32_t)rangeLowEdit->value()){
-            rangeLowEdit->setValue(low_idx);
-        }
-    });
     rangeLowEdit->setMinimum(0);
     rangeLowEdit->setMaximum(std::numeric_limits<int>::max());
     rangeLowEdit->setEnabled(false); //will set editable when register is tracked with this UI
@@ -1120,17 +1110,25 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
 
     //adjust spinbox ranges in response to range changing
     connect(rbc, &RegisterBlockController::bitFieldRangeChanged, this, [=](uint32_t low_idx, uint32_t high_idx){
-        if ((uint32_t)rangeHighEdit->minimum() != low_idx){
-            rangeHighEdit->setMinimum(low_idx);
-        }
-        if ((uint32_t)rangeLowEdit->maximum() != high_idx){
-            rangeLowEdit->setMaximum(high_idx);
+        if (rbc->getCurrRegIdx() == reg_idx){
+            if ((uint32_t)rangeHighEdit->minimum() != low_idx){
+                rangeHighEdit->setMinimum(low_idx);
+            }
+            if ((uint32_t)rangeLowEdit->maximum() != high_idx){
+                rangeLowEdit->setMaximum(high_idx);
+            }
+            if (high_idx != (uint32_t)rangeHighEdit->value()){
+                rangeHighEdit->setValue(high_idx);
+            }
+            if (low_idx != (uint32_t)rangeLowEdit->value()){
+                rangeLowEdit->setValue(low_idx);
+            }
         }
     });
 
     //adjust high range spinbox range maximum in response to register bit length
     connect(rbc, &RegisterBlockController::regBitLenChanged, this, [=](uint32_t new_len){
-        if ((uint32_t)rangeHighEdit->maximum() != new_len-1){
+        if (rbc->getCurrRegIdx() == reg_idx && (uint32_t)rangeHighEdit->maximum() != new_len-1){
             rangeHighEdit->setMaximum(new_len-1);
         }
     });
@@ -1143,11 +1141,16 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWid
         rbc->setBitFieldDescription(descEdit->toPlainText());
     });
     connect(rbc, &RegisterBlockController::bitFieldDescriptionChanged, descEdit, [=](const QString& new_desc){
-        if (descEdit->toPlainText().compare(new_desc)){
+        if (rbc->getCurrRegIdx() == reg_idx && descEdit->toPlainText().compare(new_desc)){
             descEdit->setText(new_desc);
         }
     });
     bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH);
+
+    //disable all bitfield stuff till we start tracking a bitfield
+    setAllEnabled(bitFieldFrame, false);
+
+    newBitFieldButton->setEnabled(true);
 
     return bitFieldFrame;
 }

@@ -2,15 +2,12 @@
 
 #include <QApplication>
 
-//TODO: implement arrow keys in register table to select adjacent rows
+//TODO: rearrange UI to not be so tall
+//TODO: refactor to make model its own controller
 
-//TODO: add register bit fields (table?)
-//TODO: add bit field bit range
-//TODO: add bit field name
 //TODO: add bit field access rights(?)
 //TODO: add bit field default val
 //TODO: add bit field reset domains(?)
-//TODO: add bit field description
 //TODO: add bit field enum option
 //TODO: add bit field self-clearing option
 //TODO: add register default value (derived, not saved)

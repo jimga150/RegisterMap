@@ -31,9 +31,9 @@ public:
 
     QWidget* makeNewRegBlockTab();
 
-    QFrame* makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* regTable);
+    QFrame* makeNewRegFrame(RegisterBlockController* rbc);
 
-    QFrame* makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWidget* bitFieldTable);
+    QFrame* makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_idx);
 
     void setAllEnabled(QWidget* parent, bool enabled);
 
