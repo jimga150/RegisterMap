@@ -12,6 +12,18 @@ RegisterBlockController::RegisterBlockController(QObject *parent)
         emit this->regOffsetChanged(this->getCurrRegOffset());
         emit this->regBitLenChanged(this->getCurrRegBitLen());
         emit this->regDescriptionChanged(this->getCurrRegDescription());
+        emit this->currBitFieldIdxChanged(this->getCurrBitFieldIdx());
+    });
+
+    connect(this, &RegisterBlockController::currBitFieldIdxChanged, this, [=](int new_idx){
+        Q_UNUSED(new_idx)
+        if (this->getCurrNumBitFields() == 0) return;
+        BitField& bf = this->getCurrRegCurrBitField();
+        emit this->bitFieldNameChanged(bf.name.c_str());
+        emit this->bitFieldCodeNameChanged(bf.codename.c_str());
+        emit this->bitFieldCodeNameGenerationChanged(this->gen_bitfield_codenames[this->current_reg_idx][this->getCurrBitFieldIdx()]);
+        emit this->bitFieldDescriptionChanged(bf.description.c_str());
+        emit this->bitFieldRangeChanged(bf.low_index, bf.high_index);
     });
 }
 
@@ -45,9 +57,24 @@ int RegisterBlockController::getCurrRegIdx()
     return this->current_reg_idx;
 }
 
+int RegisterBlockController::getCurrBitFieldIdx()
+{
+    return this->reg_bitfield_idxs[this->current_reg_idx];
+}
+
 int RegisterBlockController::getNumRegs()
 {
     return this->rb.registers.size();
+}
+
+int RegisterBlockController::getCurrNumBitFields()
+{
+    return this->getNumBitFields(this->current_reg_idx);
+}
+
+int RegisterBlockController::getNumBitFields(int reg_idx)
+{
+    return this->rb.registers[reg_idx].bitfields.size();
 }
 
 QString RegisterBlockController::getCurrRegName()
@@ -85,6 +112,16 @@ QString RegisterBlockController::getCurrRegDescription()
     return this->getRegDescription(this->current_reg_idx);
 }
 
+BitField& RegisterBlockController::getCurrRegCurrBitField()
+{
+    return this->getCurrRegBitField(this->reg_bitfield_idxs[this->current_reg_idx]);
+}
+
+BitField& RegisterBlockController::getCurrRegBitField(int bitfield_idx)
+{
+    return this->getRegBitField(this->current_reg_idx, bitfield_idx);
+}
+
 QString RegisterBlockController::getRegName(int reg_idx)
 {
     return this->rb.registers[reg_idx].name.c_str();
@@ -118,6 +155,17 @@ uint32_t RegisterBlockController::getRegBitLen(int reg_idx)
 QString RegisterBlockController::getRegDescription(int reg_idx)
 {
     return this->rb.registers[reg_idx].description.c_str();
+}
+
+BitField& RegisterBlockController::getRegBitField(int reg_idx, int bitfield_idx)
+{
+    return this->rb.registers[reg_idx].bitfields[bitfield_idx];
+}
+
+QString RegisterBlockController::getBitRangeAsString(uint32_t low_idx, uint32_t high_idx)
+{
+    if (low_idx == high_idx) return QString::number(low_idx);
+    return QString::number(high_idx) + ":" + QString::number(low_idx);
 }
 
 void RegisterBlockController::setName(const QString& new_name)
@@ -217,6 +265,8 @@ void RegisterBlockController::makeNewReg()
 
     this->rb.registers.push_back(reg);
     this->gen_reg_codenames.push_back(true);
+    this->reg_bitfield_idxs.push_back(0);
+    this->gen_bitfield_codenames.push_back(std::vector<bool>());
 
     emit this->regCreated(reg.name.c_str(), reg.offset, reg.description.c_str());
     emit this->changeMade();
@@ -286,4 +336,84 @@ void RegisterBlockController::setRegDescription(const QString& new_desc)
 
     this->rb.registers[this->current_reg_idx].description = new_desc.toStdString();
     emit this->regDescriptionChanged(new_desc);
+}
+
+void RegisterBlockController::makeNewBitField()
+{
+    BitField b;
+    b.name = "BitField " + std::to_string(this->getCurrNumBitFields());
+    b.codename = generate_code_name(b.name);
+    b.low_index = 0;
+    b.high_index = 0;
+
+    this->rb.registers[this->current_reg_idx].bitfields.push_back(b);
+    this->gen_bitfield_codenames[this->current_reg_idx].push_back(true);
+
+    emit this->bitFieldCreated(b.name.c_str(), b.low_index, b.high_index, b.description.c_str());
+    emit this->changeMade();
+}
+
+void RegisterBlockController::setCurrBitFieldIdx(int new_idx)
+{
+    if (new_idx == this->reg_bitfield_idxs[this->current_reg_idx]) return;
+
+    this->reg_bitfield_idxs[this->current_reg_idx] = new_idx;
+    emit this->currBitFieldIdxChanged(new_idx);
+}
+
+void RegisterBlockController::setBitFieldName(const QString& new_name)
+{
+    if (!(new_name.compare(this->getCurrRegCurrBitField().name.c_str()))) return;
+
+    this->getCurrRegCurrBitField().name = new_name.toStdString();
+    emit this->bitFieldNameChanged(new_name);
+    emit this->changeMade();
+
+    if (this->gen_bitfield_codenames[this->current_reg_idx][this->getCurrBitFieldIdx()]){
+        std::string codename = generate_code_name(this->getCurrRegCurrBitField().name);
+        this->setBitFieldCodeName(codename.c_str());
+    }
+}
+
+void RegisterBlockController::setBitFieldCodeName(const QString& new_name)
+{
+    if (!(new_name.compare(this->getCurrRegCurrBitField().codename.c_str()))) return;
+
+    this->getCurrRegCurrBitField().codename = new_name.toStdString();
+    emit this->bitFieldCodeNameChanged(new_name);
+    emit this->changeMade();
+}
+
+void RegisterBlockController::setBitFieldCodeNameGeneration(bool gen_codename)
+{
+    if (this->gen_bitfield_codenames[this->current_reg_idx][this->getCurrBitFieldIdx()] == gen_codename) return;
+
+    this->gen_bitfield_codenames[this->current_reg_idx][this->getCurrBitFieldIdx()] = gen_codename;
+    emit this->bitFieldCodeNameGenerationChanged(gen_codename);
+    emit this->changeMade();
+
+    if (gen_codename){
+        std::string codename = generate_code_name(this->getCurrRegCurrBitField().name);
+        this->setBitFieldCodeName(codename.c_str());
+    }
+
+}
+
+void RegisterBlockController::setBitFieldRange(uint32_t low_idx, uint32_t high_idx)
+{
+    if (low_idx == this->getCurrRegCurrBitField().low_index && high_idx == this->getCurrRegCurrBitField().high_index) return;
+
+    this->getCurrRegCurrBitField().low_index = low_idx;
+    this->getCurrRegCurrBitField().high_index = high_idx;
+    emit this->bitFieldRangeChanged(low_idx, high_idx);
+    emit this->changeMade();
+}
+
+void RegisterBlockController::setBitFieldDescription(const QString& new_desc)
+{
+    if (!(new_desc.compare(this->getCurrRegCurrBitField().description.c_str()))) return;
+
+    this->getCurrRegCurrBitField().description = new_desc.toStdString();
+    emit this->bitFieldDescriptionChanged(new_desc);
+    emit this->changeMade();
 }

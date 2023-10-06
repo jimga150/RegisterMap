@@ -13,7 +13,9 @@
     FXN(RW) \
     FXN(num_ioperms)
 
-typedef std::vector<uint8_t> bitstring;
+typedef uint8_t bit;
+
+typedef std::vector<bit> bitstring;
 
 enum ioperm_enum {
     FOREACH_IOPERMS(GENERATE_ENUM)
@@ -31,43 +33,46 @@ public:
     uint32_t high_index;
     uint32_t low_index;
 
-    std::string name;
+    inline static const std::string invalid_bitfield_name = "<INVALID>";
 
-    bool readable;
-    bool writeable; //TODO: add write condition functionality
+    std::string name;
+    std::string codename;
+
+//    bool readable = true;
+//    bool writeable; //TODO: add write condition functionality
 
     bitstring default_val;
 
     //TODO: add reset domains
 
-    std::string description;
+    std::string description = "";
 
-    bool is_enum;
-    std::map<std::string, uint32_t> values;
+    bool is_enum = false;
+    std::map<bitstring, std::string> values;
 
-    bool self_clearing;
+    bool self_clearing = false;
     bitstring cleared_state;
 
 
-    ioperm_enum get_ioperms(){
-        if (this->readable){
-            if (this->writeable){
-                return RW;
-            } else {
-                return RO;
-            }
-        } else {
-            if (this->writeable){
-                return WO;
-            } else {
-                return NA;
-            }
-        }
-        return num_ioperms;
-    }
-    std::string get_ioperms_string(){
-        return ioperm_str[this->get_ioperms()];
-    }
+//    ioperm_enum get_ioperms(){
+//        if (this->readable){
+//            if (this->writeable){
+//                return RW;
+//            } else {
+//                return RO;
+//            }
+//        } else {
+//            if (this->writeable){
+//                return WO;
+//            } else {
+//                return NA;
+//            }
+//        }
+//        return num_ioperms;
+//    }
+//    std::string get_ioperms_string(){
+//        return ioperm_str[this->get_ioperms()];
+//    }
 };
 
 #endif // BITFIELD_H

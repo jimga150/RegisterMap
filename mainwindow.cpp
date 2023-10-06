@@ -39,16 +39,32 @@
 #define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(4, 0))
 #define REG_FIELD_COORD_DESC                (std::pair<int, int>(5, 0))
 #define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(6, 0))
-#define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(6, 1))
-#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(7, 0))
+#define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(7, 0))
+#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(8, 0))
 
 #define REG_FIELD_WIDTH   (4)
-#define REG_FIELD_HEIGHT  (6)
+#define REG_FIELD_HEIGHT  (9)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
 #define REG_TABLE_COL_DESC      (2)
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
+
+#define BITFIELD_FIELD_COORD_NAME           (std::pair<int, int>(0, 1))
+#define BITFIELD_FIELD_COORD_CODENAME       (std::pair<int, int>(0, 3))
+#define BITFIELD_FIELD_COORD_GEN_CODENAME   (std::pair<int, int>(1, 3))
+#define BITFIELD_FIELD_COORD_RANGE_HIGH     (std::pair<int, int>(2, 1))
+#define BITFIELD_FIELD_COORD_RANGE_LOW      (std::pair<int, int>(2, 3))
+#define BITFIELD_FIELD_COORD_DESC_LABEL     (std::pair<int, int>(3, 0))
+#define BITFIELD_FIELD_COORD_DESC           (std::pair<int, int>(4, 0))
+
+#define BITFIELD_FIELD_WIDTH   (4)
+#define BITFIELD_FIELD_HEIGHT  (5)
+
+#define BITFIELD_TABLE_COL_NAME     (0)
+#define BITFIELD_TABLE_COL_RANGE    (1)
+#define BITFIELD_TABLE_COL_DESC     (2)
+#define BITFIELD_TABLE_COL_MAX      BITFIELD_TABLE_COL_DESC
 
 MainWindow::MainWindow(void (*makeNewWindow)(QString), QWidget *parent)
     : QMainWindow(parent)
@@ -377,119 +393,7 @@ void MainWindow::load_file(QString load_filename)
 
             if (!key.substr(0, reg_block_prefix.length()).compare(reg_block_prefix)){
                 //this is a register block
-
-                std::string name;
-                try {
-                    name = toml::find<std::string>(val, RegisterBlockController::name_key);
-                } catch (std::out_of_range& e){
-                    name = key;
-                }
-
-                std::string codename;
-                try {
-                    codename = toml::find<std::string>(val, RegisterBlockController::codename_key);
-                } catch (std::out_of_range& e){
-                    codename = key;
-                }
-
-                bool gen_codename;
-                try {
-                    gen_codename = toml::find<std::string>(val, RegisterBlockController::codenamegen_key).compare("false");
-                } catch (std::out_of_range& e){
-                    gen_codename = true;
-                }
-
-                std::string description;
-                try {
-                    description = toml::find<std::string>(val, RegisterBlockController::desc_key);
-                } catch (std::out_of_range& e){
-                    description = "";
-                }
-
-                addr_t size;
-                try {
-                    size = toml::find<addr_t>(val, RegisterBlockController::size_key);
-                } catch (std::out_of_range& e){
-                    //TODO: try best to figure out size from register offsets?
-                    //if this isnt in the TOML then this should probably just error out to be honest.
-                    size = 0;
-                }
-
-                toml_value_t registers;
-                try {
-                    registers = toml::find(val, RegisterBlockController::reg_key);
-                } catch (std::out_of_range& e){
-                    //TODO: this should deffo throw an error message. probably not a popup every time though.
-                }
-
-                this->on_new_reg_block_btn_clicked();
-                RegisterBlockController* rbc = this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1);
-
-                rbc->setName(name.c_str());
-                rbc->setCodeNameGeneration(gen_codename);
-                rbc->setCodeName(codename.c_str());
-                rbc->setDescription(description.c_str());
-                rbc->setSize(size);
-
-                for (std::pair<const std::string, toml_value_t>& kv : registers.as_table()){
-                    const std::string key = kv.first;
-                    toml_value_t val = kv.second;
-
-                    std::string name;
-                    try {
-                        name = toml::find<std::string>(val, RegisterBlockController::reg_name_key);
-                    } catch (std::out_of_range& e){
-                        name = key;
-                    }
-
-                    std::string codename;
-                    try {
-                        codename = toml::find<std::string>(val, RegisterBlockController::reg_codename_key);
-                    } catch (std::out_of_range& e){
-                        codename = key;
-                    }
-
-                    bool gen_codename;
-                    try {
-                        gen_codename = toml::find<std::string>(val, RegisterBlockController::reg_codenamegen_key).compare("false");
-                    } catch (std::out_of_range& e){
-                        gen_codename = true;
-                    }
-
-                    addr_t offset;
-                    try {
-                        offset = toml::find<addr_t>(val, RegisterBlockController::reg_offset_key);
-                    } catch (std::out_of_range& e){
-                        //TODO: this should be an error.
-                        offset = 0;
-                    }
-
-                    uint32_t bit_len;
-                    try {
-                        bit_len = toml::find<uint32_t>(val, RegisterBlockController::reg_bitlen_key);
-                    } catch (std::out_of_range& e){
-                        //TODO: this should be an error.
-                        bit_len = 8;
-                    }
-
-                    std::string description;
-                    try {
-                        description = toml::find<std::string>(val, RegisterBlockController::reg_desc_key);
-                    } catch (std::out_of_range& e){
-                        description = "";
-                    }
-
-                    rbc->makeNewReg();
-                    int new_reg_idx = rbc->getNumRegs() - 1;
-                    rbc->setCurrRegIdx(new_reg_idx);
-
-                    rbc->setRegName(name.c_str());
-                    rbc->setRegCodeNameGeneration(gen_codename);
-                    rbc->setRegCodeName(codename.c_str());
-                    rbc->setRegOffset(offset);
-                    rbc->setRegBitLen(bit_len);
-                    rbc->setRegDescription(description.c_str());
-                }
+                this->loadRegisterBlock(val, key);
             }
         }
 
@@ -508,6 +412,208 @@ void MainWindow::load_file(QString load_filename)
     load_file.close();
 }
 
+void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string table_key)
+{
+    std::string name;
+    try {
+        name = toml::find<std::string>(reg_block_table, RegisterBlockController::name_key);
+    } catch (std::out_of_range& e){
+        name = table_key;
+    }
+
+    std::string codename;
+    try {
+        codename = toml::find<std::string>(reg_block_table, RegisterBlockController::codename_key);
+    } catch (std::out_of_range& e){
+        codename = table_key;
+    }
+
+    bool gen_codename;
+    try {
+        gen_codename = toml::find<std::string>(reg_block_table, RegisterBlockController::codenamegen_key).compare("false");
+    } catch (std::out_of_range& e){
+        gen_codename = true;
+    }
+
+    std::string description;
+    try {
+        description = toml::find<std::string>(reg_block_table, RegisterBlockController::desc_key);
+    } catch (std::out_of_range& e){
+        description = "";
+    }
+
+    addr_t size;
+    try {
+        size = toml::find<addr_t>(reg_block_table, RegisterBlockController::size_key);
+    } catch (std::out_of_range& e){
+        //TODO: try best to figure out size from register offsets?
+        //if this isnt in the TOML then this should probably just error out to be honest.
+        size = 0;
+    }
+
+    toml_value_t registers;
+    try {
+        registers = toml::find(reg_block_table, RegisterBlockController::reg_key);
+    } catch (std::out_of_range& e){
+        //TODO: this should deffo throw an error message. probably not a popup every time though.
+    }
+
+    this->on_new_reg_block_btn_clicked();
+    RegisterBlockController* rbc = this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1);
+
+    rbc->setName(name.c_str());
+    rbc->setCodeNameGeneration(gen_codename);
+    rbc->setCodeName(codename.c_str());
+    rbc->setDescription(description.c_str());
+    rbc->setSize(size);
+
+    for (std::pair<const std::string, toml_value_t>& kv : registers.as_table()){
+        const std::string key = kv.first;
+        toml_value_t val = kv.second;
+
+        this->loadRegister(val, key, rbc);
+    }
+}
+
+void MainWindow::loadRegister(toml_value_t reg_table, std::string table_key, RegisterBlockController* rbc)
+{
+    std::string name;
+    try {
+        name = toml::find<std::string>(reg_table, RegisterBlockController::reg_name_key);
+    } catch (std::out_of_range& e){
+        name = table_key;
+    }
+
+    std::string codename;
+    try {
+        codename = toml::find<std::string>(reg_table, RegisterBlockController::reg_codename_key);
+    } catch (std::out_of_range& e){
+        codename = table_key;
+    }
+
+    bool gen_codename;
+    try {
+        gen_codename = toml::find<std::string>(reg_table, RegisterBlockController::reg_codenamegen_key).compare("false");
+    } catch (std::out_of_range& e){
+        gen_codename = true;
+    }
+
+    addr_t offset;
+    try {
+        offset = toml::find<addr_t>(reg_table, RegisterBlockController::reg_offset_key);
+    } catch (std::out_of_range& e){
+        //TODO: this should be an error.
+        offset = 0;
+    }
+
+    uint32_t bit_len;
+    try {
+        bit_len = toml::find<uint32_t>(reg_table, RegisterBlockController::reg_bitlen_key);
+    } catch (std::out_of_range& e){
+        //TODO: this should be an error.
+        bit_len = 8;
+    }
+
+    std::string description;
+    try {
+        description = toml::find<std::string>(reg_table, RegisterBlockController::reg_desc_key);
+    } catch (std::out_of_range& e){
+        description = "";
+    }
+
+    rbc->makeNewReg();
+    int new_reg_idx = rbc->getNumRegs() - 1;
+    rbc->setCurrRegIdx(new_reg_idx);
+
+    rbc->setRegName(name.c_str());
+    rbc->setRegCodeNameGeneration(gen_codename);
+    rbc->setRegCodeName(codename.c_str());
+    rbc->setRegOffset(offset);
+    rbc->setRegBitLen(bit_len);
+    rbc->setRegDescription(description.c_str());
+
+    toml_value_t bitfield_table;
+    try {
+        bitfield_table = toml::find(reg_table, RegisterBlockController::reg_bitfields_key);
+    } catch (std::out_of_range& e){
+        //no bitfields? no problem! Just dont make any
+    }
+
+    if (!bitfield_table.is_table()) return;
+
+    for (std::pair<const std::string, toml_value_t>& kv : bitfield_table.as_table()){
+        const std::string key = kv.first;
+        toml_value_t val = kv.second;
+
+        this->loadBitField(val, key, rbc);
+    }
+}
+
+void MainWindow::loadBitField(toml_value_t bitfield_table, std::string table_key, RegisterBlockController* rbc)
+{
+    std::string name;
+    try {
+        name = toml::find<std::string>(bitfield_table, RegisterBlockController::bitfield_name_key);
+    } catch (std::out_of_range& e){
+        name = table_key;
+    }
+
+    std::string codename;
+    try {
+        codename = toml::find<std::string>(bitfield_table, RegisterBlockController::bitfield_codename_key);
+    } catch (std::out_of_range& e){
+        codename = table_key;
+    }
+
+    bool gen_codename;
+    try {
+        gen_codename = toml::find<std::string>(bitfield_table, RegisterBlockController::bitfield_codenamegen_key).compare("false");
+    } catch (std::out_of_range& e){
+        gen_codename = true;
+    }
+
+    std::string description;
+    try {
+        description = toml::find<std::string>(bitfield_table, RegisterBlockController::bitfield_desc_key);
+    } catch (std::out_of_range& e){
+        description = "";
+    }
+
+    uint32_t high_idx;
+    try {
+        high_idx = toml::find<uint32_t>(bitfield_table, RegisterBlockController::bitfield_high_idx_key);
+    } catch (std::out_of_range& e){
+        high_idx = 0;
+    }
+
+    uint32_t low_idx;
+    try {
+        low_idx = toml::find<uint32_t>(bitfield_table, RegisterBlockController::bitfield_low_idx_key);
+    } catch (std::out_of_range& e){
+        low_idx = 0;
+    }
+
+    if (low_idx > high_idx){
+        uint32_t new_low = high_idx;
+        printf(
+            "Adjusting invalid bit range: %s -> %s\n",
+            RegisterBlockController::getBitRangeAsString(low_idx, high_idx).toUtf8().constData(),
+            RegisterBlockController::getBitRangeAsString(new_low, high_idx).toUtf8().constData()
+            );
+        low_idx = new_low;
+    }
+
+    rbc->makeNewBitField();
+    int new_bitfield_idx = rbc->getCurrNumBitFields() - 1;
+    rbc->setCurrBitFieldIdx(new_bitfield_idx);
+
+    rbc->setBitFieldName(name.c_str());
+    rbc->setBitFieldCodeNameGeneration(gen_codename);
+    rbc->setBitFieldCodeName(codename.c_str());
+    rbc->setBitFieldDescription(description.c_str());
+    rbc->setBitFieldRange(low_idx, high_idx);
+}
+
 void MainWindow::changeMade()
 {
     QString windowTitle = this->windowTitle();
@@ -520,8 +626,16 @@ void MainWindow::changeMade()
 
 void MainWindow::on_new_reg_block_btn_clicked()
 {
+    QWidget* w = this->makeNewRegBlockTab();
+    this->ui->tabWidget->addTab(w, "");
+    this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1)->setName(
+        "Register Block " + QString::number(this->reg_block_ctrls.size()-1)
+    );
+}
+
+QWidget* MainWindow::makeNewRegBlockTab(){
+
     QWidget* w = new QWidget();
-    this->ui->tabWidget->addTab(w, "Register Block");
 
     RegisterBlockController* rbc = new RegisterBlockController(w);
     this->reg_block_ctrls.push_back(rbc);
@@ -646,6 +760,22 @@ void MainWindow::on_new_reg_block_btn_clicked()
     });
     g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
 
+    QFrame* regFrame = this->makeNewRegFrame(rbc, regTable);
+    setAllEnabled(regFrame, false);
+
+    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+
+//    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+//    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
+
+    //notify of any actual data changes
+    connect(rbc, &RegisterBlockController::changeMade, this, &MainWindow::changeMade);
+
+    return w;
+}
+
+QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* regTable){
+
     QFrame* regFrame = new QFrame();
     regFrame->setLineWidth(5);
 
@@ -673,7 +803,11 @@ void MainWindow::on_new_reg_block_btn_clicked()
                 offset_item->setText(rbc->getCurrRegOffsetAsString());
             }
         });
-        //TODO: add connection for register description change
+        connect(rbc, &RegisterBlockController::regDescriptionChanged, regTable, [=](const QString& new_desc){
+            if (rbc->getCurrRegIdx() == curr_table_row){
+                desc_item->setText(new_desc);
+            }
+        });
 
         regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
         regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
@@ -694,133 +828,335 @@ void MainWindow::on_new_reg_block_btn_clicked()
     QGridLayout* reggrid = new QGridLayout();
     regFrame->setLayout(reggrid);
 
-    {
-        QLabel* regNameLabel = new QLabel("Name: ");
-        regNameLabel->setEnabled(false);
-        reggrid->addWidget(regNameLabel, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second-1);
+    QLabel* regNameLabel = new QLabel("Name: ");
+    regNameLabel->setEnabled(false);
+    reggrid->addWidget(regNameLabel, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second-1);
 
-        QLineEdit* nameEdit = new QLineEdit();
-        connect(nameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setRegName);
-        connect(rbc, &RegisterBlockController::regNameChanged, nameEdit, &QLineEdit::setText);
-        nameEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        reggrid->addWidget(nameEdit, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second);
+    QLineEdit* nameEdit = new QLineEdit();
+    connect(nameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setRegName);
+    connect(rbc, &RegisterBlockController::regNameChanged, nameEdit, &QLineEdit::setText);
+    nameEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    reggrid->addWidget(nameEdit, REG_FIELD_COORD_NAME.first, REG_FIELD_COORD_NAME.second);
 
-        QLabel* codeNameLabel = new QLabel("Source-Friendly Name: ");
-        codeNameLabel->setEnabled(false);
-        reggrid->addWidget(codeNameLabel, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second-1);
+    QLabel* codeNameLabel = new QLabel("Source-Friendly Name: ");
+    codeNameLabel->setEnabled(false);
+    reggrid->addWidget(codeNameLabel, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second-1);
 
-        QLineEdit* codeNameEdit = new QLineEdit();
-        codeNameEdit->setEnabled(false);
-        codeNameEdit->setReadOnly(true);
-        connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setRegCodeName);
-        connect(rbc, &RegisterBlockController::regCodeNameChanged, codeNameEdit, &QLineEdit::setText);
-        reggrid->addWidget(codeNameEdit, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second);
+    QLineEdit* codeNameEdit = new QLineEdit();
+    codeNameEdit->setEnabled(false);
+    codeNameEdit->setReadOnly(true);
+    connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setRegCodeName);
+    connect(rbc, &RegisterBlockController::regCodeNameChanged, codeNameEdit, &QLineEdit::setText);
+    reggrid->addWidget(codeNameEdit, REG_FIELD_COORD_CODENAME.first, REG_FIELD_COORD_CODENAME.second);
 
-        QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-        connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
-            if (state == Qt::CheckState::Checked){
-                rbc->setRegCodeNameGeneration(false);
-            } else {
-                rbc->setRegCodeNameGeneration(true);
+    QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
+    connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
+        if (state == Qt::CheckState::Checked){
+            rbc->setRegCodeNameGeneration(false);
+        } else {
+            rbc->setRegCodeNameGeneration(true);
+        }
+    });
+    connect(rbc, &RegisterBlockController::regCodeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
+        customCNCheckBox->setChecked(!gen_code_name);
+        codeNameEdit->setReadOnly(gen_code_name);
+    });
+    customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
+    reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
+
+    //        QLabel* CNCollisionWarningLabel = new QLabel("");
+    //        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
+    //        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
+
+    QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
+    offsetLabel->setEnabled(false);
+    reggrid->addWidget(offsetLabel, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second-1);
+
+    QSpinBox* offsetEdit = new QSpinBox();
+    connect(offsetEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegOffset);
+    connect(rbc, &RegisterBlockController::regOffsetChanged, offsetEdit, [=](addr_t new_offset){
+        if (new_offset != (addr_t)offsetEdit->value()){
+            offsetEdit->setValue(new_offset);
+        }
+    });
+    offsetEdit->setMinimum(0);
+    offsetEdit->setMaximum(std::numeric_limits<int>::max());
+    offsetEdit->setDisplayIntegerBase(16);
+    offsetEdit->setPrefix("0x");
+    offsetEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
+
+    QLabel* bitLenLabel = new QLabel("Size (bits): ");
+    bitLenLabel->setEnabled(false);
+    reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
+
+    QSpinBox* bitLenEdit = new QSpinBox();
+    bitLenEdit->setValue(1);
+    bitLenEdit->setMinimum(1);
+    bitLenEdit->setMaximum(std::numeric_limits<int>::max());
+    bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    connect(bitLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        if (bitLenEdit->hasFocus()){
+            rbc->setRegBitLen(new_val);
+        }
+    });
+    connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](uint32_t new_bitlen){
+        if (new_bitlen != (uint32_t)bitLenEdit->value()){
+            bitLenEdit->setValue(new_bitlen);
+        }
+    });
+    reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
+
+    QLabel* byteLenLabel = new QLabel("Size (bytes): ");
+    byteLenLabel->setEnabled(false);
+    reggrid->addWidget(byteLenLabel, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second-1);
+
+    QSpinBox* byteLenEdit = new QSpinBox();
+    byteLenEdit->setValue(1);
+    byteLenEdit->setMinimum(1);
+    byteLenEdit->setMaximum(std::numeric_limits<int>::max());
+    byteLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    connect(byteLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        if (byteLenEdit->hasFocus()){
+            rbc->setRegBitLen(new_val*BITS_PER_BYTE);
+        }
+    });
+    connect(rbc, &RegisterBlockController::regBitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
+        uint32_t new_bytelen = (uint32_t)ceil((float)new_bitlen*1.0/BITS_PER_BYTE);
+        if (new_bytelen != (uint32_t)byteLenEdit->value()){
+            byteLenEdit->setValue(new_bytelen);
+        }
+    });
+    reggrid->addWidget(byteLenEdit, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second);
+
+    QLabel* descLabel = new QLabel("Description: ");
+    reggrid->addWidget(descLabel, REG_FIELD_COORD_DESC_LABEL.first, REG_FIELD_COORD_DESC_LABEL.second);
+
+    QTextEdit* descEdit = new QTextEdit();
+    connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
+        rbc->setRegDescription(descEdit->toPlainText());
+    });
+    connect(rbc, &RegisterBlockController::regDescriptionChanged, descEdit, [=](const QString& new_desc){
+        if (descEdit->toPlainText().compare(new_desc)){
+            descEdit->setText(new_desc);
+        }
+    });
+    reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH);
+
+    QTableWidget* bitFieldTable = new QTableWidget(0, 3);
+    bitFieldTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    bitFieldTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    bitFieldTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    bitFieldTable->setAutoScroll(false);
+    bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_NAME, new QTableWidgetItem("Name"));
+    bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_RANGE, new QTableWidgetItem("Range"));
+    bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_DESC, new QTableWidgetItem("Description"));
+    connect(bitFieldTable, &QTableWidget::itemClicked, rbc, [=](QTableWidgetItem* item){
+        int row = bitFieldTable->row(item);
+        rbc->setCurrBitFieldIdx(row);
+    });
+
+    connect(rbc, &RegisterBlockController::currBitFieldIdxChanged, bitFieldTable, &QTableWidget::selectRow);
+
+    //this forces the highlighted row to always be the one we're editing
+    connect(bitFieldTable, &QTableWidget::itemSelectionChanged, this, [=](){
+        int curr_row = rbc->getCurrBitFieldIdx();
+        for (QTableWidgetItem* twi : bitFieldTable->selectedItems()){
+            if (bitFieldTable->row(twi) != curr_row){
+                bitFieldTable->clearSelection();
+                bitFieldTable->selectRow(curr_row);
+                break;
+            }
+        }
+    });
+
+    reggrid->addWidget(bitFieldTable, REG_FIELD_COORD_BITFIELD_TABLE.first, REG_FIELD_COORD_BITFIELD_TABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
+
+    QPushButton* newBitFieldButton = new QPushButton("New Bit Field");
+    newBitFieldButton->setEnabled(false);
+    connect(newBitFieldButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewBitField);
+    reggrid->addWidget(newBitFieldButton, REG_FIELD_COORD_NEW_BITFIELD_BTN.first, REG_FIELD_COORD_NEW_BITFIELD_BTN.second);
+
+    //        QPushButton* sortBitFieldsBtn = new QPushButton("Sort Bit Fields");
+    //        connect(sortBitFieldsBtn, &QPushButton::clicked, rbc, [=](){
+    //            if (this->checkOffsetCollisions(rbc) != OK) return;
+    //            rbc->sortRegsByOffset();
+    //        });
+    //        g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
+
+    QFrame* bitFieldFrame = this->makeNewBitFieldFrame(rbc, bitFieldTable);
+
+    //disable all bitfield stuff till we start tracking a bitfield
+    setAllEnabled(bitFieldFrame, false);
+
+    reggrid->addWidget(bitFieldFrame, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+
+    return regFrame;
+}
+
+QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWidget* bitFieldTable){
+    QFrame* bitFieldFrame = new QFrame();
+    bitFieldFrame->setLineWidth(5);
+
+    //connect up new register functionality here so we can reference bitFieldFrame
+    connect(rbc, &RegisterBlockController::bitFieldCreated, bitFieldTable, [=]
+            (const QString& name, uint32_t low_idx, uint32_t high_idx, const QString& description){
+
+        bitFieldTable->setRowCount(bitFieldTable->rowCount()+1);
+        int curr_table_row = bitFieldTable->rowCount() - 1;
+
+        QTableWidgetItem* name_item = new QTableWidgetItem(name);
+        QTableWidgetItem* range_item = new QTableWidgetItem(RegisterBlockController::getBitRangeAsString(low_idx, high_idx));
+        QTableWidgetItem* desc_item = new QTableWidgetItem(description);
+
+        connect(rbc, &RegisterBlockController::bitFieldNameChanged, bitFieldTable, [=](const QString& new_name){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+                name_item->setText(new_name);
             }
         });
-        connect(rbc, &RegisterBlockController::regCodeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
-            customCNCheckBox->setChecked(!gen_code_name);
-            codeNameEdit->setReadOnly(gen_code_name);
-        });
-        customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
-        reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
-
-//        QLabel* CNCollisionWarningLabel = new QLabel("");
-//        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
-//        reggrid->addWidget(CNCollisionWarningLabel, REG_FIELD_COORD_CN_COLL_WARN.first, REG_FIELD_COORD_CN_COLL_WARN.second);
-
-        QLabel* offsetLabel = new QLabel("Offset (in addrs): ");
-        offsetLabel->setEnabled(false);
-        reggrid->addWidget(offsetLabel, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second-1);
-
-        QSpinBox* offsetEdit = new QSpinBox();
-        connect(offsetEdit, &QSpinBox::valueChanged, rbc, &RegisterBlockController::setRegOffset);
-        connect(rbc, &RegisterBlockController::regOffsetChanged, offsetEdit, [=](addr_t new_offset){
-            if (new_offset != (addr_t)offsetEdit->value()){
-                offsetEdit->setValue(new_offset);
+        connect(rbc, &RegisterBlockController::bitFieldRangeChanged, bitFieldTable, [=](uint32_t low_idx, uint32_t high_idx){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+                range_item->setText(RegisterBlockController::getBitRangeAsString(low_idx, high_idx));
             }
         });
-        offsetEdit->setMinimum(0);
-        offsetEdit->setMaximum(std::numeric_limits<int>::max());
-        offsetEdit->setDisplayIntegerBase(16);
-        offsetEdit->setPrefix("0x");
-        offsetEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
-
-        QLabel* bitLenLabel = new QLabel("Size (bits): ");
-        bitLenLabel->setEnabled(false);
-        reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
-
-        QSpinBox* bitLenEdit = new QSpinBox();
-        bitLenEdit->setValue(1);
-        bitLenEdit->setMinimum(1);
-        bitLenEdit->setMaximum(std::numeric_limits<int>::max());
-        bitLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        connect(bitLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
-            if (bitLenEdit->hasFocus()){
-                rbc->setRegBitLen(new_val);
+        connect(rbc, &RegisterBlockController::bitFieldDescriptionChanged, bitFieldTable, [=](const QString& new_desc){
+            if (rbc->getCurrBitFieldIdx() == curr_table_row){
+                desc_item->setText(new_desc);
             }
         });
-        connect(rbc, &RegisterBlockController::regBitLenChanged, bitLenEdit, [=](uint32_t new_bitlen){
-            if (new_bitlen != (uint32_t)bitLenEdit->value()){
-                bitLenEdit->setValue(new_bitlen);
+
+        bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_NAME, name_item);
+        bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_RANGE, range_item);
+        bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_DESC, desc_item);
+
+        rbc->setCurrBitFieldIdx(curr_table_row);
+
+        //loop through children of register frame
+        for (QObject* const qo : bitFieldFrame->children()){
+            //if its a widget (invalid casts return nullptr)
+            if (QWidget* const w = qobject_cast<QWidget*>(qo)){
+                //enable it
+                w->setEnabled(true);
             }
-        });
-        reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
+        }
+    });
 
-        QLabel* byteLenLabel = new QLabel("Size (bytes): ");
-        byteLenLabel->setEnabled(false);
-        reggrid->addWidget(byteLenLabel, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second-1);
+    QGridLayout* bitFieldGrid = new QGridLayout();
+    bitFieldFrame->setLayout(bitFieldGrid);
 
-        QSpinBox* byteLenEdit = new QSpinBox();
-        byteLenEdit->setValue(1);
-        byteLenEdit->setMinimum(1);
-        byteLenEdit->setMaximum(std::numeric_limits<int>::max());
-        byteLenEdit->setEnabled(false); //will set editable when register is tracked with this UI
-        connect(byteLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
-            if (byteLenEdit->hasFocus()){
-                rbc->setRegBitLen(new_val*BITS_PER_BYTE);
-            }
-        });
-        connect(rbc, &RegisterBlockController::regBitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
-            uint32_t new_bytelen = (uint32_t)ceil((float)new_bitlen*1.0/BITS_PER_BYTE);
-            if (new_bytelen != (uint32_t)byteLenEdit->value()){
-                byteLenEdit->setValue(new_bytelen);
-            }
-        });
-        reggrid->addWidget(byteLenEdit, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second);
+    QLabel* bitFieldNameLabel = new QLabel("Name: ");
+    bitFieldNameLabel->setEnabled(false);
+    bitFieldGrid->addWidget(bitFieldNameLabel, BITFIELD_FIELD_COORD_NAME.first, BITFIELD_FIELD_COORD_NAME.second-1);
 
-        QLabel* descLabel = new QLabel("Description: ");
-        reggrid->addWidget(descLabel, REG_FIELD_COORD_DESC_LABEL.first, REG_FIELD_COORD_DESC_LABEL.second);
+    QLineEdit* nameEdit = new QLineEdit();
+    connect(nameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setBitFieldName);
+    connect(rbc, &RegisterBlockController::bitFieldNameChanged, nameEdit, &QLineEdit::setText);
+    nameEdit->setEnabled(false); //will set editable when bit field is tracked with this UI
+    bitFieldGrid->addWidget(nameEdit, BITFIELD_FIELD_COORD_NAME.first, BITFIELD_FIELD_COORD_NAME.second);
 
-        QTextEdit* descEdit = new QTextEdit();
-        connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
-            rbc->setRegDescription(descEdit->toPlainText());
-        });
-        connect(rbc, &RegisterBlockController::regDescriptionChanged, descEdit, [=](const QString& new_desc){
-            if (descEdit->toPlainText().compare(new_desc)){
-                descEdit->setText(new_desc);
-            }
-        });
-        reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH);
+    QLabel* codeNameLabel = new QLabel("Source-Friendly Name: ");
+    codeNameLabel->setEnabled(false);
+    bitFieldGrid->addWidget(codeNameLabel, BITFIELD_FIELD_COORD_CODENAME.first, BITFIELD_FIELD_COORD_CODENAME.second-1);
 
+    QLineEdit* codeNameEdit = new QLineEdit();
+    codeNameEdit->setEnabled(false);
+    codeNameEdit->setReadOnly(true);
+    connect(codeNameEdit, &QLineEdit::textEdited, rbc, &RegisterBlockController::setBitFieldCodeName);
+    connect(rbc, &RegisterBlockController::bitFieldCodeNameChanged, codeNameEdit, &QLineEdit::setText);
+    bitFieldGrid->addWidget(codeNameEdit, BITFIELD_FIELD_COORD_CODENAME.first, BITFIELD_FIELD_COORD_CODENAME.second);
+
+    QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
+    connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
+        if (state == Qt::CheckState::Checked){
+            rbc->setBitFieldCodeNameGeneration(false);
+        } else {
+            rbc->setBitFieldCodeNameGeneration(true);
+        }
+    });
+    connect(rbc, &RegisterBlockController::bitFieldCodeNameGenerationChanged, customCNCheckBox, [=](bool gen_code_name){
+        customCNCheckBox->setChecked(!gen_code_name);
+        codeNameEdit->setReadOnly(gen_code_name);
+    });
+    customCNCheckBox->setEnabled(false); //will set editable when bit field is tracked with this UI
+    bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second);
+
+    QLabel* rangeLabel = new QLabel("Range: ");
+    rangeLabel->setEnabled(false);
+    bitFieldGrid->addWidget(rangeLabel, BITFIELD_FIELD_COORD_RANGE_HIGH.first, BITFIELD_FIELD_COORD_RANGE_HIGH.second-1);
+
+    QSpinBox* rangeHighEdit = new QSpinBox();
+    connect(rangeHighEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        rbc->setBitFieldRange(rbc->getCurrRegCurrBitField().low_index, new_val);
+    });
+    connect(rbc, &RegisterBlockController::bitFieldRangeChanged, rangeHighEdit, [=](uint32_t low_idx, uint32_t high_idx){
+        Q_UNUSED(low_idx);
+        if (high_idx != (uint32_t)rangeHighEdit->value()){
+            rangeHighEdit->setValue(high_idx);
+        }
+    });
+    rangeHighEdit->setMinimum(0);
+    rangeHighEdit->setMaximum(std::numeric_limits<int>::max());
+    rangeHighEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    bitFieldGrid->addWidget(rangeHighEdit, BITFIELD_FIELD_COORD_RANGE_HIGH.first, BITFIELD_FIELD_COORD_RANGE_HIGH.second);
+
+    QLabel* downToLabel = new QLabel("downto");
+    downToLabel->setEnabled(false);
+    bitFieldGrid->addWidget(downToLabel, BITFIELD_FIELD_COORD_RANGE_LOW.first, BITFIELD_FIELD_COORD_RANGE_LOW.second-1);
+
+    QSpinBox* rangeLowEdit = new QSpinBox();
+    connect(rangeLowEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        rbc->setBitFieldRange(new_val, rbc->getCurrRegCurrBitField().high_index);
+    });
+    connect(rbc, &RegisterBlockController::bitFieldRangeChanged, rangeLowEdit, [=](uint32_t low_idx, uint32_t high_idx){
+        Q_UNUSED(high_idx);
+        if (low_idx != (uint32_t)rangeLowEdit->value()){
+            rangeLowEdit->setValue(low_idx);
+        }
+    });
+    rangeLowEdit->setMinimum(0);
+    rangeLowEdit->setMaximum(std::numeric_limits<int>::max());
+    rangeLowEdit->setEnabled(false); //will set editable when register is tracked with this UI
+    bitFieldGrid->addWidget(rangeLowEdit, BITFIELD_FIELD_COORD_RANGE_LOW.first, BITFIELD_FIELD_COORD_RANGE_LOW.second);
+
+    //adjust spinbox ranges in response to range changing
+    connect(rbc, &RegisterBlockController::bitFieldRangeChanged, this, [=](uint32_t low_idx, uint32_t high_idx){
+        if ((uint32_t)rangeHighEdit->minimum() != low_idx){
+            rangeHighEdit->setMinimum(low_idx);
+        }
+        if ((uint32_t)rangeLowEdit->maximum() != high_idx){
+            rangeLowEdit->setMaximum(high_idx);
+        }
+    });
+
+    //adjust high range spinbox range maximum in response to register bit length
+    connect(rbc, &RegisterBlockController::regBitLenChanged, this, [=](uint32_t new_len){
+        if ((uint32_t)rangeHighEdit->maximum() != new_len-1){
+            rangeHighEdit->setMaximum(new_len-1);
+        }
+    });
+
+    QLabel* descLabel = new QLabel("Description: ");
+    bitFieldGrid->addWidget(descLabel, BITFIELD_FIELD_COORD_DESC_LABEL.first, BITFIELD_FIELD_COORD_DESC_LABEL.second);
+
+    QTextEdit* descEdit = new QTextEdit();
+    connect(descEdit, &QTextEdit::textChanged, rbc, [=](){
+        rbc->setBitFieldDescription(descEdit->toPlainText());
+    });
+    connect(rbc, &RegisterBlockController::bitFieldDescriptionChanged, descEdit, [=](const QString& new_desc){
+        if (descEdit->toPlainText().compare(new_desc)){
+            descEdit->setText(new_desc);
+        }
+    });
+    bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH);
+
+    return bitFieldFrame;
+}
+
+void MainWindow::setAllEnabled(QWidget* parent, bool enabled){
+    for (QObject* qo : parent->children()){
+        if (QWidget* w = qobject_cast<QWidget*>(qo)){
+            w->setEnabled(enabled);
+        }
     }
-
-    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
-
-    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
-
-    //notify of any actual data changes
-    connect(rbc, &RegisterBlockController::changeMade, this, &MainWindow::changeMade);
-
-    rbc->setName("Register Block " + QString::number(this->reg_block_ctrls.size()-1));
-
 }
 

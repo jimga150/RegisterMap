@@ -29,6 +29,14 @@ public:
     MainWindow(void (*makeNewWindow)(QString load_filename), QWidget *parent = nullptr);
     ~MainWindow();
 
+    QWidget* makeNewRegBlockTab();
+
+    QFrame* makeNewRegFrame(RegisterBlockController* rbc, QTableWidget* regTable);
+
+    QFrame* makeNewBitFieldFrame(RegisterBlockController* rbc, QTableWidget* bitFieldTable);
+
+    void setAllEnabled(QWidget* parent, bool enabled);
+
     test_result_enum checkRBOffsetCollisions();
     test_result_enum checkOffsetCollisions(RegisterBlockController* rbc);
 
@@ -38,6 +46,14 @@ public:
     test_result_enum checkRegCodeNameCollisions(RegisterBlockController* rbc);
 
     void print_toml_table(toml_value_t table, int tab_level);
+
+    void loadRegisterBlock(toml_value_t reg_block_table, std::string table_key);
+
+    void loadRegister(toml_value_t reg_table, std::string table_key, RegisterBlockController* rbc);
+
+    void loadBitField(toml_value_t bitfield_table, std::string table_key, RegisterBlockController* rbc);
+
+
 
     QVector<RegisterBlockController*> reg_block_ctrls;
 
