@@ -16,33 +16,31 @@
 
 
 #define REG_BLOCK_FIELD_COORD_NAME          (std::pair<int, int>(0, 1))
-#define REG_BLOCK_FIELD_COORD_CODENAME      (std::pair<int, int>(0, 3))
-#define REG_BLOCK_FIELD_COORD_GEN_CODENAME  (std::pair<int, int>(1, 3))
-#define REG_BLOCK_FIELD_COORD_SIZE          (std::pair<int, int>(2, 1))
-//#define REG_BLOCK_FIELD_COORD_CN_COLL_WARN  (std::pair<int, int>(2, 3))
-#define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(3, 0))
-#define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(4, 0))
-#define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(5, 0))
-#define REG_BLOCK_FIELD_COORD_SPACER        (std::pair<int, int>(6, 0))
+#define REG_BLOCK_FIELD_COORD_CODENAME      (std::pair<int, int>(2, 1))
+#define REG_BLOCK_FIELD_COORD_GEN_CODENAME  (std::pair<int, int>(3, 0))
+#define REG_BLOCK_FIELD_COORD_SIZE          (std::pair<int, int>(4, 1))
+#define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(5, 0))
+#define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(6, 0))
+#define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(0, 2))
 
-#define REG_BLOCK_FIELD_WIDTH   (4)
+#define REG_BLOCK_FIELD_WIDTH   (3)
 #define REG_BLOCK_FIELD_HEIGHT  (7)
 
 #define REG_FIELD_COORD_REGTABLE            (std::pair<int, int>(0, 0))
-#define REG_FIELD_COORD_NEWREGBTN           (std::pair<int, int>(1, 0))
-#define REG_FIELD_COORD_SORTREGBTN          (std::pair<int, int>(1, 1))
-#define REG_FIELD_COORD_NAME                (std::pair<int, int>(2, 1))
-#define REG_FIELD_COORD_CODENAME            (std::pair<int, int>(2, 3))
-#define REG_FIELD_COORD_GEN_CODENAME        (std::pair<int, int>(3, 3))
-#define REG_FIELD_COORD_OFFSET              (std::pair<int, int>(4, 1))
-#define REG_FIELD_COORD_BITLEN              (std::pair<int, int>(4, 3))
-#define REG_FIELD_COORD_BYTELEN             (std::pair<int, int>(5, 3))
-#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(6, 0))
-#define REG_FIELD_COORD_DESC                (std::pair<int, int>(7, 0))
-#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(8, 0))
+#define REG_FIELD_COORD_NEWREGBTN           (std::pair<int, int>(0, 1))
+#define REG_FIELD_COORD_SORTREGBTN          (std::pair<int, int>(0, 2))
+#define REG_FIELD_COORD_NAME                (std::pair<int, int>(1, 2))
+#define REG_FIELD_COORD_CODENAME            (std::pair<int, int>(2, 2))
+#define REG_FIELD_COORD_GEN_CODENAME        (std::pair<int, int>(3, 1))
+#define REG_FIELD_COORD_OFFSET              (std::pair<int, int>(4, 2))
+#define REG_FIELD_COORD_BITLEN              (std::pair<int, int>(5, 2))
+#define REG_FIELD_COORD_BYTELEN             (std::pair<int, int>(6, 2))
+#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(7, 1))
+#define REG_FIELD_COORD_DESC                (std::pair<int, int>(8, 1))
+#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(9, 0))
 
-#define REG_FIELD_WIDTH   (4)
-#define REG_FIELD_HEIGHT  (9)
+#define REG_FIELD_WIDTH   (3)
+#define REG_FIELD_HEIGHT  (10)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
@@ -50,17 +48,17 @@
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
 
 #define BITFIELD_FIELD_COORD_BITFIELD_TABLE     (std::pair<int, int>(0, 0))
-#define BITFIELD_FIELD_COORD_NEW_BITFIELD_BTN   (std::pair<int, int>(1, 0))
-#define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(2, 1))
-#define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(2, 3))
-#define BITFIELD_FIELD_COORD_GEN_CODENAME       (std::pair<int, int>(3, 3))
-#define BITFIELD_FIELD_COORD_RANGE_HIGH         (std::pair<int, int>(4, 1))
-#define BITFIELD_FIELD_COORD_RANGE_LOW          (std::pair<int, int>(4, 3))
-#define BITFIELD_FIELD_COORD_DESC_LABEL         (std::pair<int, int>(5, 0))
-#define BITFIELD_FIELD_COORD_DESC               (std::pair<int, int>(6, 0))
+#define BITFIELD_FIELD_COORD_NEW_BITFIELD_BTN   (std::pair<int, int>(0, 1))
+#define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(1, 2))
+#define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(2, 2))
+#define BITFIELD_FIELD_COORD_GEN_CODENAME       (std::pair<int, int>(3, 1))
+#define BITFIELD_FIELD_COORD_RANGE_HIGH         (std::pair<int, int>(4, 2))
+#define BITFIELD_FIELD_COORD_RANGE_LOW          (std::pair<int, int>(5, 2))
+#define BITFIELD_FIELD_COORD_DESC_LABEL         (std::pair<int, int>(6, 1))
+#define BITFIELD_FIELD_COORD_DESC               (std::pair<int, int>(7, 1))
 
-#define BITFIELD_FIELD_WIDTH   (4)
-#define BITFIELD_FIELD_HEIGHT  (7)
+#define BITFIELD_FIELD_WIDTH   (3)
+#define BITFIELD_FIELD_HEIGHT  (8)
 
 #define BITFIELD_TABLE_COL_NAME     (0)
 #define BITFIELD_TABLE_COL_RANGE    (1)
@@ -719,7 +717,7 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         customCNCheckBox->setChecked(!gen_code_name);
         codeNameEdit->setReadOnly(gen_code_name);
     });
-    g->addWidget(customCNCheckBox, REG_BLOCK_FIELD_COORD_GEN_CODENAME.first, REG_BLOCK_FIELD_COORD_GEN_CODENAME.second);
+    g->addWidget(customCNCheckBox, REG_BLOCK_FIELD_COORD_GEN_CODENAME.first, REG_BLOCK_FIELD_COORD_GEN_CODENAME.second, 1, 2);
 
     //    QLabel* CNCollisionWarningLabel = new QLabel("");
     //    CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
@@ -753,11 +751,12 @@ QWidget* MainWindow::makeNewRegBlockTab(){
             descEdit->setText(new_desc);
         }
     });
-    g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH);
+    g->addWidget(descEdit, REG_BLOCK_FIELD_COORD_DESC.first, REG_BLOCK_FIELD_COORD_DESC.second, 1, REG_BLOCK_FIELD_WIDTH-1);
 
     QFrame* regFrame = this->makeNewRegFrame(rbc);
 
-    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+    g->addWidget(regFrame, REG_BLOCK_FIELD_COORD_REGFRAME.first, REG_BLOCK_FIELD_COORD_REGFRAME.second, REG_BLOCK_FIELD_HEIGHT, 1);
+    g->setColumnStretch(REG_BLOCK_FIELD_COORD_REGFRAME.second, 1);
 
 //    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 //    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
@@ -772,6 +771,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     QFrame* regFrame = new QFrame();
     regFrame->setLineWidth(5);
+//    regFrame->setStyleSheet("background-color: rgb(0,150,0)");
 
     QGridLayout* reggrid = new QGridLayout();
     regFrame->setLayout(reggrid);
@@ -803,7 +803,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
         }
     });
 
-    reggrid->addWidget(regTable, REG_FIELD_COORD_REGTABLE.first, REG_FIELD_COORD_REGTABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
+    reggrid->addWidget(regTable, REG_FIELD_COORD_REGTABLE.first, REG_FIELD_COORD_REGTABLE.second, REG_FIELD_HEIGHT-1, 1);
+    reggrid->setColumnStretch(REG_FIELD_COORD_REGTABLE.second, 1);
 
     QPushButton* newregButton = new QPushButton("New Register");
     connect(newregButton, &QPushButton::clicked, rbc, &RegisterBlockController::makeNewReg);
@@ -850,7 +851,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
         codeNameEdit->setReadOnly(gen_code_name);
     });
     customCNCheckBox->setEnabled(false); //will set editable when register is tracked with this UI
-    reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second);
+    reggrid->addWidget(customCNCheckBox, REG_FIELD_COORD_GEN_CODENAME.first, REG_FIELD_COORD_GEN_CODENAME.second, 1, 2);
 
     //        QLabel* CNCollisionWarningLabel = new QLabel("");
     //        CNCollisionWarningLabel->setStyleSheet("QLabel { color : red; }");
@@ -929,12 +930,12 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             descEdit->setText(new_desc);
         }
     });
-    reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH);
+    reggrid->addWidget(descEdit, REG_FIELD_COORD_DESC.first, REG_FIELD_COORD_DESC.second, 1, REG_FIELD_WIDTH-1);
 
     QStackedWidget* bitFieldStack = new QStackedWidget();
     connect(rbc, &RegisterBlockController::currRegIdxChanged, bitFieldStack, &QStackedWidget::setCurrentIndex);
 
-    reggrid->addWidget(bitFieldStack, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_BLOCK_FIELD_WIDTH);
+    reggrid->addWidget(bitFieldStack, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_FIELD_WIDTH);
 
     //connect up new register functionality here so we can reference bitFieldStack
     connect(rbc, &RegisterBlockController::regCreated, regTable, [=]
@@ -987,6 +988,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_idx){
     QFrame* bitFieldFrame = new QFrame();
     bitFieldFrame->setLineWidth(5);
+//    bitFieldFrame->setStyleSheet("background-color: rgb(150,0,0)");
 
     QGridLayout* bitFieldGrid = new QGridLayout();
     bitFieldFrame->setLayout(bitFieldGrid);
@@ -1018,7 +1020,8 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_i
         }
     });
 
-    bitFieldGrid->addWidget(bitFieldTable, BITFIELD_FIELD_COORD_BITFIELD_TABLE.first, BITFIELD_FIELD_COORD_BITFIELD_TABLE.second, 1, REG_BLOCK_FIELD_WIDTH);
+    bitFieldGrid->addWidget(bitFieldTable, BITFIELD_FIELD_COORD_BITFIELD_TABLE.first, BITFIELD_FIELD_COORD_BITFIELD_TABLE.second, BITFIELD_FIELD_HEIGHT, 1);
+    bitFieldGrid->setColumnStretch(BITFIELD_FIELD_COORD_BITFIELD_TABLE.second, 1);
 
     QPushButton* newBitFieldButton = new QPushButton("New Bit Field");
     newBitFieldButton->setEnabled(false);
@@ -1114,7 +1117,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_i
         }
     });
     customCNCheckBox->setEnabled(false); //will set editable when bit field is tracked with this UI
-    bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second);
+    bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second, 1, BITFIELD_FIELD_WIDTH-1);
 
     QLabel* rangeLabel = new QLabel("Range: ");
     rangeLabel->setEnabled(false);
@@ -1179,7 +1182,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_i
             descEdit->setText(new_desc);
         }
     });
-    bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH);
+    bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH-1);
 
     //disable all bitfield stuff till we start tracking a bitfield
     setAllEnabled(bitFieldFrame, false);
