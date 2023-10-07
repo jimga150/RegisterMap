@@ -468,6 +468,8 @@ void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string tab
     rbc->setDescription(description.c_str());
     rbc->setSize(size);
 
+    if (!registers.is_table()) return;
+
     for (std::pair<const std::string, toml_value_t>& kv : registers.as_table()){
         const std::string key = kv.first;
         toml_value_t val = kv.second;
