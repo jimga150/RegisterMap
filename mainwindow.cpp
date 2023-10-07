@@ -283,6 +283,27 @@ void MainWindow::save()
         p->sortRegsByOffset();
 
         for (int i = 0; i < p->getNumRegs(); ++i){
+
+            toml_value_t bitfield_array;
+
+            for (int b = 0; b < p->getNumBitFields(i); ++b){
+
+                BitField& bf = p->getRegBitField(i, b);
+
+                toml_value_t bitfield_record{
+                    {RegisterBlockController::bitfield_name_key, bf.name},
+                    {RegisterBlockController::bitfield_codename_key, bf.codename},
+                    {RegisterBlockController::bitfield_codenamegen_key,
+                        p->getRegBitFieldCodeNameGeneration(i, b) ? "true" : "false"},
+                    {RegisterBlockController::bitfield_desc_key, bf.description},
+                    {RegisterBlockController::bitfield_high_idx_key, bf.high_index},
+                    {RegisterBlockController::bitfield_low_idx_key, bf.low_index}
+                };
+
+                toml_id = std::to_string(bf.low_index) + "_" + bf.name;
+                bitfield_array[toml_id] = bitfield_record;
+            }
+
 //            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
             toml_value_t reg_record{
                 {RegisterBlockController::reg_name_key, p->getRegName(i).toStdString()},
@@ -292,6 +313,12 @@ void MainWindow::save()
                 {RegisterBlockController::reg_bitlen_key, p->getRegBitLen(i)},
                 {RegisterBlockController::reg_desc_key, p->getRegDescription(i).toStdString()}
             };
+
+            //only add bit field array if any exist to add, adding empty arrays is bad in TOML
+            if (p->getNumBitFields(i) > 0){
+                reg_record.as_table()[RegisterBlockController::reg_bitfields_key] = bitfield_array;
+            }
+
             toml_id = std::to_string(p->getRegOffset(i)) + "_" + p->getRegCodeName(i).toStdString();
             reg_array[toml_id] = reg_record;
         }

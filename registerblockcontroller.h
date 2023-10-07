@@ -44,7 +44,9 @@ public:
     QString getRegOffsetAsString(int reg_idx);
     uint32_t getRegBitLen(int reg_idx);
     QString getRegDescription(int reg_idx);
+
     BitField& getRegBitField(int reg_idx, int bitfield_idx);
+    bool getRegBitFieldCodeNameGeneration(int reg_idx, int bitfield_idx);
 
     static QString getBitRangeAsString(uint32_t low_idx, uint32_t high_idx);
 

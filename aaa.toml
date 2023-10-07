@@ -1,0 +1,21 @@
+version_major = 0
+version_minor = 1
+
+[rb_Register_Block_0]
+autogen_codename = "true"
+codename = "Register_Block_0"
+description = ""
+name = "Register Block 0"
+size = 0
+
+[rb_Register_Block_0.registers]
+
+[rb_Register_Block_0.registers.0_New_Register_0]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_0"
+description = "Reserved"
+name = "New Register 0"
+offset = 0
+
+

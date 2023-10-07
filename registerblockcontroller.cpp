@@ -162,6 +162,11 @@ BitField& RegisterBlockController::getRegBitField(int reg_idx, int bitfield_idx)
     return this->rb.registers[reg_idx].bitfields[bitfield_idx];
 }
 
+bool RegisterBlockController::getRegBitFieldCodeNameGeneration(int reg_idx, int bitfield_idx)
+{
+    return this->gen_bitfield_codenames[reg_idx][bitfield_idx];
+}
+
 QString RegisterBlockController::getBitRangeAsString(uint32_t low_idx, uint32_t high_idx)
 {
     if (low_idx == high_idx) return QString::number(low_idx);
@@ -232,6 +237,8 @@ void RegisterBlockController::setCurrRegIdx(int new_idx)
 
 void RegisterBlockController::sortRegsByOffset()
 {
+    if (this->getNumRegs() == 0) return;
+
     addr_t offset_in_focus = this->getCurrRegOffset();
 
     this->rb.sort_registers_by_offset();
