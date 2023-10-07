@@ -301,9 +301,14 @@ void MainWindow::save()
             {RegisterBlockController::codename_key, p->getCodeName().toStdString()},
             {RegisterBlockController::codenamegen_key, p->getCodeNameGeneration() ? "true" : "false"},
             {RegisterBlockController::size_key, p->getSize()},
-            {RegisterBlockController::desc_key, p->getDescription().toStdString()},
-            {RegisterBlockController::reg_key, reg_array}
+            {RegisterBlockController::desc_key, p->getDescription().toStdString()}
         };
+
+        //only add register array if any exist to add, adding empty arrays is bad in TOML
+        if (p->getNumRegs() > 0){
+            rb_table.as_table()[RegisterBlockController::reg_key] = reg_array;
+        }
+
         toml_id = reg_block_prefix + p->getCodeName().toStdString();
         base_table[toml_id] = rb_table;
     }
