@@ -23,11 +23,11 @@ public:
 
     inline static const std::string invalid_reg_name = "<INVALID>";
 
-    Register get_register_at(addr_t offset);
+    Register invalid_reg;
+
+    Register* get_register_at(addr_t offset);
 
     addr_t get_max_offset();
-
-    void sort_registers_by_offset();
 
 };
 

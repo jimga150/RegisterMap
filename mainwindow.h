@@ -33,7 +33,7 @@ public:
 
     QFrame* makeNewRegFrame(RegisterBlockController* rbc);
 
-    QFrame* makeNewBitFieldFrame(RegisterBlockController* rbc, int reg_idx);
+    QFrame* makeNewBitFieldFrame(RegisterBlockController* rbc);
 
     void setAllEnabled(QWidget* parent, bool enabled);
 
@@ -51,11 +51,14 @@ public:
 
     void loadRegister(toml_value_t reg_table, std::string table_key, RegisterBlockController* rbc);
 
-    void loadBitField(toml_value_t bitfield_table, std::string table_key, RegisterBlockController* rbc);
+    void loadBitField(toml_value_t bitfield_table, std::string table_key, RegisterController* rc);
 
 
 
     QVector<RegisterBlockController*> reg_block_ctrls;
+
+    std::vector<QMetaObject::Connection> reg_ui_connections;
+    std::vector<QMetaObject::Connection> bitfield_ui_connections;
 
     int current_reg_row; //TODO: link this to register blocks or tab widgets and store one for each
 

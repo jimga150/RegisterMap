@@ -10,22 +10,26 @@ CONFIG += c++17
 
 SOURCES += \
     bitfield.cpp \
+    bitfieldcontroller.cpp \
     common.cpp \
     domain.cpp \
     main.cpp \
     mainwindow.cpp \
     register.cpp \
     registerblock.cpp \
-    registerblockcontroller.cpp
+    registerblockcontroller.cpp \
+    registercontroller.cpp
 
 HEADERS += \
     bitfield.h \
+    bitfieldcontroller.h \
     common.h \
     domain.h \
     mainwindow.h \
     register.h \
     registerblock.h \
     registerblockcontroller.h \
+    registercontroller.h \
     toml11/toml.hpp \
     toml11/toml/color.hpp \
     toml11/toml/combinator.hpp \

@@ -2,8 +2,10 @@
 
 #include <QApplication>
 
-//TODO: rearrange UI to not be so tall
-//TODO: refactor to make model its own controller
+//TODO: use camel case for functions, snake case for variables
+//TODO: add bitfield deletion
+//TODO: add register deletion
+//TODO: add register block deletion
 
 //TODO: add bit field access rights(?)
 //TODO: add bit field default val
