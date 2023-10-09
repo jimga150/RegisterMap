@@ -12,13 +12,13 @@ Register::~Register()
     }
 }
 
-uint32_t Register::get_byte_len(){
+uint32_t Register::getByteLen(){
     float frac_byte_cnt = ((float)bit_len)/8.0;
     float whole_byte_cnt = ceil(frac_byte_cnt);
     return (uint32_t)whole_byte_cnt;
 }
 
-bitstring Register::get_default_val(){
+bitstring Register::getDefaultVal(){
     bitstring ans;
     for (uint32_t i = 0; i < bit_len; ++i){
         ans.push_back(0);

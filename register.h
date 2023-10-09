@@ -27,9 +27,9 @@ public:
 
     std::vector<BitField*> bitfields;
 
-    uint32_t get_byte_len();
+    uint32_t getByteLen();
 
-    bitstring get_default_val();
+    bitstring getDefaultVal();
 
     //TODO: derive reset domains with reset domains of bit fields
     //or maybe assume that resets apply to entire registers?

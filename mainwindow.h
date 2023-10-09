@@ -47,7 +47,7 @@ public:
     test_result_enum checkRBRegCodeNameCollisions();
     test_result_enum checkRegCodeNameCollisions(RegisterBlockController* rbc);
 
-    void print_toml_table(toml_value_t table, int tab_level);
+    void printTomlTable(toml_value_t table, int tab_level);
 
     void loadRegisterBlock(toml_value_t reg_block_table, std::string table_key);
 
@@ -77,7 +77,7 @@ public slots:
 
     void load();
 
-    void load_file(QString load_file);
+    void loadFile(QString load_file);
 
     void changeMade();
 

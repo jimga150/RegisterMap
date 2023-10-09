@@ -12,14 +12,14 @@ RegisterBlock::~RegisterBlock()
     }
 }
 
-Register* RegisterBlock::get_register_at(addr_t offset){
+Register* RegisterBlock::getRegisterAt(addr_t offset){
     for (Register* reg : this->registers){
         if (reg->offset == offset) return reg;
     }
     return &invalid_reg;
 }
 
-addr_t RegisterBlock::get_max_offset()
+addr_t RegisterBlock::getMaxOffset()
 {
     addr_t max_offset = 0;
     for (Register* r : this->registers){

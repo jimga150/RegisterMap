@@ -14,7 +14,7 @@ public:
     uint64_t high_addr;
 
 
-    uint64_t get_size(){
+    uint64_t getSize(){
         return this->high_addr - this->low_addr;
     }
 };

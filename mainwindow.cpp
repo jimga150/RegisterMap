@@ -223,7 +223,7 @@ test_result_enum MainWindow::checkRegCodeNameCollisions(RegisterBlockController*
     return result;
 }
 
-void MainWindow::print_toml_table(toml_value_t table, int tab_level = 0)
+void MainWindow::printTomlTable(toml_value_t table, int tab_level = 0)
 {
     if (!table.is_table()) return;
     for (std::pair<const std::string, toml_value_t>& kv : table.as_table()){
@@ -232,7 +232,7 @@ void MainWindow::print_toml_table(toml_value_t table, int tab_level = 0)
         }
         printf("%s\n", kv.first.c_str());
 
-        this->print_toml_table(kv.second, tab_level+1);
+        this->printTomlTable(kv.second, tab_level+1);
     }
 }
 
@@ -368,12 +368,12 @@ void MainWindow::load()
         this->makeNewWindow(load_filename);
     } else {
         //wipe this window and load the selected TOML file
-        this->load_file(load_filename);
+        this->loadFile(load_filename);
     }
 
 }
 
-void MainWindow::load_file(QString load_filename)
+void MainWindow::loadFile(QString load_filename)
 {
 
     if (load_filename.length() == 0){
@@ -393,7 +393,7 @@ void MainWindow::load_file(QString load_filename)
         base_table = toml::parse(load_filename.toUtf8().constData());
 
         printf("File contents:\n");
-        this->print_toml_table(base_table);
+        this->printTomlTable(base_table);
 
         //TODO: make method of storing old load methods and call upon those to translate to the current object structure
         int vmaj = toml::find<int>(base_table, vmaj_key);
