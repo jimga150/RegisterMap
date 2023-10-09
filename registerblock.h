@@ -2,7 +2,7 @@
 #define REGISTERBLOCK_H
 
 #include "register.h"
-#include "domain.h"
+//#include "domain.h"
 
 //TODO: make register groups that can own ranges of registers within a block
 
@@ -10,8 +10,9 @@ class RegisterBlock
 {
 public:
     RegisterBlock();
+    ~RegisterBlock();
 
-    std::vector<Register> registers;
+    std::vector<Register*> registers;
 
     std::string name;
     std::string code_name;

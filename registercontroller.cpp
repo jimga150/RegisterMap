@@ -129,17 +129,15 @@ void RegisterController::setDescription(const QString& new_desc)
 
 void RegisterController::makeNewBitField()
 {
-    BitField b;
-    b.name = "BitField " + std::to_string(this->getNumBitFields());
-    b.codename = generate_code_name(b.name);
-    b.low_index = 0;
-    b.high_index = 0;
+    BitField* b = new BitField;
+    b->name = "BitField " + std::to_string(this->getNumBitFields());
+    b->codename = generate_code_name(b->name);
+    b->low_index = 0;
+    b->high_index = 0;
 
     this->reg->bitfields.push_back(b);
 
-    BitField* bp = &(this->reg->bitfields.at(this->reg->bitfields.size()-1));
-
-    BitFieldController* bfc = new BitFieldController(bp, this);
+    BitFieldController* bfc = new BitFieldController(b, this);
     connect(bfc, &BitFieldController::changeMade, this, &RegisterController::changeMade);
 
     this->bit_field_controllers.push_back(bfc);

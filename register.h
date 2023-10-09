@@ -14,6 +14,7 @@ class Register
 {
 public:
     Register();
+    ~Register();
 
     std::string name;
     std::string code_name;
@@ -24,7 +25,7 @@ public:
 
     std::string description;
 
-    std::vector<BitField> bitfields;
+    std::vector<BitField*> bitfields;
 
     uint32_t get_byte_len();
 
