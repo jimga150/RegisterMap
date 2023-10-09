@@ -969,18 +969,26 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
         this->reg_ui_connections.push_back(
             connect(newBitFieldButton, &QPushButton::clicked, rc, &RegisterController::makeNewBitField)
         );
+
+        nameEdit->setText(rc->getName());
         this->reg_ui_connections.push_back(
             connect(nameEdit, &QLineEdit::textEdited, rc, &RegisterController::setName)
         );
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::nameChanged, nameEdit, &QLineEdit::setText)
         );
+
+        codeNameEdit->setText(rc->getCodeName());
         this->reg_ui_connections.push_back(
             connect(codeNameEdit, &QLineEdit::textEdited, rc, &RegisterController::setCodeName)
         );
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::codeNameChanged, codeNameEdit, &QLineEdit::setText)
         );
+
+        bool gen_code_name = rc->getCodeNameGeneration();
+        customCNCheckBox->setChecked(!gen_code_name);
+        codeNameEdit->setReadOnly(gen_code_name);
         this->reg_ui_connections.push_back(
             connect(customCNCheckBox, &QCheckBox::stateChanged, rc, [=](int state){
                 if (state == Qt::CheckState::Checked){
@@ -997,6 +1005,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 codeNameEdit->setReadOnly(gen_code_name);
             })
         );
+
+        offsetEdit->setValue(rc->getOffset());
         this->reg_ui_connections.push_back(
             connect(offsetEdit, &QSpinBox::valueChanged, rc, &RegisterController::setOffset)
         );
@@ -1007,6 +1017,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+
+        bitLenEdit->setValue(rc->getBitLen());
         this->reg_ui_connections.push_back(
             connect(bitLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
                 if (bitLenEdit->hasFocus()){
@@ -1021,6 +1033,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+
+        byteLenEdit->setValue(rc->getBitLen()*BITS_PER_BYTE);
         this->reg_ui_connections.push_back(
             connect(byteLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
                 if (byteLenEdit->hasFocus()){
@@ -1036,6 +1050,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+
+        descEdit->setText(rc->getDescription());
         this->reg_ui_connections.push_back(
             connect(descEdit, &QTextEdit::textChanged, rc, [=](){
                 rc->setDescription(descEdit->toPlainText());
@@ -1048,6 +1064,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::bitFieldCreated, bitFieldTable, [=](BitFieldController* bfc){
 
@@ -1077,6 +1094,15 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 this->setAllEnabled(bitFieldFrame, true);
             })
         );
+
+        //run the bitfield creation signal for each pre=existing bitfield in the register to get the table to populate
+        for (int r = bitFieldTable->rowCount()-1; r >= 0; --r){
+            bitFieldTable->removeRow(r);
+        }
+        for (uint b = 0; b < rc->getNumBitFields(); ++b){
+            BitFieldController* bfc = rc->getBitFieldControllerAt(b);
+            emit rc->bitFieldCreated(bfc);
+        }
     });
 
     setAllEnabled(regFrame, false);
