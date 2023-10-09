@@ -836,6 +836,10 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         this->setAllEnabled(regFrame, true);
     });
 
+    for (int i = 0; i < g->rowCount(); ++i){
+        printf("g row %d: %d\n", i, g->rowStretch(i));
+    }
+
 //    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 //    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
 
@@ -919,6 +923,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     bitFieldTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     bitFieldTable->setSelectionMode(QAbstractItemView::SingleSelection);
     bitFieldTable->setAutoScroll(false);
+    bitFieldTable->setSizePolicy(QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding);
     bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_NAME, new QTableWidgetItem("Name"));
     bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_RANGE, new QTableWidgetItem("Range"));
     bitFieldTable->setHorizontalHeaderItem(BITFIELD_TABLE_COL_DESC, new QTableWidgetItem("Description"));
@@ -943,7 +948,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     reggrid->addWidget(bitFieldTable, REG_FIELD_COORD_BITFIELD_TABLE.first, REG_FIELD_COORD_BITFIELD_TABLE.second, 1, REG_FIELD_WIDTH);
 //    reggrid->setColumnStretch(REG_FIELD_COORD_BITFIELD_TABLE.second, 1);
-//    reggrid->setRowStretch(1, 6);
+    reggrid->setRowStretch(REG_FIELD_COORD_BITFIELD_TABLE.first, 1);
 
     QFrame* bitFieldFrame = this->makeNewBitFieldFrame(rbc);
     reggrid->addWidget(bitFieldFrame, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_FIELD_WIDTH);
@@ -1076,7 +1081,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     setAllEnabled(regFrame, false);
 
     for (int i = 0; i < reggrid->rowCount(); ++i){
-        printf("row %d: %d\n", i, reggrid->rowStretch(i));
+        printf("reggrid row %d: %d\n", i, reggrid->rowStretch(i));
     }
 
     return regFrame;
