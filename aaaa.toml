@@ -31,6 +31,33 @@ description = ""
 name = "New Register 1"
 offset = 1
 
+[rb_Register_Block678.registers.1_New_Register_1.bit_fields]
+
+[rb_Register_Block678.registers.1_New_Register_1.bit_fields.0_idxbf]
+autogen_codename = "true"
+codename = "idxbf"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "idx)bf"
+
+[rb_Register_Block678.registers.1_New_Register_1.bit_fields.1_BitField_1]
+autogen_codename = "true"
+codename = "BitField_1"
+description = ""
+high_idx = 1
+low_idx = 1
+name = "BitField 1"
+
+[rb_Register_Block678.registers.1_New_Register_1.bit_fields.2_BitField_23]
+autogen_codename = "true"
+codename = "BitField_23"
+description = ""
+high_idx = 3
+low_idx = 2
+name = "BitField 23"
+
+
 [rb_Register_Block678.registers.2_New_Register_2846]
 autogen_codename = "false"
 bit_len = 7

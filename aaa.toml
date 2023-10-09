@@ -4,7 +4,7 @@ version_minor = 1
 [rb_Register_Block_0]
 autogen_codename = "true"
 codename = "Register_Block_0"
-description = ""
+description = "desc"
 name = "Register Block 0"
 size = 0
 
@@ -17,5 +17,133 @@ codename = "New_Register_0"
 description = "Reserved"
 name = "New Register 0"
 offset = 0
+
+[rb_Register_Block_0.registers.1_New_Register_1]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_1"
+description = "Reserved"
+name = "New Register 1"
+offset = 1
+
+[rb_Register_Block_0.registers.1_New_Register_1.bit_fields]
+
+[rb_Register_Block_0.registers.1_New_Register_1.bit_fields."0_BitField 0"]
+autogen_codename = "true"
+codename = "BitField_0"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 0"
+
+[rb_Register_Block_0.registers.1_New_Register_1.bit_fields."0_BitField 1"]
+autogen_codename = "true"
+codename = "BitField_1"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 1"
+
+
+[rb_Register_Block_1]
+autogen_codename = "true"
+codename = "Register_Block_1"
+description = ""
+name = "Register Block 1"
+size = 0
+
+[rb_Register_Block_1.registers]
+
+[rb_Register_Block_1.registers.0_New_Register_0]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_0"
+description = "Reserved"
+name = "New Register 0"
+offset = 0
+
+[rb_Register_Block_1.registers.1_New_Register_1]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_1"
+description = "Reserved"
+name = "New Register 1"
+offset = 1
+
+[rb_Register_Block_1.registers.2_New_Register_2]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_2"
+description = "Reserved"
+name = "New Register 2"
+offset = 2
+
+[rb_Register_Block_1.registers.3_New_Register_3]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_3"
+description = "Reserved"
+name = "New Register 3"
+offset = 3
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields]
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 0"]
+autogen_codename = "true"
+codename = "BitField_0"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 0"
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 1"]
+autogen_codename = "true"
+codename = "BitField_1"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 1"
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 2"]
+autogen_codename = "true"
+codename = "BitField_2"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 2"
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 3"]
+autogen_codename = "true"
+codename = "BitField_3"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 3"
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 4"]
+autogen_codename = "true"
+codename = "BitField_4"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 4"
+
+[rb_Register_Block_1.registers.3_New_Register_3.bit_fields."0_BitField 5"]
+autogen_codename = "true"
+codename = "BitField_5"
+description = ""
+high_idx = 0
+low_idx = 0
+name = "BitField 5"
+
+
+[rb_Register_Block_1.registers.4_New_Register_4]
+autogen_codename = "true"
+bit_len = 8
+codename = "New_Register_4"
+description = "Reserved"
+name = "New Register 4"
+offset = 4
+
 
 
