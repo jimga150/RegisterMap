@@ -151,6 +151,8 @@ void RegisterBlockController::sortRegsByOffset()
         this->setCurrRegIdx(i);
     }
 
+    emit this->regIdxsReassigned();
+
     //return to whatever register we were focused on when we started
     for (uint i = 0; i < this->rb.registers.size(); ++i){
         if (this->reg_controllers[i]->getOffset() == offset_in_focus){

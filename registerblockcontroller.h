@@ -48,6 +48,8 @@ signals:
 
     void regCreated(RegisterController* rc);
 
+    void regIdxsReassigned();
+
 public slots:
 
     void setName(const QString& new_name);

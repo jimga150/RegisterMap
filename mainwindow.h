@@ -37,6 +37,8 @@ public:
 
     void setAllEnabled(QWidget* parent, bool enabled);
 
+    QString getSortableString(uint64_t arg);
+
     test_result_enum checkRBOffsetCollisions();
     test_result_enum checkOffsetCollisions(RegisterBlockController* rbc);
 

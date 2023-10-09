@@ -46,7 +46,8 @@
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
 #define REG_TABLE_COL_DESC      (2)
-#define REG_TABLE_COL_MAX       REG_TABLE_COL_DESC
+#define REG_TABLE_COL_OFFSETINT (3)
+#define REG_TABLE_COL_MAX       REG_TABLE_COL_OFFSETINT
 
 #define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(0, 2))
 #define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(1, 2))
@@ -764,7 +765,7 @@ QWidget* MainWindow::makeNewRegBlockTab(){
     });
     g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
 
-    QTableWidget* regTable = new QTableWidget(0, 3);
+    QTableWidget* regTable = new QTableWidget(0, REG_TABLE_COL_MAX+1);
     regTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     regTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     regTable->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -772,12 +773,17 @@ QWidget* MainWindow::makeNewRegBlockTab(){
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_NAME, new QTableWidgetItem("Name"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_OFFSET, new QTableWidgetItem("Offset"));
     regTable->setHorizontalHeaderItem(REG_TABLE_COL_DESC, new QTableWidgetItem("Description"));
+    regTable->setColumnHidden(REG_TABLE_COL_OFFSETINT, true);
     connect(regTable, &QTableWidget::itemClicked, rbc, [=](QTableWidgetItem* item){
         int row = regTable->row(item);
         rbc->setCurrRegIdx(row);
     });
 
     connect(rbc, &RegisterBlockController::currRegIdxChanged, regTable, &QTableWidget::selectRow);
+
+    connect(rbc, &RegisterBlockController::regIdxsReassigned, regTable, [=](){
+        regTable->sortItems(REG_TABLE_COL_OFFSETINT, Qt::SortOrder::AscendingOrder);
+    });
 
     //this forces the highlighted row to always be the one we're editing
     connect(regTable, &QTableWidget::itemSelectionChanged, this, [=](){
@@ -815,13 +821,14 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         QTableWidgetItem* name_item = new QTableWidgetItem(rc->getName());
         QTableWidgetItem* offset_item = new QTableWidgetItem(rc->getOffsetAsString());
         QTableWidgetItem* desc_item = new QTableWidgetItem(rc->getDescription());
+        QTableWidgetItem* offset_int_item = new QTableWidgetItem(this->getSortableString(rc->getOffset()));
 
         connect(rc, &RegisterController::nameChanged, regTable, [=](const QString& new_name){
             name_item->setText(new_name);
         });
         connect(rc, &RegisterController::offsetChanged, regTable, [=](addr_t new_offset){
-            Q_UNUSED(new_offset);
             offset_item->setText(rc->getOffsetAsString());
+            offset_int_item->setText(this->getSortableString(new_offset));
         });
         connect(rc, &RegisterController::descriptionChanged, regTable, [=](const QString& new_name){
             desc_item->setText(new_name);
@@ -830,6 +837,7 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
         regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
         regTable->setItem(curr_table_row, REG_TABLE_COL_DESC, desc_item);
+        regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSETINT, offset_int_item);
 
         rbc->setCurrRegIdx(curr_table_row);
 
@@ -1278,5 +1286,13 @@ void MainWindow::setAllEnabled(QWidget* parent, bool enabled){
             w->setEnabled(enabled);
         }
     }
+}
+
+QString MainWindow::getSortableString(uint64_t arg)
+{
+    //0-pad the base 10 offset by enough that there is no way a larger number will be sorted as "less" than a smaller number
+    //due to leading digit problems
+    //for example: 10 would be before 2, but 0010 will be after 0002
+    return QString("%1").arg(QString::number(arg), 20, '0');
 }
 
