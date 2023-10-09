@@ -297,7 +297,7 @@ void MainWindow::save()
                     {BitFieldController::low_idx_key, bfc->getLowIdx()}
                 };
 
-                toml_id = std::to_string(bfc->getLowIdx()) + "_" + bfc->getName().toStdString();
+                toml_id = std::to_string(bfc->getLowIdx()) + "_" + bfc->getCodeName().toStdString();
                 bitfield_array[toml_id] = bitfield_record;
             }
 
