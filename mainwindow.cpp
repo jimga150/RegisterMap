@@ -961,6 +961,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 fprintf(stderr, "Failed to disconnect a Register <-> UI connection!\n");
             }
         }
+        this->reg_ui_connections.clear();
 
         //connect up the new register
         RegisterController* rc = rbc->getRegControllerAt(new_idx);
@@ -1141,6 +1142,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 fprintf(stderr, "Failed to disconnect a Bit Field <-> UI connection!\n");
             }
         }
+        this->bitfield_ui_connections.clear();
 
         //connect up the new register
         RegisterController* rc = rbc->getCurrRegController();
