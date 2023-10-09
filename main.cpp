@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: use camel case for functions, snake case for variables
 //TODO: add bitfield deletion
 //TODO: add register deletion
 //TODO: add register block deletion
