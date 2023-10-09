@@ -36,6 +36,11 @@ uint32_t RegisterController::getBitLen()
     return this->reg->bit_len;
 }
 
+uint32_t RegisterController::getByteLen()
+{
+    return this->reg->getByteLen();
+}
+
 QString RegisterController::getDescription()
 {
     return this->reg->description.c_str();

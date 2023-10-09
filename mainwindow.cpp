@@ -1048,7 +1048,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
         );
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::bitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
-                uint32_t new_bytelen = (uint32_t)ceil((float)new_bitlen*1.0/BITS_PER_BYTE);
+                Q_UNUSED(new_bitlen);
+                uint32_t new_bytelen = rc->getByteLen();
                 if (new_bytelen != (uint32_t)byteLenEdit->value()){
                     byteLenEdit->setValue(new_bytelen);
                 }

@@ -18,6 +18,7 @@ public:
     addr_t getOffset();
     QString getOffsetAsString();
     uint32_t getBitLen();
+    uint32_t getByteLen();
     QString getDescription();
 
     size_t getCurrBitFieldIdx();
