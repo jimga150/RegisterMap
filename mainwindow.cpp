@@ -853,7 +853,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     QFrame* regFrame = new QFrame();
     regFrame->setLineWidth(5);
-    regFrame->setStyleSheet("background-color: rgb(0,150,0)");
+//    regFrame->setStyleSheet("background-color: rgb(0,150,0)");
 
     QGridLayout* reggrid = new QGridLayout();
     regFrame->setLayout(reggrid);
@@ -1092,7 +1092,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
 
     QFrame* bitFieldFrame = new QFrame();
     bitFieldFrame->setLineWidth(5);
-    bitFieldFrame->setStyleSheet("background-color: rgb(150,0,0)");
+//    bitFieldFrame->setStyleSheet("background-color: rgb(150,0,0)");
 
     QGridLayout* bitFieldGrid = new QGridLayout();
     bitFieldFrame->setLayout(bitFieldGrid);
