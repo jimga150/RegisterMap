@@ -970,25 +970,22 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             connect(newBitFieldButton, &QPushButton::clicked, rc, &RegisterController::makeNewBitField)
         );
 
-        nameEdit->setText(rc->getName());
         this->reg_ui_connections.push_back(
             connect(nameEdit, &QLineEdit::textEdited, rc, &RegisterController::setName)
         );
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::nameChanged, nameEdit, &QLineEdit::setText)
         );
+        emit rc->nameChanged(rc->getName());
 
-        codeNameEdit->setText(rc->getCodeName());
         this->reg_ui_connections.push_back(
             connect(codeNameEdit, &QLineEdit::textEdited, rc, &RegisterController::setCodeName)
         );
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::codeNameChanged, codeNameEdit, &QLineEdit::setText)
         );
+        emit rc->codeNameChanged(rc->getCodeName());
 
-        bool gen_code_name = rc->getCodeNameGeneration();
-        customCNCheckBox->setChecked(!gen_code_name);
-        codeNameEdit->setReadOnly(gen_code_name);
         this->reg_ui_connections.push_back(
             connect(customCNCheckBox, &QCheckBox::stateChanged, rc, [=](int state){
                 if (state == Qt::CheckState::Checked){
@@ -1005,8 +1002,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 codeNameEdit->setReadOnly(gen_code_name);
             })
         );
+        emit rc->codeNameGenerationChanged(rc->getCodeNameGeneration());
 
-        offsetEdit->setValue(rc->getOffset());
         this->reg_ui_connections.push_back(
             connect(offsetEdit, &QSpinBox::valueChanged, rc, &RegisterController::setOffset)
         );
@@ -1017,8 +1014,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+        emit rc->offsetChanged(rc->getOffset());
 
-        bitLenEdit->setValue(rc->getBitLen());
         this->reg_ui_connections.push_back(
             connect(bitLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
                 if (bitLenEdit->hasFocus()){
@@ -1034,7 +1031,6 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             })
         );
 
-        byteLenEdit->setValue(rc->getBitLen()*BITS_PER_BYTE);
         this->reg_ui_connections.push_back(
             connect(byteLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
                 if (byteLenEdit->hasFocus()){
@@ -1050,8 +1046,8 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+        emit rc->bitLenChanged(rc->getBitLen());
 
-        descEdit->setText(rc->getDescription());
         this->reg_ui_connections.push_back(
             connect(descEdit, &QTextEdit::textChanged, rc, [=](){
                 rc->setDescription(descEdit->toPlainText());
@@ -1064,6 +1060,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 }
             })
         );
+        emit rc->descriptionChanged(rc->getDescription());
 
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::bitFieldCreated, bitFieldTable, [=](BitFieldController* bfc){
@@ -1075,25 +1072,33 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                 QTableWidgetItem* range_item = new QTableWidgetItem(bfc->getBitRangeAsString());
                 QTableWidgetItem* desc_item = new QTableWidgetItem(bfc->getDescription());
 
-                connect(bfc, &BitFieldController::nameChanged, bitFieldTable, [=](const QString& new_name){
-                    name_item->setText(new_name);
-                });
-                connect(bfc, &BitFieldController::rangeStrChanged, bitFieldTable, [=](const QString& new_name){
-                    range_item->setText(new_name);
-                });
-                connect(bfc, &BitFieldController::descriptionChanged, bitFieldTable, [=](const QString& new_name){
-                    desc_item->setText(new_name);
-                });
+                this->reg_ui_connections.push_back(
+                    connect(bfc, &BitFieldController::nameChanged, bitFieldTable, [=](const QString& new_name){
+                        name_item->setText(new_name);
+                    })
+                );
+                this->reg_ui_connections.push_back(
+                    connect(bfc, &BitFieldController::rangeStrChanged, bitFieldTable, [=](const QString& new_name){
+                        range_item->setText(new_name);
+                    })
+                );
+                this->reg_ui_connections.push_back(
+                    connect(bfc, &BitFieldController::descriptionChanged, bitFieldTable, [=](const QString& new_name){
+                        desc_item->setText(new_name);
+                    })
+                );
 
                 bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_NAME, name_item);
                 bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_RANGE, range_item);
                 bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_DESC, desc_item);
 
-                rc->setBitFieldIdx(curr_table_row);
-
                 this->setAllEnabled(bitFieldFrame, true);
+
+                rc->setBitFieldIdx(curr_table_row);
             })
         );
+
+        int curr_bf_idx = rc->getCurrBitFieldIdx();
 
         //run the bitfield creation signal for each pre=existing bitfield in the register to get the table to populate
         for (int r = bitFieldTable->rowCount()-1; r >= 0; --r){
@@ -1103,6 +1108,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             BitFieldController* bfc = rc->getBitFieldControllerAt(b);
             emit rc->bitFieldCreated(bfc);
         }
+        rc->setBitFieldIdx(curr_bf_idx);
     });
 
     setAllEnabled(regFrame, false);
@@ -1180,12 +1186,16 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
         this->bitfield_ui_connections.push_back(
             connect(bfc, &BitFieldController::nameChanged, nameEdit, &QLineEdit::setText)
         );
+        emit bfc->nameChanged(bfc->getName());
+
         this->bitfield_ui_connections.push_back(
             connect(codeNameEdit, &QLineEdit::textEdited, bfc, &BitFieldController::setCodeName)
         );
         this->bitfield_ui_connections.push_back(
             connect(bfc, &BitFieldController::codeNameChanged, codeNameEdit, &QLineEdit::setText)
         );
+        emit bfc->codeNameChanged(bfc->getCodeName());
+
         this->bitfield_ui_connections.push_back(
             connect(customCNCheckBox, &QCheckBox::stateChanged, rbc, [=](int state){
                 if (state == Qt::CheckState::Checked){
@@ -1201,6 +1211,8 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 codeNameEdit->setReadOnly(gen_code_name);
             })
         );
+        emit bfc->codeNameGenerationChanged(bfc->getCodeNameGeneration());
+
         this->bitfield_ui_connections.push_back(
             connect(rangeHighEdit, &QSpinBox::valueChanged, bfc, [=](int new_val){
                 bfc->setRange(bfc->getLowIdx(), new_val);
@@ -1228,6 +1240,8 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 }
             })
         );
+        emit bfc->rangeChanged(bfc->getLowIdx(), bfc->getHighIdx());
+
         this->bitfield_ui_connections.push_back(
             //adjust high range spinbox range maximum in response to register bit length
             connect(rc, &RegisterController::bitLenChanged, this, [=](uint32_t new_len){
@@ -1236,6 +1250,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 }
             })
         );
+
         this->bitfield_ui_connections.push_back(
             connect(descEdit, &QTextEdit::textChanged, bfc, [=](){
                 bfc->setDescription(descEdit->toPlainText());
@@ -1248,6 +1263,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 }
             })
         );
+        emit bfc->descriptionChanged(bfc->getDescription());
     });
 
     //disable all bitfield stuff till we start tracking a bitfield

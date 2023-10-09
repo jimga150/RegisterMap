@@ -2,8 +2,6 @@
 
 #include <QApplication>
 
-//TODO: fix bits/bytes UI mixup
-//TODO: add defualt info to new bit fields
 //TODO: test rest of use cases
 
 //TODO: use camel case for functions, snake case for variables

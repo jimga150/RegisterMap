@@ -67,7 +67,8 @@ private:
 
     Register* reg;
 
-    size_t curr_bitfield_idx;
+    //set to a nonzero number so that the first bitfield creation will properly trigger the 0-index update
+    size_t curr_bitfield_idx = -1;
     std::vector<BitFieldController*> bit_field_controllers;
 
 };

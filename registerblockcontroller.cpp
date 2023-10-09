@@ -115,6 +115,12 @@ void RegisterBlockController::setCurrRegIdx(int new_idx)
 {
     this->current_reg_idx = new_idx;
     emit this->currRegIdxChanged(new_idx);
+
+    RegisterController* rc = this->getCurrRegController();
+
+    if (rc->getNumBitFields() > 0){
+        emit rc->currBitFieldIdxChanged(rc->getCurrBitFieldIdx());
+    }
 }
 
 void RegisterBlockController::sortRegsByOffset()
