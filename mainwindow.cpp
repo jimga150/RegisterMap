@@ -1131,7 +1131,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
 
     connect(rbc, &RegisterBlockController::currBitFieldIdxChanged, this, [=](int new_bf_idx){
         //disconnect everything between the register frame and the previously selected register
-        for (QMetaObject::Connection c : this->bitfield_ui_connections){
+        for (QMetaObject::Connection& c : this->bitfield_ui_connections){
             if (!disconnect(c)){
                 fprintf(stderr, "Failed to disconnect a Bit Field <-> UI connection!\n");
             }
