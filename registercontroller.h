@@ -46,6 +46,7 @@ signals:
     void bitFieldCreated(BitFieldController* bfc);
 
     void currBitFieldIdxChanged(int new_idx);
+    void bitFieldIdxsReassigned();
 
     void changeMade();
 
@@ -61,6 +62,8 @@ public slots:
     void makeNewBitField();
 
     void setBitFieldIdx(size_t new_idx);
+
+    void sortBitFieldsByRange();
 
 private:
 

@@ -37,6 +37,7 @@
 #define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(6, 0))
 #define REG_FIELD_COORD_DESC                (std::pair<int, int>(7, 0))
 #define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(8, 0))
+#define REG_FIELD_COORD_SORT_BITFIELD_BTN   (std::pair<int, int>(8, 1))
 #define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(9, 0))
 #define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(10, 0))
 
@@ -1024,12 +1025,13 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     QPushButton* newBitFieldButton = new QPushButton("New Bit Field");
     reggrid->addWidget(newBitFieldButton, REG_FIELD_COORD_NEW_BITFIELD_BTN.first, REG_FIELD_COORD_NEW_BITFIELD_BTN.second);
 
-    //        QPushButton* sortBitFieldsBtn = new QPushButton("Sort Bit Fields");
-    //        connect(sortBitFieldsBtn, &QPushButton::clicked, rbc, [=](){
-    //            if (this->checkOffsetCollisions(rbc) != OK) return;
-    //            rbc->sortRegsByOffset();
-    //        });
-    //        g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
+    QPushButton* sortBitFieldsBtn = new QPushButton("Sort Bit Fields");
+    connect(sortBitFieldsBtn, &QPushButton::clicked, rbc, [=](){
+        RegisterController* rc = rbc->getCurrRegController();
+        if (this->checkRegRangeCollisions(rc) != OK) return;
+        rc->sortBitFieldsByRange();
+    });
+    reggrid->addWidget(sortBitFieldsBtn, REG_FIELD_COORD_SORT_BITFIELD_BTN.first, REG_FIELD_COORD_SORT_BITFIELD_BTN.second);
 
     QTableWidget* bitFieldTable = new QTableWidget(0, BITFIELD_TABLE_COL_MAX+1);
     bitFieldTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -1078,6 +1080,24 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
         //connect up the new register
         RegisterController* rc = rbc->getRegControllerAt(new_idx);
+
+        if (rc->getNumBitFields() == 0){
+            this->setAllEnabled(bitFieldFrame, false);
+            for (QObject* const o : bitFieldFrame->children()){
+                if (QLineEdit* le = qobject_cast<QLineEdit*>(o)){
+                    le->setText("");
+                    continue;
+                }
+                if (QTextEdit* te = qobject_cast<QTextEdit*>(o)){
+                    te->setText("");
+                    continue;
+                }
+                if (QAbstractSpinBox* sb = qobject_cast<QAbstractSpinBox*>(o)){
+                    sb->clear();
+                    continue;
+                }
+            }
+        }
 
         this->reg_ui_connections.push_back(
             connect(newBitFieldButton, &QPushButton::clicked, rc, &RegisterController::makeNewBitField)
@@ -1175,6 +1195,12 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             })
         );
         emit rc->descriptionChanged(rc->getDescription());
+
+        this->reg_ui_connections.push_back(
+            connect(rc, &RegisterController::bitFieldIdxsReassigned, bitFieldTable, [=](){
+                bitFieldTable->sortItems(BITFIELD_TABLE_COL_RANGE, Qt::SortOrder::AscendingOrder);
+            })
+        );
 
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::bitFieldCreated, bitFieldTable, [=](BitFieldController* bfc){
