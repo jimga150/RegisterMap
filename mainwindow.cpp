@@ -1346,10 +1346,10 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
                 if ((uint32_t)rangeLowEdit->maximum() != high_idx){
                     rangeLowEdit->setMaximum(high_idx);
                 }
-                if (high_idx != (uint32_t)rangeHighEdit->value()){
+                if (high_idx != (uint32_t)rangeHighEdit->value() || rangeHighEdit->text().length() == 0){
                     rangeHighEdit->setValue(high_idx);
                 }
-                if (low_idx != (uint32_t)rangeLowEdit->value()){
+                if (low_idx != (uint32_t)rangeLowEdit->value() || rangeLowEdit->text().length() == 0){
                     rangeLowEdit->setValue(low_idx);
                 }
             })
