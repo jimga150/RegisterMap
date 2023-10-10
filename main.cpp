@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: add bitfield deletion
 //TODO: add register deletion
 //TODO: add register block deletion
 
