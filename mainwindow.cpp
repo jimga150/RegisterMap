@@ -1031,7 +1031,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     //        });
     //        g->addWidget(sortRegsButton, REG_BLOCK_FIELD_COORD_SORTREGBTN.first, REG_BLOCK_FIELD_COORD_SORTREGBTN.second);
 
-    QTableWidget* bitFieldTable = new QTableWidget(0, 3);
+    QTableWidget* bitFieldTable = new QTableWidget(0, BITFIELD_TABLE_COL_MAX+1);
     bitFieldTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     bitFieldTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     bitFieldTable->setSelectionMode(QAbstractItemView::SingleSelection);
