@@ -10,6 +10,7 @@ class BitFieldController : public QObject
     Q_OBJECT
 public:
     explicit BitFieldController(BitField* bf, QObject *parent = nullptr);
+    ~BitFieldController();
 
     QString getName();
     QString getCodeName();

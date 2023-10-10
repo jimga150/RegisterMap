@@ -140,8 +140,6 @@ void RegisterController::makeNewBitField()
     b->low_index = 0;
     b->high_index = 0;
 
-    this->reg->bitfields.push_back(b);
-
     BitFieldController* bfc = new BitFieldController(b, this);
     connect(bfc, &BitFieldController::changeMade, this, &RegisterController::changeMade);
 

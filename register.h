@@ -6,8 +6,6 @@
 #include <vector>
 #include <cstdio>
 
-#include "bitfield.h"
-
 typedef uint32_t addr_t;
 
 class Register
@@ -25,11 +23,7 @@ public:
 
     std::string description;
 
-    std::vector<BitField*> bitfields;
-
     uint32_t getByteLen();
-
-    bitstring getDefaultVal();
 
     //TODO: derive reset domains with reset domains of bit fields
     //or maybe assume that resets apply to entire registers?

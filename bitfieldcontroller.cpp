@@ -9,6 +9,11 @@ BitFieldController::BitFieldController(BitField* bf, QObject *parent)
     });
 }
 
+BitFieldController::~BitFieldController()
+{
+    delete this->bf;
+}
+
 QString BitFieldController::getName()
 {
     return this->bf->name.c_str();
