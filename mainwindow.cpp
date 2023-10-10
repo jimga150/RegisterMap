@@ -950,9 +950,9 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         this->setAllEnabled(regFrame, true);
     });
 
-    for (int i = 0; i < g->rowCount(); ++i){
-        printf("g row %d: %d\n", i, g->rowStretch(i));
-    }
+//    for (int i = 0; i < g->rowCount(); ++i){
+//        printf("g row %d: %d\n", i, g->rowStretch(i));
+//    }
 
 //    QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 //    g->addItem(spacer, REG_BLOCK_FIELD_COORD_SPACER.first, REG_BLOCK_FIELD_COORD_SPACER.second);
@@ -1253,9 +1253,9 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     setAllEnabled(regFrame, false);
 
-    for (int i = 0; i < reggrid->rowCount(); ++i){
-        printf("reggrid row %d: %d\n", i, reggrid->rowStretch(i));
-    }
+//    for (int i = 0; i < reggrid->rowCount(); ++i){
+//        printf("reggrid row %d: %d\n", i, reggrid->rowStretch(i));
+//    }
 
     return regFrame;
 }
