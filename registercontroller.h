@@ -60,6 +60,7 @@ public slots:
     void setDescription(const QString& new_desc);
 
     void makeNewBitField();
+    void deleteBitField(size_t idx);
 
     void setBitFieldIdx(size_t new_idx);
 

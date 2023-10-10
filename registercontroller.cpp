@@ -149,6 +149,23 @@ void RegisterController::makeNewBitField()
     emit this->changeMade();
 }
 
+void RegisterController::deleteBitField(size_t idx)
+{
+    bool change_idx = this->getNumBitFields() > 1;
+    size_t new_idx = idx > 0 ? idx - 1 : idx;
+
+    BitFieldController* bfc_todelete = this->getBitFieldControllerAt(idx);
+
+    this->bit_field_controllers.erase(this->bit_field_controllers.begin() + idx);
+
+    bfc_todelete->deleteLater();
+    //BitFieldController will emit destroyed() signal, which is connected to the UI elements
+
+    emit this->changeMade();
+
+    if (change_idx) this->setBitFieldIdx(new_idx);
+}
+
 void RegisterController::setBitFieldIdx(size_t new_idx)
 {
     if (new_idx == this->curr_bitfield_idx) return;

@@ -50,16 +50,17 @@
 #define REG_TABLE_COL_OFFSETINT (3)
 #define REG_TABLE_COL_MAX       REG_TABLE_COL_OFFSETINT
 
-#define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(0, 2))
-#define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(1, 2))
-#define BITFIELD_FIELD_COORD_GEN_CODENAME       (std::pair<int, int>(2, 1))
-#define BITFIELD_FIELD_COORD_RANGE_HIGH         (std::pair<int, int>(3, 2))
-#define BITFIELD_FIELD_COORD_RANGE_LOW          (std::pair<int, int>(4, 2))
-#define BITFIELD_FIELD_COORD_DESC_LABEL         (std::pair<int, int>(5, 1))
-#define BITFIELD_FIELD_COORD_DESC               (std::pair<int, int>(6, 1))
+#define BITFIELD_FIELD_COORD_NAME               (std::pair<int, int>(0, 1))
+#define BITFIELD_FIELD_COORD_CODENAME           (std::pair<int, int>(1, 1))
+#define BITFIELD_FIELD_COORD_GEN_CODENAME       (std::pair<int, int>(2, 0))
+#define BITFIELD_FIELD_COORD_RANGE_HIGH         (std::pair<int, int>(3, 1))
+#define BITFIELD_FIELD_COORD_RANGE_LOW          (std::pair<int, int>(4, 1))
+#define BITFIELD_FIELD_COORD_DESC_LABEL         (std::pair<int, int>(5, 0))
+#define BITFIELD_FIELD_COORD_DESC               (std::pair<int, int>(6, 0))
+#define BITFIELD_FIELD_COORD_DELETEBTN          (std::pair<int, int>(7, 0))
 
-#define BITFIELD_FIELD_WIDTH   (3)
-#define BITFIELD_FIELD_HEIGHT  (7)
+#define BITFIELD_FIELD_WIDTH   (2)
+#define BITFIELD_FIELD_HEIGHT  (8)
 
 #define BITFIELD_TABLE_COL_NAME     (0)
 #define BITFIELD_TABLE_COL_RANGE    (1)
@@ -1231,6 +1232,12 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
                         desc_item->setText(new_name);
                     })
                 );
+                this->reg_ui_connections.push_back(
+                    connect(bfc, &QObject::destroyed, bitFieldTable, [=](QObject* obj){
+                        disconnect(obj);
+                        bitFieldTable->removeRow(curr_table_row);
+                    })
+                );
 
                 bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_NAME, name_item);
                 bitFieldTable->setItem(curr_table_row, BITFIELD_TABLE_COL_RANGE, range_item);
@@ -1309,7 +1316,10 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
     bitFieldGrid->addWidget(descLabel, BITFIELD_FIELD_COORD_DESC_LABEL.first, BITFIELD_FIELD_COORD_DESC_LABEL.second);
 
     QTextEdit* descEdit = new QTextEdit();
-    bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH-1);
+    bitFieldGrid->addWidget(descEdit, BITFIELD_FIELD_COORD_DESC.first, BITFIELD_FIELD_COORD_DESC.second, 1, BITFIELD_FIELD_WIDTH);
+
+    QPushButton* deleteBtn = new QPushButton("Delete Bit Field");
+    bitFieldGrid->addWidget(deleteBtn, BITFIELD_FIELD_COORD_DELETEBTN.first, BITFIELD_FIELD_COORD_DELETEBTN.second);
 
     connect(rbc, &RegisterBlockController::currBitFieldIdxChanged, this, [=](int new_bf_idx){
         //disconnect everything between the register frame and the previously selected register
@@ -1412,6 +1422,12 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
             })
         );
         emit bfc->descriptionChanged(bfc->getDescription());
+
+        this->bitfield_ui_connections.push_back(
+            connect(deleteBtn, &QPushButton::clicked, bfc, [=](){
+                rc->deleteBitField(new_bf_idx);
+            })
+        );
     });
 
     //disable all bitfield stuff till we start tracking a bitfield
