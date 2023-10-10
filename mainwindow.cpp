@@ -1072,6 +1072,10 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
         //disconnect everything between the register frame and the previously selected register
         for (QMetaObject::Connection& c : this->reg_ui_connections){
+            if (!c){
+//                fprintf(stderr, "Register <-> UI connection was invalid.\n");
+                continue;
+            }
             if (!disconnect(c)){
                 fprintf(stderr, "Failed to disconnect a Register <-> UI connection!\n");
             }
@@ -1310,6 +1314,10 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
     connect(rbc, &RegisterBlockController::currBitFieldIdxChanged, this, [=](int new_bf_idx){
         //disconnect everything between the register frame and the previously selected register
         for (QMetaObject::Connection& c : this->bitfield_ui_connections){
+            if (!c){
+//                fprintf(stderr, "Bit Field <-> UI connection was invalid.\n");
+                continue;
+            }
             if (!disconnect(c)){
                 fprintf(stderr, "Failed to disconnect a Bit Field <-> UI connection!\n");
             }
