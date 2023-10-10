@@ -87,7 +87,109 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-test_result_enum MainWindow::checkRBOffsetCollisions()
+test_result_enum MainWindow::checkAllRegRangeCollisions()
+{
+    test_result_enum test_result = OK;
+    for (RegisterBlockController* rbc : this->reg_block_ctrls){
+        if (this->checkRBRegRangeCollisions(rbc) != OK){
+            test_result = ERROR;
+        }
+    }
+    return test_result;
+}
+
+test_result_enum MainWindow::checkRBRegRangeCollisions(RegisterBlockController* rbc)
+{
+    test_result_enum test_result = OK;
+    for (uint i = 0; i < rbc->getNumRegs(); ++i){
+        if (this->checkRegRangeCollisions(rbc->getRegControllerAt(i)) != OK){
+            test_result = ERROR;
+        }
+    }
+    return test_result;
+}
+
+test_result_enum MainWindow::checkRegBitLen(RegisterController* rc)
+{
+
+    std::vector<BitFieldController*> bad_bitfields;
+
+    for (uint i = 0; i < rc->getNumBitFields(); ++i){
+        BitFieldController* bfc = rc->getBitFieldControllerAt(i);
+        if (bfc->getHighIdx() > rc->getBitLen()-1){
+            bad_bitfields.push_back(bfc);
+        }
+    }
+
+    if (bad_bitfields.size() > 0){
+        QString warn_msg =
+            QString("One or more Bit Fields in %1 exceed the bit length (%2).")
+                .arg(rc->getName()).arg(rc->getBitLen());
+        for (BitFieldController* bfc : bad_bitfields){
+            warn_msg += "\nName: ";
+            warn_msg += bfc->getName();
+            warn_msg += "\tRange: ";
+            warn_msg += bfc->getBitRangeAsString();
+        }
+        QMessageBox::warning(this, "Bit Length Validation Failed: " + rc->getName(), warn_msg);
+        return ERROR;
+    }
+
+    return OK;
+}
+
+test_result_enum MainWindow::checkRegRangeCollisions(RegisterController* rc)
+{
+
+    if (rc->getNumBitFields() == 0) return OK;
+
+    if (this->checkRegBitLen(rc) != OK) return ERROR;
+
+    std::vector<BitFieldController*> bits_used;
+    for (uint i = 0; i < rc->getBitLen(); ++i){
+        bits_used.push_back(nullptr);
+    }
+
+    std::vector<std::pair<BitFieldController*, BitFieldController*>> colliding_bitfields;
+
+    for (uint i = 0; i < rc->getNumBitFields(); ++i){
+        BitFieldController* bfc = rc->getBitFieldControllerAt(i);
+
+        for (uint b = bfc->getLowIdx(); b <= bfc->getHighIdx(); ++b){
+            if (bits_used[b]){
+                std::pair<BitFieldController*, BitFieldController*> colliding_pair;
+                colliding_pair.first = bits_used[b];
+                colliding_pair.second = bfc;
+                colliding_bitfields.push_back(colliding_pair);
+            } else {
+                bits_used[b] = bfc;
+            }
+        }
+    }
+
+    if (colliding_bitfields.size() > 0){
+        QString warn_msg =
+            QString("One or more Bit Fields in %1 overlap.")
+                .arg(rc->getName());
+        for (std::pair<BitFieldController*, BitFieldController*>& collision : colliding_bitfields){
+            warn_msg += "\n";
+            warn_msg += collision.first->getName();
+            warn_msg += " (";
+            warn_msg += collision.first->getBitRangeAsString();
+            warn_msg += ") <-> ";
+            warn_msg += collision.second->getName();
+            warn_msg += " (";
+            warn_msg += collision.first->getBitRangeAsString();
+            warn_msg += ")";
+        }
+        QMessageBox::warning(this, "Bit Field Validation Failed: " + rc->getName(), warn_msg);
+        return ERROR;
+    }
+
+    return OK;
+}
+
+test_result_enum MainWindow::checkAllOffsetCollisions()
 {
     test_result_enum final_result = OK;
     for (RegisterBlockController* rbc : this->reg_block_ctrls){
@@ -168,7 +270,7 @@ test_result_enum MainWindow::checkRBCodeNameCollisions()
     return result;
 }
 
-test_result_enum MainWindow::checkRBRegCodeNameCollisions()
+test_result_enum MainWindow::checkAllRegCodeNameCollisions()
 {
     test_result_enum final_result = OK;
     for (RegisterBlockController* rbc : this->reg_block_ctrls){
@@ -240,14 +342,17 @@ void MainWindow::save()
 {
     bool valid = true;
 
+    //verify that no bitfields in any registers in any register blocks overlap or fall outside their register's bit range
+    valid &= this->checkAllRegRangeCollisions() == OK;
+
     //verify that no register block codenames collide or are empty
     valid &= this->checkRBCodeNameCollisions() == OK;
 
     //verify that no register codenames collide within register blocks (or are empty)
-    valid &= this->checkRBRegCodeNameCollisions() == OK;
+    valid &= this->checkAllRegCodeNameCollisions() == OK;
 
     //verify that no register offsets collide within register blocks
-    valid &= this->checkRBOffsetCollisions() == OK;
+    valid &= this->checkAllOffsetCollisions() == OK;
 
     if (!valid) return;
 

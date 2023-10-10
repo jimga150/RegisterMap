@@ -39,12 +39,17 @@ public:
 
     QString getSortableString(uint64_t arg);
 
-    test_result_enum checkRBOffsetCollisions();
+    test_result_enum checkAllRegRangeCollisions();
+    test_result_enum checkRBRegRangeCollisions(RegisterBlockController* rbc);
+    test_result_enum checkRegBitLen(RegisterController* rc);
+    test_result_enum checkRegRangeCollisions(RegisterController* rc);
+
+    test_result_enum checkAllOffsetCollisions();
     test_result_enum checkOffsetCollisions(RegisterBlockController* rbc);
 
     test_result_enum checkRBCodeNameCollisions();
 
-    test_result_enum checkRBRegCodeNameCollisions();
+    test_result_enum checkAllRegCodeNameCollisions();
     test_result_enum checkRegCodeNameCollisions(RegisterBlockController* rbc);
 
     void printTomlTable(toml_value_t table, int tab_level);
