@@ -161,31 +161,14 @@ void RegisterController::setBitFieldIdx(size_t new_idx)
 
 void RegisterController::sortBitFieldsByRange()
 {
-//    if (this->getNumRegs() == 0) return;
     if (this->getNumBitFields() == 0) return;
 
-//    addr_t offset_in_focus = this->getCurrRegController()->getOffset();
     QString range_in_focus = this->getCurrBitFieldController()->getBitRangeAsString();
-
-//    std::vector<RegisterController*> sorted_reg_controllers;
-//    sorted_reg_controllers.reserve(this->reg_controllers.size());
 
     std::vector<BitFieldController*> sorted_bit_field_controllers;
     sorted_bit_field_controllers.reserve(this->bit_field_controllers.size());
 
-//    //sort register controller list (these point to registers owned by the register block,
-//    //so that list doesnt need to be sorted)
-//    for (uint i = 0; i < this->reg_controllers.size(); ++i){
-//        uint j;
-//        for (j = 0; j < sorted_reg_controllers.size(); ++j){
-//            if (sorted_reg_controllers[j]->getOffset() > this->reg_controllers[i]->getOffset()){
-//                break;
-//            }
-//        }
-//        sorted_reg_controllers.insert(sorted_reg_controllers.begin() + j, this->reg_controllers[i]);
-//    }
-//    this->reg_controllers.swap(sorted_reg_controllers);
-
+    //sort bit field controller list (these point to registers owned by the register block,
     for (uint i = 0; i < this->bit_field_controllers.size(); ++i){
         uint j;
         for (j = 0; j < sorted_bit_field_controllers.size(); ++j){
@@ -197,28 +180,15 @@ void RegisterController::sortBitFieldsByRange()
     }
     this->bit_field_controllers.swap(sorted_bit_field_controllers);
 
-//    //cycle through all register indices to cause table to update
-//    //with the info from new registers in given index positions
-//    for (uint i = 0; i < this->getNumRegs(); ++i){
-//        this->setCurrRegIdx(i);
-//    }
-
+    //cycle through all bit field indices to cause table to update
+    //with the info from new registers in given index positions
     for (uint i = 0; i < this->getNumBitFields(); ++i){
         emit this->currBitFieldIdxChanged(i);
     }
 
-//    emit this->regIdxsReassigned();
-
     emit this->bitFieldIdxsReassigned();
 
-//    //return to whatever register we were focused on when we started
-//    for (uint i = 0; i < this->rb.registers.size(); ++i){
-//        if (this->reg_controllers[i]->getOffset() == offset_in_focus){
-//            this->setCurrRegIdx(i);
-//            break;
-//        }
-//    }
-
+    //return to whatever bit field we were focused on when we started
     for (uint i = 0; i < this->getNumBitFields(); ++i){
         if (!(this->bit_field_controllers[i]->getBitRangeAsString().compare(range_in_focus))){
             this->setBitFieldIdx(i);
