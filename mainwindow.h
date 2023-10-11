@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 
-#include "QtWidgets/qtablewidget.h"
+#include <QFile>
+#include <QTableWidget>
 #include "registerblockcontroller.h"
 #include "toml11/toml.hpp"
 
@@ -79,6 +80,8 @@ public:
 public slots:
 
     void save();
+
+    void saveTo(QFile& save_file, bool is_validated = false);
 
     void load();
 

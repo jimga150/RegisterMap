@@ -2,6 +2,10 @@
 
 #include <QApplication>
 
+//TODO: add undo
+
+//TODO: add domains and interfaces
+
 //TODO: add bit field access rights(?)
 //TODO: add bit field default val
 //TODO: add bit field reset domains(?)

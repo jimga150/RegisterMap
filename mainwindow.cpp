@@ -392,6 +392,13 @@ void MainWindow::save()
         return;
     }
 
+    this->saveTo(save_file, true);
+
+    save_file.close();
+}
+
+void MainWindow::saveTo(QFile& save_file, bool is_validated)
+{
     QTextStream savefilestream(&save_file);
     std::stringstream std_stream;
 
@@ -403,12 +410,16 @@ void MainWindow::save()
 
     std::string toml_id;
 
+    int rb_num = 0;
+
     for (RegisterBlockController* p : this->reg_block_ctrls){
 
         toml_value_t reg_array;
 
-        //we already verified that no offset collisions occur, so this is OK
-        p->sortRegsByOffset();
+        if (is_validated){
+            //we already verified that no offset collisions occur, so this is OK
+            p->sortRegsByOffset();
+        }
 
         for (uint i = 0; i < p->getNumRegs(); ++i){
 
@@ -422,19 +433,22 @@ void MainWindow::save()
                     {BitFieldController::name_key, bfc->getName().toStdString()},
                     {BitFieldController::codename_key, bfc->getCodeName().toStdString()},
                     {BitFieldController::codenamegen_key,
-                        bfc->getCodeNameGeneration() ? "true" : "false"},
+                     bfc->getCodeNameGeneration() ? "true" : "false"},
                     {BitFieldController::desc_key, bfc->getDescription().toStdString()},
                     {BitFieldController::high_idx_key, bfc->getHighIdx()},
                     {BitFieldController::low_idx_key, bfc->getLowIdx()}
                 };
 
-                toml_id = std::to_string(bfc->getLowIdx()) + "_" + bfc->getCodeName().toStdString();
+                toml_id = (is_validated ? "" : std::to_string(b) + "_") +
+                          std::to_string(bfc->getLowIdx()) + "_" +
+                          bfc->getCodeName().toStdString();
+
                 bitfield_array[toml_id] = bitfield_record;
             }
 
             RegisterController* rc = p->getRegControllerAt(i);
 
-//            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
+            //            printf("Collecting register %s (0x%x)\n", p->getRegName(i).toUtf8().constData(), p->getRegOffset(i));
             toml_value_t reg_record{
                 {RegisterController::name_key, rc->getName().toStdString()},
                 {RegisterController::codename_key, rc->getCodeName().toStdString()},
@@ -448,7 +462,10 @@ void MainWindow::save()
                 reg_record.as_table()[RegisterController::bitfields_key] = bitfield_array;
             }
 
-            toml_id = std::to_string(rc->getOffset()) + "_" + rc->getCodeName().toStdString();
+            toml_id = (is_validated ? "" : std::to_string(i) + "_") +
+                      std::to_string(rc->getOffset()) + "_" +
+                      rc->getCodeName().toStdString();
+
             reg_array[toml_id] = reg_record;
         }
 
@@ -466,7 +483,10 @@ void MainWindow::save()
             rb_table.as_table()[RegisterBlockController::reg_key] = reg_array;
         }
 
-        toml_id = reg_block_prefix + p->getCodeName().toStdString();
+        //only add numbers in toml keys if we didnt validate against codename collisions
+        std::string rb_num_str = (is_validated ? "" : std::to_string(rb_num) + "_");
+
+        toml_id = reg_block_prefix + rb_num_str + p->getCodeName().toStdString();
         base_table[toml_id] = rb_table;
     }
 
@@ -475,8 +495,6 @@ void MainWindow::save()
     savefilestream << std_stream.str().c_str();
 
     this->setWindowTitle(QFileInfo(save_file.fileName()).fileName());
-
-    save_file.close();
 }
 
 void MainWindow::load()
@@ -522,8 +540,8 @@ void MainWindow::loadFile(QString load_filename)
     try {
         base_table = toml::parse(load_filename.toUtf8().constData());
 
-        printf("File contents:\n");
-        this->printTomlTable(base_table);
+//        printf("File contents:\n");
+//        this->printTomlTable(base_table);
 
         //TODO: make method of storing old load methods and call upon those to translate to the current object structure
         int vmaj = toml::find<int>(base_table, vmaj_key);
