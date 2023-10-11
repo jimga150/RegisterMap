@@ -3,6 +3,7 @@
 #include <QApplication>
 
 //TODO: add register deletion
+//TODO: make bitfields and registers not heap pointers in controllers?
 //TODO: add register block deletion
 
 //TODO: add bit field access rights(?)
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
     int retval = a.exec();
 
     for (MainWindow* w : windows){
-        w->deleteLater();
+        delete w;
     }
 
     return retval;
