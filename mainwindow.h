@@ -30,6 +30,8 @@ public:
     MainWindow(void (*makeNewWindow)(QString load_filename), QWidget *parent = nullptr);
     ~MainWindow();
 
+    bool openSaveFile(QFile& file);
+
     QWidget* makeNewRegBlockTab();
 
     QFrame* makeNewRegFrame(RegisterBlockController* rbc);

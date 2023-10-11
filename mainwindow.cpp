@@ -387,14 +387,21 @@ void MainWindow::save()
     printf("Save as: %s\n", save_location.toUtf8().constData());
 
     QFile save_file(save_location);
-    if (!(save_file.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate | QIODeviceBase::Text))){
-        QMessageBox::warning(this, "File save Failed", "Failed to save file");
-        return;
-    }
+
+    if (!this->openSaveFile(save_file)) return;
 
     this->saveTo(save_file, true);
 
     save_file.close();
+}
+
+bool MainWindow::openSaveFile(QFile& file)
+{
+    if (!(file.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate | QIODeviceBase::Text))){
+        QMessageBox::warning(this, "File save Failed", "Failed to save file");
+        return false;
+    }
+    return true;
 }
 
 void MainWindow::saveTo(QFile& save_file, bool is_validated)
