@@ -1052,7 +1052,10 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     //this forces the highlighted row to always be the one we're editing
     connect(bitFieldTable, &QTableWidget::itemSelectionChanged, this, [=](){
-        int curr_row = rbc->getCurrRegController()->getCurrBitFieldIdx();
+        if (!rbc) return;
+        RegisterController* rc = rbc->getCurrRegController();
+        if (!rc) return;
+        int curr_row = rc->getCurrBitFieldIdx();
         for (QTableWidgetItem* twi : bitFieldTable->selectedItems()){
             if (bitFieldTable->row(twi) != curr_row){
                 bitFieldTable->clearSelection();

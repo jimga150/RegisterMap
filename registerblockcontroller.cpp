@@ -52,7 +52,8 @@ RegisterController* RegisterBlockController::getCurrRegController()
 
 RegisterController* RegisterBlockController::getRegControllerAt(size_t n)
 {
-    return this->reg_controllers.at(n);
+    if (n < this->getNumRegs()) return this->reg_controllers.at(n);
+    return nullptr;
 }
 
 void RegisterBlockController::setName(const QString& new_name)
