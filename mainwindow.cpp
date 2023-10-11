@@ -1297,7 +1297,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
     bitFieldGrid->addWidget(codeNameEdit, BITFIELD_FIELD_COORD_CODENAME.first, BITFIELD_FIELD_COORD_CODENAME.second);
 
     QCheckBox* customCNCheckBox = new QCheckBox("Specify custom Source-Friendly Name");
-    bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second, 1, BITFIELD_FIELD_WIDTH-1);
+    bitFieldGrid->addWidget(customCNCheckBox, BITFIELD_FIELD_COORD_GEN_CODENAME.first, BITFIELD_FIELD_COORD_GEN_CODENAME.second, 1, BITFIELD_FIELD_WIDTH);
 
     QLabel* rangeLabel = new QLabel("Range: ");
     bitFieldGrid->addWidget(rangeLabel, BITFIELD_FIELD_COORD_RANGE_HIGH.first, BITFIELD_FIELD_COORD_RANGE_HIGH.second-1);
