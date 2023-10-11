@@ -187,3 +187,20 @@ void RegisterBlockController::makeNewReg()
     emit this->regCreated(rc);
     emit this->changeMade();
 }
+
+void RegisterBlockController::deleteReg(size_t idx)
+{
+    bool change_idx = this->getNumRegs() > 1;
+    size_t new_idx = idx > 0 ? idx - 1 : idx;
+
+    RegisterController* rc_todelete = this->getRegControllerAt(idx);
+
+    this->reg_controllers.erase(this->reg_controllers.begin() + idx);
+
+    rc_todelete->deleteLater();
+    //RegisterController will emit destroyed() signal, which is connected to the UI elements
+
+    emit this->changeMade();
+
+    if (change_idx) this->setCurrRegIdx(new_idx);
+}

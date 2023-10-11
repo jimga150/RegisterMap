@@ -40,9 +40,10 @@
 #define REG_FIELD_COORD_SORT_BITFIELD_BTN   (std::pair<int, int>(8, 1))
 #define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(9, 0))
 #define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(10, 0))
+#define REG_FIELD_COORD_DELETEBTN           (std::pair<int, int>(11, 0))
 
 #define REG_FIELD_WIDTH   (2)
-#define REG_FIELD_HEIGHT  (11)
+#define REG_FIELD_HEIGHT  (12)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
@@ -940,6 +941,10 @@ QWidget* MainWindow::makeNewRegBlockTab(){
         connect(rc, &RegisterController::descriptionChanged, regTable, [=](const QString& new_name){
             desc_item->setText(new_name);
         });
+        connect(rc, &QObject::destroyed, regTable, [=](QObject* obj){
+            disconnect(obj);
+            regTable->removeRow(curr_table_row);
+        });
 
         regTable->setItem(curr_table_row, REG_TABLE_COL_NAME, name_item);
         regTable->setItem(curr_table_row, REG_TABLE_COL_OFFSET, offset_item);
@@ -1071,6 +1076,9 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
 
     QFrame* bitFieldFrame = this->makeNewBitFieldFrame(rbc);
     reggrid->addWidget(bitFieldFrame, REG_FIELD_COORD_BITFIELD_FRAME.first, REG_FIELD_COORD_BITFIELD_FRAME.second, 1, REG_FIELD_WIDTH);
+
+    QPushButton* deleteBtn = new QPushButton("Delete Register");
+    reggrid->addWidget(deleteBtn, REG_FIELD_COORD_DELETEBTN.first, REG_FIELD_COORD_DELETEBTN.second, 1, REG_FIELD_WIDTH);
 
     connect(rbc, &RegisterBlockController::currRegIdxChanged, this, [=](int new_idx){
 
@@ -1207,6 +1215,12 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
         this->reg_ui_connections.push_back(
             connect(rc, &RegisterController::bitFieldIdxsReassigned, bitFieldTable, [=](){
                 bitFieldTable->sortItems(BITFIELD_TABLE_COL_RANGE, Qt::SortOrder::AscendingOrder);
+            })
+        );
+
+        this->reg_ui_connections.push_back(
+            connect(deleteBtn, &QPushButton::clicked, rbc, [=](){
+                rbc->deleteReg(rbc->getCurrRegIdx());
             })
         );
 

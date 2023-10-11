@@ -63,6 +63,7 @@ public slots:
     void sortRegsByOffset();
 
     void makeNewReg();
+    void deleteReg(size_t idx);
 
 private:
 

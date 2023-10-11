@@ -2,7 +2,6 @@
 
 #include <QApplication>
 
-//TODO: add register deletion
 //TODO: make bitfields and registers not heap pointers in controllers?
 //TODO: add register block deletion
 
