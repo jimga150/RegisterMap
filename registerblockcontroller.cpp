@@ -168,16 +168,16 @@ void RegisterBlockController::makeNewReg()
 
     int new_idx = this->getNumRegs();
 
-    Register* reg_addr = new Register;
+    Register reg;
 
-    reg_addr->name = "New Register " + std::to_string(new_idx);
-    reg_addr->offset = new_idx; //TODO: check for offset collisions
-    reg_addr->code_name = generate_code_name(reg_addr->name);
-    reg_addr->bit_len = 8; //TODO: set default for this in a menu? default per-block?
-    reg_addr->description = "Reserved";
+    reg.name = "New Register " + std::to_string(new_idx);
+    reg.offset = new_idx; //TODO: check for offset collisions
+    reg.code_name = generate_code_name(reg.name);
+    reg.bit_len = 8; //TODO: set default for this in a menu? default per-block?
+    reg.description = "Reserved";
 
     //we take ownership of Register pointer
-    RegisterController* rc = new RegisterController(reg_addr, this);
+    RegisterController* rc = new RegisterController(reg, this);
 
     connect(rc, &RegisterController::changeMade, this, &RegisterBlockController::changeMade);
     connect(rc, &RegisterController::currBitFieldIdxChanged, this, &RegisterBlockController::currBitFieldIdxChanged);

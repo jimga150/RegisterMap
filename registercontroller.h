@@ -10,7 +10,7 @@ class RegisterController : public QObject
 {
     Q_OBJECT
 public:
-    explicit RegisterController(Register* r, QObject *parent = nullptr);
+    explicit RegisterController(Register r, QObject *parent = nullptr);
     ~RegisterController();
 
     QString getName();
@@ -71,7 +71,7 @@ private:
 
     bool gen_codename = true;
 
-    Register* reg;
+    Register reg;
 
     //set to a nonzero number so that the first bitfield creation will properly trigger the 0-index update
     size_t curr_bitfield_idx = -1;

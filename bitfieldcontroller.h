@@ -9,7 +9,7 @@ class BitFieldController : public QObject
 {
     Q_OBJECT
 public:
-    explicit BitFieldController(BitField* bf, QObject *parent = nullptr);
+    explicit BitFieldController(BitField bf, QObject *parent = nullptr);
     ~BitFieldController();
 
     QString getName();
@@ -50,7 +50,7 @@ private:
 
     bool gen_codename = true;
 
-    BitField* bf;
+    BitField bf;
 
 };
 
