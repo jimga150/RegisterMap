@@ -11,6 +11,7 @@ class RegisterController : public QObject
     Q_OBJECT
 public:
     explicit RegisterController(Register* r, QObject *parent = nullptr);
+    ~RegisterController();
 
     QString getName();
     QString getCodeName();

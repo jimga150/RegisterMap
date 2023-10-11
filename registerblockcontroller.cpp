@@ -42,7 +42,7 @@ size_t RegisterBlockController::getCurrRegIdx()
 
 size_t RegisterBlockController::getNumRegs()
 {
-    return this->rb.registers.size();
+    return this->reg_controllers.size();
 }
 
 RegisterController* RegisterBlockController::getCurrRegController()
@@ -154,7 +154,7 @@ void RegisterBlockController::sortRegsByOffset()
     emit this->regIdxsReassigned();
 
     //return to whatever register we were focused on when we started
-    for (uint i = 0; i < this->rb.registers.size(); ++i){
+    for (uint i = 0; i < this->getNumRegs(); ++i){
         if (this->reg_controllers[i]->getOffset() == offset_in_focus){
             this->setCurrRegIdx(i);
             break;
@@ -165,12 +165,9 @@ void RegisterBlockController::sortRegsByOffset()
 void RegisterBlockController::makeNewReg()
 {
 
-    int new_idx = this->rb.registers.size();
+    int new_idx = this->getNumRegs();
 
     Register* reg_addr = new Register;
-
-    //RegisterBlock takes ownership of Register pointer
-    this->rb.registers.push_back(reg_addr);
 
     reg_addr->name = "New Register " + std::to_string(new_idx);
     reg_addr->offset = new_idx; //TODO: check for offset collisions
@@ -178,7 +175,9 @@ void RegisterBlockController::makeNewReg()
     reg_addr->bit_len = 8; //TODO: set default for this in a menu? default per-block?
     reg_addr->description = "Reserved";
 
+    //we take ownership of Register pointer
     RegisterController* rc = new RegisterController(reg_addr, this);
+
     connect(rc, &RegisterController::changeMade, this, &RegisterBlockController::changeMade);
     connect(rc, &RegisterController::currBitFieldIdxChanged, this, &RegisterBlockController::currBitFieldIdxChanged);
 

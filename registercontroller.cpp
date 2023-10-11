@@ -6,6 +6,11 @@ RegisterController::RegisterController(Register* r, QObject *parent)
     this->reg = r;
 }
 
+RegisterController::~RegisterController()
+{
+    delete this->reg;
+}
+
 QString RegisterController::getName()
 {
     return this->reg->name.c_str();

@@ -12,12 +12,10 @@ public:
     RegisterBlock();
     ~RegisterBlock();
 
-    Register* getRegisterAt(addr_t offset);
+//    Register* getRegisterAt(addr_t offset);
 
-    addr_t getMaxOffset();
+//    addr_t getMaxOffset();
 
-
-    std::vector<Register*> registers;
 
     std::string name;
     std::string code_name;

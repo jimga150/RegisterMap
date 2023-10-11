@@ -7,23 +7,21 @@ RegisterBlock::RegisterBlock()
 
 RegisterBlock::~RegisterBlock()
 {
-    for (Register* r : this->registers){
-        delete r;
-    }
+
 }
 
-Register* RegisterBlock::getRegisterAt(addr_t offset){
-    for (Register* reg : this->registers){
-        if (reg->offset == offset) return reg;
-    }
-    return &invalid_reg;
-}
+//Register* RegisterBlock::getRegisterAt(addr_t offset){
+//    for (Register* reg : this->registers){
+//        if (reg->offset == offset) return reg;
+//    }
+//    return &invalid_reg;
+//}
 
-addr_t RegisterBlock::getMaxOffset()
-{
-    addr_t max_offset = 0;
-    for (Register* r : this->registers){
-        if (r->offset > max_offset) max_offset = r->offset;
-    }
-    return max_offset;
-}
+//addr_t RegisterBlock::getMaxOffset()
+//{
+//    addr_t max_offset = 0;
+//    for (Register* r : this->registers){
+//        if (r->offset > max_offset) max_offset = r->offset;
+//    }
+//    return max_offset;
+//}
