@@ -81,6 +81,28 @@ MainWindow::MainWindow(void (*makeNewWindow)(QString), QWidget *parent)
     connect(this->ui->actionNew, &QAction::triggered, this, [=](){
         this->makeNewWindow("");
     });
+    connect(this->ui->tabWidget, &QTabWidget::tabCloseRequested, this, [=](int idx_to_close){
+
+        QWidget* w_to_delete = this->ui->tabWidget->widget(idx_to_close);
+        if (!w_to_delete) return;
+
+        bool delete_tab = false;
+
+        for (uint i = 0; i < this->reg_block_ctrls.size(); ++i){
+            RegisterBlockController* rbc = this->reg_block_ctrls[i];
+            if (qobject_cast<QWidget*>(rbc->parent()) == w_to_delete){
+                rbc->deleteLater();
+                this->reg_block_ctrls.erase(this->reg_block_ctrls.constBegin() + i);
+                delete_tab = true;
+                break;
+            }
+        }
+
+        if (delete_tab){
+            w_to_delete->deleteLater();
+            this->ui->tabWidget->removeTab(idx_to_close);
+        }
+    });
 
     this->setWindowTitle("New Register Map");
 }

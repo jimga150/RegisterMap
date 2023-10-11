@@ -2,9 +2,6 @@
 
 #include <QApplication>
 
-//TODO: make bitfields and registers not heap pointers in controllers?
-//TODO: add register block deletion
-
 //TODO: add bit field access rights(?)
 //TODO: add bit field default val
 //TODO: add bit field reset domains(?)
