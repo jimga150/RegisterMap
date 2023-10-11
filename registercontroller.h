@@ -18,8 +18,6 @@ public:
     bool getCodeNameGeneration();
     addr_t getOffset();
     QString getOffsetAsString();
-    uint32_t getBitLen();
-    uint32_t getByteLen();
     QString getDescription();
 
     size_t getCurrBitFieldIdx();
@@ -32,7 +30,6 @@ public:
     inline static const std::string codenamegen_key = "autogen_codename";
     inline static const std::string desc_key = "description";
     inline static const std::string offset_key = "offset";
-    inline static const std::string bitlen_key = "bit_len";
     inline static const std::string bitfields_key = "bit_fields";
 
 signals:
@@ -41,7 +38,6 @@ signals:
     void codeNameChanged(const QString& new_name);
     void codeNameGenerationChanged(bool gen_codename);
     void offsetChanged(addr_t new_offset);
-    void bitLenChanged(uint32_t new_bitlen);
     void descriptionChanged(const QString& new_desc);
 
     void bitFieldCreated(BitFieldController* bfc);
@@ -57,7 +53,6 @@ public slots:
     void setCodeName(const QString& new_name);
     void setCodeNameGeneration(bool gen_codename);
     void setOffset(addr_t new_offset);
-    void setBitLen(uint32_t new_bitlen);
     void setDescription(const QString& new_desc);
 
     void makeNewBitField();

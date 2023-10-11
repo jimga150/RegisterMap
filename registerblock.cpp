@@ -10,6 +10,12 @@ RegisterBlock::~RegisterBlock()
 
 }
 
+uint32_t RegisterBlock::getByteLen(){
+    float frac_byte_cnt = ((float)(this->bit_len))/8.0;
+    float whole_byte_cnt = ceil(frac_byte_cnt);
+    return (uint32_t)whole_byte_cnt;
+}
+
 //Register* RegisterBlock::getRegisterAt(addr_t offset){
 //    for (Register* reg : this->registers){
 //        if (reg->offset == offset) return reg;

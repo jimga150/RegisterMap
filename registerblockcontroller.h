@@ -19,6 +19,8 @@ public:
     bool getCodeNameGeneration();
     QString getDescription();
     addr_t getSize();
+    uint32_t getBitLen();
+    uint32_t getByteLen();
 
     size_t getCurrRegIdx();
     size_t getNumRegs();
@@ -30,6 +32,7 @@ public:
     inline static const std::string codenamegen_key = "autogen_codename";
     inline static const std::string desc_key = "description";
     inline static const std::string size_key = "size";
+    inline static const std::string bitlen_key = "bit_len";
     inline static const std::string reg_key = "registers";
 
 signals:
@@ -40,8 +43,8 @@ signals:
     void codeNameChanged(const QString& new_name);
     void codeNameGenerationChanged(bool gen_code_name);
     void descriptionChanged(const QString& new_desc);
-
     void sizeChanged(addr_t new_size);
+    void bitLenChanged(uint32_t new_bitlen);
 
     void currRegIdxChanged(int new_idx);
     void currBitFieldIdxChanged(int new_idx);
@@ -56,8 +59,8 @@ public slots:
     void setCodeName(const QString& new_name);
     void setCodeNameGeneration(bool gen_code_name);
     void setDescription(const QString& new_desc);
-
     void setSize(const addr_t new_size);
+    void setBitLen(uint32_t new_bitlen);
 
     void setCurrRegIdx(int new_idx);
     void sortRegsByOffset();

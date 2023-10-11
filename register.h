@@ -17,13 +17,9 @@ public:
     std::string name;
     std::string code_name;
 
-    uint32_t bit_len;
-
     addr_t offset;
 
     std::string description;
-
-    uint32_t getByteLen();
 
     //TODO: derive reset domains with reset domains of bit fields
     //or maybe assume that resets apply to entire registers?

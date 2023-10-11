@@ -35,6 +35,16 @@ addr_t RegisterBlockController::getSize()
     return this->rb.size;
 }
 
+uint32_t RegisterBlockController::getBitLen()
+{
+    return this->rb.bit_len;
+}
+
+uint32_t RegisterBlockController::getByteLen()
+{
+    return this->rb.getByteLen();
+}
+
 size_t RegisterBlockController::getCurrRegIdx()
 {
     return this->current_reg_idx;
@@ -112,6 +122,18 @@ void RegisterBlockController::setSize(const addr_t new_size)
     emit this->changeMade();
 }
 
+void RegisterBlockController::setBitLen(uint32_t new_bitlen)
+{
+    if (new_bitlen == this->rb.bit_len) return;
+
+    //TODO: there will likely be some heavy ramifications of this if it ends up being too small for the existing bitfields.
+    //Also, will this be compatible with the interface(s)???
+    this->rb.bit_len = new_bitlen;
+
+    emit this->bitLenChanged(new_bitlen);
+    emit this->changeMade();
+}
+
 void RegisterBlockController::setCurrRegIdx(int new_idx)
 {
     this->current_reg_idx = new_idx;
@@ -173,7 +195,6 @@ void RegisterBlockController::makeNewReg()
     reg.name = "New Register " + std::to_string(new_idx);
     reg.offset = new_idx; //TODO: check for offset collisions
     reg.code_name = generate_code_name(reg.name);
-    reg.bit_len = 8; //TODO: set default for this in a menu? default per-block?
     reg.description = "Reserved";
 
     //we take ownership of Register pointer

@@ -41,8 +41,8 @@ public:
 
     test_result_enum checkAllRegRangeCollisions();
     test_result_enum checkRBRegRangeCollisions(RegisterBlockController* rbc);
-    test_result_enum checkRegBitLen(RegisterController* rc);
-    test_result_enum checkRegRangeCollisions(RegisterController* rc);
+    test_result_enum checkRegBitLen(RegisterController* rc, uint32_t rbc_bitlen);
+    test_result_enum checkRegRangeCollisions(RegisterController* rc, uint32_t rbc_bitlen);
 
     test_result_enum checkAllOffsetCollisions();
     test_result_enum checkOffsetCollisions(RegisterBlockController* rbc);

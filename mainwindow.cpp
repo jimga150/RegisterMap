@@ -18,32 +18,32 @@
 #define REG_BLOCK_FIELD_COORD_CODENAME      (std::pair<int, int>(1, 1))
 #define REG_BLOCK_FIELD_COORD_GEN_CODENAME  (std::pair<int, int>(2, 0))
 #define REG_BLOCK_FIELD_COORD_SIZE          (std::pair<int, int>(3, 1))
-#define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(4, 0))
-#define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(5, 0))
-#define REG_BLOCK_FIELD_COORD_NEWREGBTN     (std::pair<int, int>(6, 0))
-#define REG_BLOCK_FIELD_COORD_SORTREGBTN    (std::pair<int, int>(6, 1))
-#define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(7, 0))
+#define REG_BLOCK_FIELD_COORD_BITLEN        (std::pair<int, int>(4, 1))
+#define REG_BLOCK_FIELD_COORD_BYTELEN       (std::pair<int, int>(5, 1))
+#define REG_BLOCK_FIELD_COORD_DESC_LABEL    (std::pair<int, int>(6, 0))
+#define REG_BLOCK_FIELD_COORD_DESC          (std::pair<int, int>(7, 0))
+#define REG_BLOCK_FIELD_COORD_NEWREGBTN     (std::pair<int, int>(8, 0))
+#define REG_BLOCK_FIELD_COORD_SORTREGBTN    (std::pair<int, int>(8, 1))
+#define REG_BLOCK_FIELD_COORD_REGTABLE      (std::pair<int, int>(9, 0))
 #define REG_BLOCK_FIELD_COORD_REGFRAME      (std::pair<int, int>(0, 2))
 
 #define REG_BLOCK_FIELD_WIDTH   (3)
-#define REG_BLOCK_FIELD_HEIGHT  (8)
+#define REG_BLOCK_FIELD_HEIGHT  (10)
 
 #define REG_FIELD_COORD_NAME                (std::pair<int, int>(0, 1))
 #define REG_FIELD_COORD_CODENAME            (std::pair<int, int>(1, 1))
 #define REG_FIELD_COORD_GEN_CODENAME        (std::pair<int, int>(2, 0))
 #define REG_FIELD_COORD_OFFSET              (std::pair<int, int>(3, 1))
-#define REG_FIELD_COORD_BITLEN              (std::pair<int, int>(4, 1))
-#define REG_FIELD_COORD_BYTELEN             (std::pair<int, int>(5, 1))
-#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(6, 0))
-#define REG_FIELD_COORD_DESC                (std::pair<int, int>(7, 0))
-#define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(8, 0))
-#define REG_FIELD_COORD_SORT_BITFIELD_BTN   (std::pair<int, int>(8, 1))
-#define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(9, 0))
-#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(10, 0))
-#define REG_FIELD_COORD_DELETEBTN           (std::pair<int, int>(11, 0))
+#define REG_FIELD_COORD_DESC_LABEL          (std::pair<int, int>(4, 0))
+#define REG_FIELD_COORD_DESC                (std::pair<int, int>(5, 0))
+#define REG_FIELD_COORD_NEW_BITFIELD_BTN    (std::pair<int, int>(6, 0))
+#define REG_FIELD_COORD_SORT_BITFIELD_BTN   (std::pair<int, int>(6, 1))
+#define REG_FIELD_COORD_BITFIELD_TABLE      (std::pair<int, int>(7, 0))
+#define REG_FIELD_COORD_BITFIELD_FRAME      (std::pair<int, int>(8, 0))
+#define REG_FIELD_COORD_DELETEBTN           (std::pair<int, int>(9, 0))
 
 #define REG_FIELD_WIDTH   (2)
-#define REG_FIELD_HEIGHT  (12)
+#define REG_FIELD_HEIGHT  (10)
 
 #define REG_TABLE_COL_NAME      (0)
 #define REG_TABLE_COL_OFFSET    (1)
@@ -127,29 +127,29 @@ test_result_enum MainWindow::checkRBRegRangeCollisions(RegisterBlockController* 
 {
     test_result_enum test_result = OK;
     for (uint i = 0; i < rbc->getNumRegs(); ++i){
-        if (this->checkRegRangeCollisions(rbc->getRegControllerAt(i)) != OK){
+        if (this->checkRegRangeCollisions(rbc->getRegControllerAt(i), rbc->getBitLen()) != OK){
             test_result = ERROR;
         }
     }
     return test_result;
 }
 
-test_result_enum MainWindow::checkRegBitLen(RegisterController* rc)
+test_result_enum MainWindow::checkRegBitLen(RegisterController* rc, uint32_t rbc_bitlen)
 {
 
     std::vector<BitFieldController*> bad_bitfields;
 
     for (uint i = 0; i < rc->getNumBitFields(); ++i){
         BitFieldController* bfc = rc->getBitFieldControllerAt(i);
-        if (bfc->getHighIdx() > rc->getBitLen()-1){
+        if (bfc->getHighIdx() > rbc_bitlen-1){
             bad_bitfields.push_back(bfc);
         }
     }
 
     if (bad_bitfields.size() > 0){
         QString warn_msg =
-            QString("One or more Bit Fields in %1 exceed the bit length (%2).")
-                .arg(rc->getName()).arg(rc->getBitLen());
+            QString("One or more Bit Fields in %1 exceed the Register Block bit length (%2).")
+                .arg(rc->getName()).arg(rbc_bitlen);
         for (BitFieldController* bfc : bad_bitfields){
             warn_msg += "\nName: ";
             warn_msg += bfc->getName();
@@ -163,15 +163,15 @@ test_result_enum MainWindow::checkRegBitLen(RegisterController* rc)
     return OK;
 }
 
-test_result_enum MainWindow::checkRegRangeCollisions(RegisterController* rc)
+test_result_enum MainWindow::checkRegRangeCollisions(RegisterController* rc, uint32_t rbc_bitlen)
 {
 
     if (rc->getNumBitFields() == 0) return OK;
 
-    if (this->checkRegBitLen(rc) != OK) return ERROR;
+    if (this->checkRegBitLen(rc, rbc_bitlen) != OK) return ERROR;
 
     std::vector<BitFieldController*> bits_used;
-    for (uint i = 0; i < rc->getBitLen(); ++i){
+    for (uint i = 0; i < rbc_bitlen; ++i){
         bits_used.push_back(nullptr);
     }
 
@@ -440,7 +440,6 @@ void MainWindow::save()
                 {RegisterController::codename_key, rc->getCodeName().toStdString()},
                 {RegisterController::codenamegen_key, rc->getCodeNameGeneration() ? "true" : "false"},
                 {RegisterController::offset_key, rc->getOffset()},
-                {RegisterController::bitlen_key, rc->getBitLen()},
                 {RegisterController::desc_key, rc->getDescription().toStdString()}
             };
 
@@ -458,7 +457,8 @@ void MainWindow::save()
             {RegisterBlockController::codename_key, p->getCodeName().toStdString()},
             {RegisterBlockController::codenamegen_key, p->getCodeNameGeneration() ? "true" : "false"},
             {RegisterBlockController::size_key, p->getSize()},
-            {RegisterBlockController::desc_key, p->getDescription().toStdString()}
+            {RegisterBlockController::desc_key, p->getDescription().toStdString()},
+            {RegisterBlockController::bitlen_key, p->getBitLen()}
         };
 
         //only add register array if any exist to add, adding empty arrays is bad in TOML
@@ -614,6 +614,14 @@ void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string tab
         size = 0;
     }
 
+    uint32_t bit_len;
+    try {
+        bit_len = toml::find<uint32_t>(reg_block_table, RegisterBlockController::bitlen_key);
+    } catch (std::out_of_range& e){
+        //TODO: this should be an error.
+        bit_len = 8;
+    }
+
     toml_value_t registers;
     try {
         registers = toml::find(reg_block_table, RegisterBlockController::reg_key);
@@ -629,6 +637,7 @@ void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string tab
     rbc->setCodeName(codename.c_str());
     rbc->setDescription(description.c_str());
     rbc->setSize(size);
+    rbc->setBitLen(bit_len);
 
     if (!registers.is_table()) return;
 
@@ -671,14 +680,6 @@ void MainWindow::loadRegister(toml_value_t reg_table, std::string table_key, Reg
         offset = 0;
     }
 
-    uint32_t bit_len;
-    try {
-        bit_len = toml::find<uint32_t>(reg_table, RegisterController::bitlen_key);
-    } catch (std::out_of_range& e){
-        //TODO: this should be an error.
-        bit_len = 8;
-    }
-
     std::string description;
     try {
         description = toml::find<std::string>(reg_table, RegisterController::desc_key);
@@ -696,7 +697,6 @@ void MainWindow::loadRegister(toml_value_t reg_table, std::string table_key, Reg
     rc->setCodeNameGeneration(gen_codename);
     rc->setCodeName(codename.c_str());
     rc->setOffset(offset);
-    rc->setBitLen(bit_len);
     rc->setDescription(description.c_str());
 
     toml_value_t bitfield_table;
@@ -796,9 +796,11 @@ void MainWindow::on_new_reg_block_btn_clicked()
 {
     QWidget* w = this->makeNewRegBlockTab();
     this->ui->tabWidget->addTab(w, "");
-    this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1)->setName(
-        "Register Block " + QString::number(this->reg_block_ctrls.size()-1)
-    );
+
+    RegisterBlockController* rbc = this->reg_block_ctrls.at(this->reg_block_ctrls.size()-1);
+
+    rbc->setName("Register Block " + QString::number(this->reg_block_ctrls.size()-1));
+    rbc->setBitLen(8);
 }
 
 QWidget* MainWindow::makeNewRegBlockTab(){
@@ -869,6 +871,46 @@ QWidget* MainWindow::makeNewRegBlockTab(){
     g->addWidget(sizeEdit, REG_BLOCK_FIELD_COORD_SIZE.first, REG_BLOCK_FIELD_COORD_SIZE.second);
 
     sizeEdit->setValue(rbc->getSize());
+
+    QLabel* bitLenLabel = new QLabel("Size (bits): ");
+    g->addWidget(bitLenLabel, REG_BLOCK_FIELD_COORD_BITLEN.first, REG_BLOCK_FIELD_COORD_BITLEN.second-1);
+
+    QSpinBox* bitLenEdit = new QSpinBox();
+    bitLenEdit->setValue(1);
+    bitLenEdit->setMinimum(1);
+    bitLenEdit->setMaximum(std::numeric_limits<int>::max());
+    connect(bitLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        if (bitLenEdit->hasFocus()){
+            rbc->setBitLen(new_val);
+        }
+    });
+    connect(rbc, &RegisterBlockController::bitLenChanged, bitLenEdit, [=](uint32_t new_bitlen){
+        if (new_bitlen != (uint32_t)bitLenEdit->value()){
+            bitLenEdit->setValue(new_bitlen);
+        }
+    });
+    g->addWidget(bitLenEdit, REG_BLOCK_FIELD_COORD_BITLEN.first, REG_BLOCK_FIELD_COORD_BITLEN.second);
+
+    QLabel* byteLenLabel = new QLabel("Size (bytes): ");
+    g->addWidget(byteLenLabel, REG_BLOCK_FIELD_COORD_BYTELEN.first, REG_BLOCK_FIELD_COORD_BYTELEN.second-1);
+
+    QSpinBox* byteLenEdit = new QSpinBox();
+    byteLenEdit->setValue(1);
+    byteLenEdit->setMinimum(1);
+    byteLenEdit->setMaximum(std::numeric_limits<int>::max());
+    connect(byteLenEdit, &QSpinBox::valueChanged, rbc, [=](int new_val){
+        if (byteLenEdit->hasFocus()){
+            rbc->setBitLen(new_val*BITS_PER_BYTE);
+        }
+    });
+    connect(rbc, &RegisterBlockController::bitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
+        Q_UNUSED(new_bitlen);
+        uint32_t new_bytelen = rbc->getByteLen();
+        if (new_bytelen != (uint32_t)byteLenEdit->value()){
+            byteLenEdit->setValue(new_bytelen);
+        }
+    });
+    g->addWidget(byteLenEdit, REG_BLOCK_FIELD_COORD_BYTELEN.first, REG_BLOCK_FIELD_COORD_BYTELEN.second);
 
     QLabel* descLabel = new QLabel("Description: ");
     g->addWidget(descLabel, REG_BLOCK_FIELD_COORD_DESC_LABEL.first, REG_BLOCK_FIELD_COORD_DESC_LABEL.second);
@@ -1026,24 +1068,6 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     offsetEdit->setPrefix("0x");
     reggrid->addWidget(offsetEdit, REG_FIELD_COORD_OFFSET.first, REG_FIELD_COORD_OFFSET.second);
 
-    QLabel* bitLenLabel = new QLabel("Size (bits): ");
-    reggrid->addWidget(bitLenLabel, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second-1);
-
-    QSpinBox* bitLenEdit = new QSpinBox();
-    bitLenEdit->setValue(1);
-    bitLenEdit->setMinimum(1);
-    bitLenEdit->setMaximum(std::numeric_limits<int>::max());
-    reggrid->addWidget(bitLenEdit, REG_FIELD_COORD_BITLEN.first, REG_FIELD_COORD_BITLEN.second);
-
-    QLabel* byteLenLabel = new QLabel("Size (bytes): ");
-    reggrid->addWidget(byteLenLabel, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second-1);
-
-    QSpinBox* byteLenEdit = new QSpinBox();
-    byteLenEdit->setValue(1);
-    byteLenEdit->setMinimum(1);
-    byteLenEdit->setMaximum(std::numeric_limits<int>::max());
-    reggrid->addWidget(byteLenEdit, REG_FIELD_COORD_BYTELEN.first, REG_FIELD_COORD_BYTELEN.second);
-
     QLabel* descLabel = new QLabel("Description: ");
     reggrid->addWidget(descLabel, REG_FIELD_COORD_DESC_LABEL.first, REG_FIELD_COORD_DESC_LABEL.second);
 
@@ -1056,7 +1080,7 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
     QPushButton* sortBitFieldsBtn = new QPushButton("Sort Bit Fields");
     connect(sortBitFieldsBtn, &QPushButton::clicked, rbc, [=](){
         RegisterController* rc = rbc->getCurrRegController();
-        if (this->checkRegRangeCollisions(rc) != OK) return;
+        if (this->checkRegRangeCollisions(rc, rbc->getBitLen()) != OK) return;
         rc->sortBitFieldsByRange();
     });
     reggrid->addWidget(sortBitFieldsBtn, REG_FIELD_COORD_SORT_BITFIELD_BTN.first, REG_FIELD_COORD_SORT_BITFIELD_BTN.second);
@@ -1186,39 +1210,6 @@ QFrame* MainWindow::makeNewRegFrame(RegisterBlockController* rbc){
             })
         );
         emit rc->offsetChanged(rc->getOffset());
-
-        this->reg_ui_connections.push_back(
-            connect(bitLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
-                if (bitLenEdit->hasFocus()){
-                    rc->setBitLen(new_val);
-                }
-            })
-        );
-        this->reg_ui_connections.push_back(
-            connect(rc, &RegisterController::bitLenChanged, bitLenEdit, [=](uint32_t new_bitlen){
-                if (new_bitlen != (uint32_t)bitLenEdit->value()){
-                    bitLenEdit->setValue(new_bitlen);
-                }
-            })
-        );
-
-        this->reg_ui_connections.push_back(
-            connect(byteLenEdit, &QSpinBox::valueChanged, rc, [=](int new_val){
-                if (byteLenEdit->hasFocus()){
-                    rc->setBitLen(new_val*BITS_PER_BYTE);
-                }
-            })
-        );
-        this->reg_ui_connections.push_back(
-            connect(rc, &RegisterController::bitLenChanged, byteLenEdit, [=](uint32_t new_bitlen){
-                Q_UNUSED(new_bitlen);
-                uint32_t new_bytelen = rc->getByteLen();
-                if (new_bytelen != (uint32_t)byteLenEdit->value()){
-                    byteLenEdit->setValue(new_bytelen);
-                }
-            })
-        );
-        emit rc->bitLenChanged(rc->getBitLen());
 
         this->reg_ui_connections.push_back(
             connect(descEdit, &QTextEdit::textChanged, rc, [=](){
@@ -1441,7 +1432,7 @@ QFrame* MainWindow::makeNewBitFieldFrame(RegisterBlockController* rbc){
 
         this->bitfield_ui_connections.push_back(
             //adjust high range spinbox range maximum in response to register bit length
-            connect(rc, &RegisterController::bitLenChanged, this, [=](uint32_t new_len){
+            connect(rbc, &RegisterBlockController::bitLenChanged, this, [=](uint32_t new_len){
                 if ((uint32_t)rangeHighEdit->maximum() != new_len-1){
                     rangeHighEdit->setMaximum(new_len-1);
                 }

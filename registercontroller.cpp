@@ -36,16 +36,6 @@ QString RegisterController::getOffsetAsString()
     return "0x" + QString::number(this->reg.offset, 16);
 }
 
-uint32_t RegisterController::getBitLen()
-{
-    return this->reg.bit_len;
-}
-
-uint32_t RegisterController::getByteLen()
-{
-    return this->reg.getByteLen();
-}
-
 QString RegisterController::getDescription()
 {
     return this->reg.description.c_str();
@@ -114,18 +104,6 @@ void RegisterController::setOffset(addr_t new_offset)
     this->reg.offset = new_offset;
 
     emit this->offsetChanged(new_offset);
-    emit this->changeMade();
-}
-
-void RegisterController::setBitLen(uint32_t new_bitlen)
-{
-    if (new_bitlen == this->reg.bit_len) return;
-
-    //TODO: there will likely be some heavy ramifications of this if it ends up being too small for the existing bitfields.
-    //Also, will this be compatible with the interface(s)???
-    this->reg.bit_len = new_bitlen;
-
-    emit this->bitLenChanged(new_bitlen);
     emit this->changeMade();
 }
 

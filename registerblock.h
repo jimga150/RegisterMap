@@ -12,6 +12,8 @@ public:
     RegisterBlock();
     ~RegisterBlock();
 
+    uint32_t getByteLen();
+
 //    Register* getRegisterAt(addr_t offset);
 
 //    addr_t getMaxOffset();
@@ -22,6 +24,8 @@ public:
     std::string description;
 
     addr_t size;
+
+    uint32_t bit_len;
 
 //    std::map<uint64_t, Domain*> domain_offsets;
 
