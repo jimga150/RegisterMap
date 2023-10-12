@@ -2,7 +2,9 @@
 
 #include <QApplication>
 
-//TODO: add undo
+//TODO: disable undo saving when loading
+//TODO: keep old filename (and modified state) when undoing
+//TODO: keep register block tab, and register.bitfield index selections when undoing
 
 //TODO: add domains and interfaces
 

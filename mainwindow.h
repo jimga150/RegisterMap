@@ -2,11 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include <QFile>
+#include <QTemporaryFile>
 #include <QTableWidget>
-#include "registerblockcontroller.h"
+
 #include "toml11/toml.hpp"
+
+#include "registerblockcontroller.h"
 
 //override unordered_map to map to imply order
 using toml_value_t = toml::basic_value<TOML11_DEFAULT_COMMENT_STRATEGY, std::map, std::vector>;
@@ -74,6 +75,11 @@ public:
 
     void (*makeNewWindow)(QString load_filename) = nullptr;
 
+    //TODO: make a setting to change this
+    uint max_undo_levels = 50;
+
+    std::vector<QTemporaryFile*> undo_files;
+
     inline static const std::string vmaj_key = "version_major";
     inline static const std::string vmin_key = "version_minor";
 
@@ -90,6 +96,10 @@ public slots:
     void loadFileName(QString load_file);
 
     void changeMade();
+
+    void undo();
+
+    void undo_mult(uint undo_levels);
 
 private slots:
     void on_new_reg_block_btn_clicked();

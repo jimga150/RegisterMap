@@ -81,6 +81,7 @@ MainWindow::MainWindow(void (*makeNewWindow)(QString), QWidget *parent)
     connect(this->ui->actionNew, &QAction::triggered, this, [=](){
         this->makeNewWindow("");
     });
+    connect(this->ui->actionUndo, &QAction::triggered, this, &MainWindow::undo);
     connect(this->ui->tabWidget, &QTabWidget::tabCloseRequested, this, [=](int idx_to_close){
 
         QWidget* w_to_delete = this->ui->tabWidget->widget(idx_to_close);
@@ -803,11 +804,54 @@ void MainWindow::loadBitField(toml_value_t bitfield_table, std::string table_key
 
 void MainWindow::changeMade()
 {
+    //make title show asterisk at the end
     QString windowTitle = this->windowTitle();
     if (windowTitle.at(windowTitle.length()-1) != '*'){
         //this indicates an unsaved change exists
         this->setWindowTitle(windowTitle + "*");
     }
+
+    QTemporaryFile* undo_file = new QTemporaryFile(this);
+
+    if (!undo_file->open()){
+        QMessageBox::warning(
+            this,
+            "Undo Save Failed",
+            "Failed to save undo file. You will not be able to undo to this "
+            "change in the future. Did you run out of disk space? Does this "
+            "application have permission to read/wrtie to the temp directory?"
+        );
+        return;
+    }
+
+    this->undo_files.push_back(undo_file);
+    if (this->undo_files.size() > this->max_undo_levels){
+        QTemporaryFile* undo_file_to_delete = this->undo_files.front();
+        undo_file_to_delete->deleteLater();
+        this->undo_files.erase(this->undo_files.begin());
+    }
+
+    this->saveTo(undo_file, false);
+
+}
+
+void MainWindow::undo()
+{
+    this->undo_mult(1);
+}
+
+void MainWindow::undo_mult(uint undo_levels)
+{
+    if (undo_levels + 1 > this->undo_files.size()){
+        QMessageBox::warning(this, "Undo Failed", "Undos not saved back that far");
+        return;
+    }
+
+    uint undo_idx = this->undo_files.size() - undo_levels - 1;
+
+    QString undo_file_name = this->undo_files[undo_idx]->fileName();
+
+    this->loadFileName(undo_file_name);
 }
 
 
