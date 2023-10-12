@@ -83,7 +83,7 @@ public slots:
 
     void save();
 
-    void saveTo(QFile& save_file, bool is_validated = false);
+    void saveTo(QFile* save_file, bool is_validated = false);
 
     void load();
 

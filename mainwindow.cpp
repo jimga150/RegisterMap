@@ -390,7 +390,7 @@ void MainWindow::save()
 
     if (!this->openSaveFile(save_file)) return;
 
-    this->saveTo(save_file, true);
+    this->saveTo(&save_file, true);
 
     save_file.close();
 }
@@ -404,9 +404,11 @@ bool MainWindow::openSaveFile(QFile& file)
     return true;
 }
 
-void MainWindow::saveTo(QFile& save_file, bool is_validated)
+void MainWindow::saveTo(QFile* save_file, bool is_validated)
 {
-    QTextStream savefilestream(&save_file);
+    printf("saveTo: save file is\n%s\n", save_file->fileName().toUtf8().constData());
+
+    QTextStream savefilestream(save_file);
     std::stringstream std_stream;
 
     //TODO: store version of app and write that out instead
@@ -501,7 +503,7 @@ void MainWindow::saveTo(QFile& save_file, bool is_validated)
 
     savefilestream << std_stream.str().c_str();
 
-    this->setWindowTitle(QFileInfo(save_file.fileName()).fileName());
+    this->setWindowTitle(QFileInfo(save_file->fileName()).fileName());
 }
 
 void MainWindow::load()
