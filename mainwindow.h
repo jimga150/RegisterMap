@@ -87,7 +87,7 @@ public slots:
 
     void load();
 
-    void loadFile(QString load_file);
+    void loadFileName(QString load_file);
 
     void changeMade();
 

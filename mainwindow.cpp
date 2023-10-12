@@ -525,22 +525,16 @@ void MainWindow::load()
         this->makeNewWindow(load_filename);
     } else {
         //wipe this window and load the selected TOML file
-        this->loadFile(load_filename);
+        this->loadFileName(load_filename);
     }
 
 }
 
-void MainWindow::loadFile(QString load_filename)
+void MainWindow::loadFileName(QString load_filename)
 {
 
     if (load_filename.length() == 0){
         printf("Empty load filename, skipping load...\n");
-        return;
-    }
-
-    QFile load_file(load_filename);
-    if (!(load_file.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text))){
-        QMessageBox::warning(this, "File load Failed", "Failed to load file");
         return;
     }
 
@@ -549,8 +543,8 @@ void MainWindow::loadFile(QString load_filename)
     try {
         base_table = toml::parse(load_filename.toUtf8().constData());
 
-//        printf("File contents:\n");
-//        this->printTomlTable(base_table);
+        //        printf("File contents:\n");
+        //        this->printTomlTable(base_table);
 
         //TODO: make method of storing old load methods and call upon those to translate to the current object structure
         int vmaj = toml::find<int>(base_table, vmaj_key);
@@ -587,6 +581,8 @@ void MainWindow::loadFile(QString load_filename)
             }
         }
 
+        this->setWindowTitle(QFileInfo(load_filename).fileName());
+
     } catch (std::runtime_error& e){
         fprintf(stderr, "%s:%d: TOML Parse failed (runtime error): %s", __FILE__, __LINE__, e.what());
         QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
@@ -596,10 +592,6 @@ void MainWindow::loadFile(QString load_filename)
         QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
         return;
     }
-
-    this->setWindowTitle(QFileInfo(load_file.fileName()).fileName());
-
-    load_file.close();
 }
 
 void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string table_key)
