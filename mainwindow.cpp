@@ -533,7 +533,6 @@ void MainWindow::load()
 
 void MainWindow::loadFileName(QString load_filename)
 {
-
     if (load_filename.length() == 0){
         printf("Empty load filename, skipping load...\n");
         return;
@@ -562,6 +561,9 @@ void MainWindow::loadFileName(QString load_filename)
         //This is the point of no return (pun intended)
         //----------------------------------------------------------
 
+        //stop undos from being recorded while we rip up and reload the whole document
+        this->record_undos = false;
+
         //remove all tabs except main tab
         //(doesnt delete them yet but thats fine)
         while(this->ui->tabWidget->count() > 1){
@@ -587,12 +589,13 @@ void MainWindow::loadFileName(QString load_filename)
     } catch (std::runtime_error& e){
         fprintf(stderr, "%s:%d: TOML Parse failed (runtime error): %s", __FILE__, __LINE__, e.what());
         QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
-        return;
     } catch (std::out_of_range& e){
         fprintf(stderr, "%s:%d: TOML Parse failed (out of range error): %s", __FILE__, __LINE__, e.what());
         QMessageBox::warning(this, "File load Failed", "Failed to parse file " + load_filename + "\n");
-        return;
     }
+
+    //turn undos back on now that we're done loading
+    this->record_undos = true;
 }
 
 void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string table_key)
@@ -810,6 +813,8 @@ void MainWindow::changeMade()
         //this indicates an unsaved change exists
         this->setWindowTitle(windowTitle + "*");
     }
+
+    if (!(this->record_undos)) return;
 
     QTemporaryFile* undo_file = new QTemporaryFile(this);
 

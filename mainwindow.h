@@ -80,6 +80,8 @@ public:
 
     std::vector<QTemporaryFile*> undo_files;
 
+    bool record_undos = true;
+
     inline static const std::string vmaj_key = "version_major";
     inline static const std::string vmin_key = "version_minor";
 
