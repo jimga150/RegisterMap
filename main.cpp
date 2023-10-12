@@ -38,7 +38,7 @@ static std::vector<MainWindow*> windows;
 
 void makeNewWindow(QString load_filename){
     makeNewWindow_noload();
-    windows.at(windows.size()-1)->loadFile(load_filename);
+    windows.at(windows.size()-1)->loadFileName(load_filename);
 }
 
 void makeNewWindow_noload(){
