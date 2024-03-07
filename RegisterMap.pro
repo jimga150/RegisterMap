@@ -13,6 +13,7 @@ SOURCES += \
     bitfieldcontroller.cpp \
     common.cpp \
     domain.cpp \
+    interface.cpp \
     main.cpp \
     mainwindow.cpp \
     register.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     bitfieldcontroller.h \
     common.h \
     domain.h \
+    interface.h \
     mainwindow.h \
     register.h \
     registerblock.h \

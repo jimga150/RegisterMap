@@ -2,10 +2,14 @@
 
 #include <QApplication>
 
-//TODO: make undo levels save to keep undoing
+//TODO: fix focus problem where undo shurtcut doesnt work if a spinbox is in focus
+//TODO: fix bug where you cant delete the last bitfield on a register
+
 //TODO: make block, register, and bit field creation only trigger one changeMade signal
 //TODO: keep old filename (and modified state) when undoing
 //TODO: keep register block tab, and register.bitfield index selections when undoing
+//TODO: confirm load when unsaved changes are present
+//TODO: clear all undos after a non-undo load
 
 //TODO: add domains and interfaces
 

@@ -505,6 +505,7 @@ void MainWindow::saveTo(QFile* save_file, bool is_validated)
     savefilestream << std_stream.str().c_str();
 
     this->setWindowTitle(QFileInfo(save_file->fileName()).fileName());
+    fflush(stdout);
 }
 
 void MainWindow::load()
@@ -596,6 +597,7 @@ void MainWindow::loadFileName(QString load_filename)
 
     //turn undos back on now that we're done loading
     this->record_undos = true;
+    fflush(stdout);
 }
 
 void MainWindow::loadRegisterBlock(toml_value_t reg_block_table, std::string table_key)
@@ -829,11 +831,16 @@ void MainWindow::changeMade()
         return;
     }
 
-    this->undo_files.push_back(undo_file);
+    if (this->curr_undo_level > 0){
+        this->undo_files.erase(this->undo_files.begin(), this->undo_files.begin() + this->curr_undo_level);
+        this->curr_undo_level = 0;
+    }
+
+    this->undo_files.insert(this->undo_files.begin(), undo_file);
     if (this->undo_files.size() > this->max_undo_levels){
-        QTemporaryFile* undo_file_to_delete = this->undo_files.front();
+        QTemporaryFile* undo_file_to_delete = this->undo_files.back();
         undo_file_to_delete->deleteLater();
-        this->undo_files.erase(this->undo_files.begin());
+        this->undo_files.erase(this->undo_files.end());
     }
 
     this->saveTo(undo_file, false);
@@ -847,14 +854,14 @@ void MainWindow::undo()
 
 void MainWindow::undo_mult(uint undo_levels)
 {
-    if (undo_levels + 1 > this->undo_files.size()){
+    if (this->curr_undo_level + undo_levels + 1 > this->undo_files.size()){
         QMessageBox::warning(this, "Undo Failed", "Undos not saved back that far");
         return;
     }
 
-    uint undo_idx = this->undo_files.size() - undo_levels - 1;
+    this->curr_undo_level += undo_levels;
 
-    QString undo_file_name = this->undo_files[undo_idx]->fileName();
+    QString undo_file_name = this->undo_files[curr_undo_level]->fileName();
 
     this->loadFileName(undo_file_name);
 }

@@ -6,7 +6,7 @@
 #include <vector>
 #include <cstdio>
 
-typedef uint32_t addr_t;
+#include "common.h"
 
 class Register
 {

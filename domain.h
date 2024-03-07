@@ -3,18 +3,24 @@
 
 #include <string>
 
+#include "common.h"
+
 class Domain
 {
 public:
     Domain();
 
-    std::string interface;
+    std::string name;
+    std::string codename;
 
-    uint64_t low_addr;
-    uint64_t high_addr;
+    mem_intface_t protocol;
 
+    uint8_t data_width_bytes;
 
-    uint64_t getSize(){
+    addr_t low_addr;
+    addr_t high_addr;
+
+    addr_t getSize(){
         return this->high_addr - this->low_addr;
     }
 };

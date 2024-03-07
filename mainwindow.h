@@ -78,6 +78,8 @@ public:
     //TODO: make a setting to change this
     uint max_undo_levels = 50;
 
+    uint curr_undo_level = 0;
+
     std::vector<QTemporaryFile*> undo_files;
 
     bool record_undos = true;

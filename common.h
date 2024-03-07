@@ -17,6 +17,24 @@
 
 #define BITS_PER_BYTE (8)
 
+#define FOREACH_MEM_INTFACE(FXN) \
+FXN(AXI4) \
+FXN(AXI4LITE) \
+FXN(NATIVE) \
+FXN(AVALON) \
+FXN(APB) \
+FXN(PRIM)
+
+enum mem_intface_t {
+    FOREACH_MEM_INTFACE(GENERATE_ENUM)
+};
+
+static const char* mem_intface_str[]{
+    FOREACH_MEM_INTFACE(GENERATE_STRING)
+};
+
+typedef uint32_t addr_t;
+
 //replaces the first instance of toReplace within s with the string replaceWith
 //returns
 //  true if replacement was succesful
